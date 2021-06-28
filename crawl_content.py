@@ -38,7 +38,7 @@ headers = {
     'Referer': 'https://edu.lagou.com/',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-   'Cookie': ''
+    'Cookie': ''
    }
 
 
