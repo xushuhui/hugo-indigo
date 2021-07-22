@@ -12,7 +12,59 @@ import (
 )
 
 func main() {
-
+div := `<div class="content">
+	<div class="content-item text-item">
+	  <div class="cl-preview-section">
+		<a id="anchor_0" class="virtual_anchor" target="_blank">
+		</a>
+		<h1 id="java-运算符">Java 运算符</h1>
+	  </div>
+	</div>
+	<div class="content-item code-item">
+	  <div class="code-box js-code-box">
+		<div class="code-top">
+		  <div class="left">
+			<i class="imv2-code">
+			</i>
+			<span>实例演示</span>
+		  </div>
+		  <div class="right">
+			<span class="preview">预览</span>
+			<span class="copy">复制
+			  <textarea type="text" class="code"></textarea>
+			</span>
+			<div class="copysuccess hide">复制成功！</div>
+		  </div>
+		</div>
+		<div class="code-con">
+		  <div class="cl-preview-section">
+			<pre class=" language-java">
+			  <code class="prism  language-java">
+				<span class="token keyword">public</span>
+				<span class="token keyword">class</span>
+				<span class="token class-name">ArithmeticOperators1</span>
+			   
+			  </code>
+			  <ul class="pre-numbering">
+			  
+				<li>9</li>
+			  </ul>
+			</pre>
+		  </div>
+		</div>
+		<div class="code-bottom">
+		  <a href="/wiki/run/434.html" target="_blank">运行案例</a>
+		  <span>点击 "运行案例" 可查看在线运行效果</span>
+		</div>
+		<!---->
+	  </div>
+	</div>
+	</div>`
+	doc, err :=  goquery.NewDocumentFromReader(strings.NewReader(div))
+	if err != nil {
+		log.Fatal(err)
+	}
+	println(doc)
 	getContent("", "")
 }
 func getContent(link string, title string) {
