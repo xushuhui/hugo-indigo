@@ -1,10 +1,8 @@
-# 00 开篇词 | 想吃透Go并发编程，你得这样学！
-
+# 00 开篇词 | 想吃透 Go 并发编程，你得这样学！
 
 你好，我是晁岳攀，网名鸟窝。之前我在微博研发平台架构中心担任资深架构师，同时也是微服务框架 rpcx 的作者，欢迎来到“Go 并发编程实战课”。
 
 ## 并发编程，为什么选 Go？
-
 
 为什么要学 Go 并发呢？我想先和你聊聊我和 Go 结缘的经历。
 
@@ -30,39 +28,21 @@
 
 ## 学习 Go 并发编程，有哪些困难？
 
-
 那学习 Go 并发会有哪些困难呢？我总结了一下，主要是有 5 大问题。
-
-
 
 在面对并发难题时，感觉无从下手，不知道该用什么并发原语来解决问题。
 
-
-
-
 如果多个并发原语都可以解决问题，那么，究竟哪个是最优解呢？比如说是用互斥锁，还是用 Channel。
-
-
-
 
 不知道如何编排并发任务。并发编程不像是传统的串行编程，程序的运行存在着很大的不确定性。这个时候，就会面临一个问题，怎么才能让相应的任务按照你设想的流程运行呢？
 
-
-
-
 有时候，按照正常理解的并发方式去实现的程序，结果莫名其妙就 panic 或者死锁了，排查起来非常困难。
 
-
-
-
 已知的并发原语都不能解决并发问题，程序写起来异常复杂，而且代码混乱，容易出错。
-
-
 
 每一位刚入门 Go 的程序员，在深入学习 Go 语言的时候，尤其是面对 Go 并发编程的时候，都会遇到这些问题。那么，具体该怎么学呢？
 
 ## 怎么提升 Go 并发编程能力？
-
 
 学习这件事儿，最怕的就是不成体系，即使知识点之间是彼此独立的，也必定存在着联系。我们要做的，就是找出逻辑关系，拎出知识线。我认为，关于 Go 并发编程，有两条主线，分别是知识主线和学习主线。具体是啥意思呢？可以看下面的这张知识地图。
 
@@ -79,7 +59,6 @@ Channel：Channel 类型是 Go 语言独特的类型，因为比较新，所以�
 扩展并发原语：目前来看，Go 开发组不准备在标准库中扩充并发原语了，但是还有一些并发原语应用广泛，比如信号量、SingleFlight、循环栅栏、ErrGroup 等。掌握了它们，就可以在处理一些并发问题时，取得事半功倍的效果。
 
 分布式并发原语：分布式并发原语是应对大规模的应用程序中并发问题的并发类型。我主要会介绍使用 etcd 实现的一些分布式并发原语，比如 Leader 选举、分布式互斥锁、分布式读写锁、分布式队列等，在处理分布式场景的并发问题时，特别有用。
-
 
 ![](https://static001.geekbang.org/resource/image/89/4c/89ea31fdeabc85a29406bb55959cd04c.jpg)
 
@@ -109,9 +88,7 @@ Go 中有一个大的方向，就是任务编排用 Channel，共享资源保护
 
 修炼的过程中，最好有人和你并肩而行，共同成长。欢迎你把这门课分享给你的朋友或同事，和他 / 她一起提升并发编程的功力。
 
-
 # 01 | Mutex：如何解决资源并发访问问题？
-
 
 你好，我是鸟窝。
 
@@ -126,7 +103,6 @@ Go 中有一个大的方向，就是任务编排用 Channel，共享资源保护
 好了，我们先来看看互斥锁的实现机制。
 
 ## 互斥锁的实现机制
-
 
 互斥锁是并发控制的一个基本手段，是为了避免竞争而建立的一种并发控制机制。在学习它的具体实现原理前，我们要先搞懂一个概念，就是临界区。
 
@@ -152,37 +128,15 @@ Go 中有一个大的方向，就是任务编排用 Channel，共享资源保护
 
 消息传递。信息交流以及不同的 goroutine 之间的线程安全的数据交流，常常使用 Channel 来实现。
 
-
 今天这一讲，咱们就从公认的使用最广泛的 Mutex 开始学习吧。是骡子是马咱得拉出来遛遛，看看我们到底可以怎么使用 Mutex。
 
 ## Mutex 的基本使用方法
-
 
 在正式看 Mutex 用法之前呢，我想先给你交代一件事：Locker 接口。
 
 在 Go 的标准库中，package sync 提供了锁相关的一系列同步原语，这个 package 还定义了一个 Locker 的接口，Mutex 就实现了这个接口。
 
 Locker 的接口定义了锁同步原语的方法集：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Locker interface {
 
@@ -191,25 +145,6 @@ type Locker interface {
  Unlock()
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 可以看到，Go 定义的锁接口的方法集很简单，就是请求锁（Lock）和释放锁（Unlock）这两个方法，秉承了 Go 语言一贯的简洁风格。
 
@@ -221,96 +156,15 @@ type Locker interface {
 
 简单来说，互斥锁 Mutex 就提供两个方法 Lock 和 Unlock：进入临界区之前调用 Lock 方法，退出临界区的时候调用 Unlock 方法：
 
-
-
-
-
-
-
-
-
-
-
 func(m *Mutex)Lock()
 
 func(m *Mutex)Unlock()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 当一个 goroutine 通过调用 Lock 方法获得了这个锁的拥有权后， 其它请求锁的 goroutine 就会阻塞在 Lock 方法的调用上，直到锁被释放并且自己获取到了这个锁的拥有权。
 
 看到这儿，你可能会问，为啥一定要加锁呢？别急，我带你来看一个并发访问场景中不使用锁的例子，看看实现起来会出现什么状况。
 
-在这个例子中，我们创建了 10 个 goroutine，同时不断地对一个变量（count）进行加 1 操作，每个 goroutine 负责执行 10 万次的加 1 操作，我们期望的最后计数的结果是 10 * 100000 = 1000000 (一百万)。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+在这个例子中，我们创建了 10 个 goroutine，同时不断地对一个变量（count）进行加 1 操作，每个 goroutine 负责执行 10 万次的加 1 操作，我们期望的最后计数的结果是 10 * 100000 = 1000000 （一百万）。
 
 import (
 
@@ -320,13 +174,11 @@ import (
 
  )
 
-
-
 funcmain() {
 
 var count = 0
 
-// 使用WaitGroup等待10个goroutine完成
+// 使用 WaitGroup 等待 10 个 goroutine 完成
 
 var wg sync.WaitGroup
 
@@ -338,7 +190,7 @@ gofunc() {
 
 defer wg.Done()
 
-// 对变量count执行10次加1
+// 对变量 count 执行 10 次加 1
 
 for j := 0; j < 100000; j++ {
 
@@ -350,32 +202,13 @@ for j := 0; j < 100000; j++ {
 
  }
 
-// 等待10个goroutine完成
+// 等待 10 个 goroutine 完成
 
  wg.Wait()
 
  fmt.Println(count)
 
  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 在这段代码中，我们使用 sync.WaitGroup 来等待所有的 goroutine 执行完毕后，再输出最终的结果。sync.WaitGroup 这个同步原语我会在后面的课程中具体介绍，现在你只需要知道，我们使用它来控制等待一组 goroutine 全部做完任务。
 
@@ -389,44 +222,13 @@ for j := 0; j < 100000; j++ {
 
 比如，10 个 goroutine 同时读取到 count 的值为 9527，接着各自按照自己的逻辑加 1，值变成了 9528，然后把这个结果再写回到 count 变量。但是，实际上，此时我们增加的总数应该是 10 才对，这里却只增加了 1，好多计数都被“吞”掉了。这是并发访问共享数据的常见错误。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// count++操作的汇编代码
+// count++ 操作的汇编代码
 
  MOVQ "".count(SB), AX
 
  LEAQ 1(AX), CX
 
  MOVQ CX, "".count(SB)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这个问题，有经验的开发人员还是比较容易发现的，但是，很多时候，并发问题隐藏得非常深，即使是有经验的人，也不太容易发现或者 Debug 出来。
 
@@ -449,56 +251,6 @@ Go race detector 是基于 Google 的 C/C++ [sanitizers]() 技术实现的，编
 虽然这个工具使用起来很方便，但是，因为它的实现方式，只能通过真正对实际地址进行读写访问的时候才能探测，所以它并不能在编译的时候发现 data race 的问题。而且，在运行的时候，只有在触发了 data race 之后，才能检测到，如果碰巧没有触发（比如一个 data race 问题只能在 2 月 14 号零点或者 11 月 11 号零点才出现），是检测不出来的。
 
 而且，把开启了 race 的程序部署在线上，还是比较影响性能的。运行 go tool compile -race -S counter.go，可以查看计数器例子的代码，重点关注一下 count++ 前后的编译后的代码：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 0x002a00042 (counter.go:13) CALL runtime.racefuncenter(SB)
 
@@ -544,23 +296,6 @@ Go race detector 是基于 Google 的 C/C++ [sanitizers]() 技术实现的，编
 
 0x00c500197 (counter.go:18) ADDQ $112, SP
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在编译的代码中，增加了 runtime.racefuncenter、runtime.raceread、runtime.racewrite、runtime.racefuncexit 等检测 data race 的方法。通过这些插入的指令，Go race detector 工具就能够成功地检测出 data race 问题了。
 
 总结一下，通过在编译的时候插入一些指令，在运行时通过这些插入的指令检测并发读写从而发现 data race 问题，就是这个工具的实现机制。
@@ -571,85 +306,7 @@ Go race detector 是基于 Google 的 C/C++ [sanitizers]() 技术实现的，编
 
 我们知道，这里的共享资源是 count 变量，临界区是 count++，只要在临界区前面获取锁，在离开临界区的时候释放锁，就能完美地解决 data race 的问题了。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -658,10 +315,6 @@ import (
 "sync"
 
  )
-
-
-
-
 
 funcmain() {
 
@@ -673,17 +326,13 @@ var mu sync.Mutex
 
 var count = 0
 
-
-
-// 辅助变量，用来确认所有的goroutine都完成
+// 辅助变量，用来确认所有的 goroutine 都完成
 
 var wg sync.WaitGroup
 
  wg.Add(10)
 
-
-
-// 启动10个gourontine
+// 启动 10 个 gourontine
 
 for i := 0; i < 10; i++ {
 
@@ -691,7 +340,7 @@ gofunc() {
 
 defer wg.Done()
 
-// 累加10万次
+// 累加 10 万次
 
 for j := 0; j < 100000; j++ {
 
@@ -713,23 +362,6 @@ for j := 0; j < 100000; j++ {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果你再运行一下程序，就会发现，data race 警告没有了，系统干脆地输出了 1000000：
 
 ![](https://static001.geekbang.org/resource/image/d3/8e/d3c577aec0322488e349acf17789a08e.png)
@@ -742,20 +374,6 @@ for j := 0; j < 100000; j++ {
 
 很多情况下，Mutex 会嵌入到其它 struct 中使用，比如下面的方式：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type Counter struct {
 
  mu sync.Mutex
@@ -764,78 +382,9 @@ type Counter struct {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在初始化嵌入的 struct 时，也不必初始化这个 Mutex 字段，不会因为没有初始化出现空指针或者是无法获取到锁的情况。
 
 有时候，我们还可以采用嵌入字段的方式。通过嵌入字段，你可以在这个 struct 上直接调用 Lock/Unlock 方法。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -871,10 +420,6 @@ for j := 0; j < 100000; j++ {
 
 }
 
-
-
-
-
 type Counter struct {
 
  sync.Mutex
@@ -883,118 +428,9 @@ type Counter struct {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果嵌入的 struct 有多个字段，我们一般会把 Mutex 放在要控制的字段上面，然后使用空格把字段分隔开来。即使你不这样做，代码也可以正常编译，只不过，用这种风格去写的话，逻辑会更清晰，也更易于维护。
 
 甚至，你还可以把获取锁、释放锁、计数加一的逻辑封装成一个方法，对外不需要暴露锁等逻辑：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -1002,15 +438,11 @@ funcmain() {
 
 var counter Counter
 
-
-
 var wg sync.WaitGroup
 
  wg.Add(10)
 
-
-
-// 启动10个goroutine
+// 启动 10 个 goroutine
 
 for i := 0; i < 10; i++ {
 
@@ -1018,7 +450,7 @@ gofunc() {
 
 defer wg.Done()
 
-// 执行10万次累加
+// 执行 10 万次累加
 
 for j := 0; j < 100000; j++ {
 
@@ -1036,8 +468,6 @@ for j := 0; j < 100000; j++ {
 
 }
 
-
-
 // 线程安全的计数器类型
 
 type Counter struct {
@@ -1046,17 +476,13 @@ type Counter struct {
 
  Name string
 
-
-
  mu sync.Mutex
 
  count uint64
 
 }
 
-
-
-// 加1的方法，内部使用互斥锁保护
+// 加 1 的方法，内部使用互斥锁保护
 
 func(c *Counter)Incr() {
 
@@ -1067,8 +493,6 @@ func(c *Counter)Incr() {
  c.mu.Unlock()
 
 }
-
-
 
 // 得到计数器的值，也需要锁保护
 
@@ -1082,25 +506,7 @@ return c.count
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
-
 
 这节课，我介绍了并发问题的背景知识、标准库中 Mutex 的使用和最佳实践、通过 race detector 工具发现计数器程序的问题以及修复方法。相信你已经大致了解了 Mutex 这个同步原语。
 
@@ -1112,14 +518,11 @@ return c.count
 
 ## 思考题
 
-
 你已经知道，如果 Mutex 已经被一个 goroutine 获取了锁，其它等待中的 goroutine 们只能一直等待。那么，等这个锁释放后，等待中的 goroutine 中哪一个会优先获取 Mutex 呢？
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 02 | Mutex：庖丁解牛看实现
-
 
 你好，我是鸟窝。
 
@@ -1139,90 +542,13 @@ return c.count
 
 ## 初版的互斥锁
 
-
 我们先来看怎么实现一个最简单的互斥锁。在开始之前，你可以先想一想，如果是你，你会怎么设计呢？
 
 你可能会想到，可以通过一个 flag 变量，标记当前的锁是否被某个 goroutine 持有。如果这个 flag 的值是 1，就代表锁已经被持有，那么，其它竞争的 goroutine 只能等待；如果这个 flag 的值是 0，就可以通过 CAS（compare-and-swap，或者 compare-and-set）将这个 flag 设置为 1，标识锁被当前的这个 goroutine 持有了。
 
 实际上，Russ Cox 在 2008 年提交的第一版 Mutex 就是这样实现的。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// CAS操作，当时还没有抽象出atomic包
+// CAS 操作，当时还没有抽象出 atomic 包
 
 funccas(val *int32, old, newint32)bool
 
@@ -1236,13 +562,11 @@ typeMutexstruct {
 
  key int32// 锁是否被持有的标识
 
- sema int32// 信号量专用，用以阻塞/唤醒goroutine
+ sema int32// 信号量专用，用以阻塞 / 唤醒 goroutine
 
  }
 
-
-
-// 保证成功在val上增加delta的值
+// 保证成功在 val 上增加 delta 的值
 
 funcxadd(val *int32, delta int32)(newint32) {
 
@@ -1262,13 +586,11 @@ panic("unreached")
 
  }
 
-
-
 // 请求锁
 
 func(m *Mutex)Lock() {
 
-if xadd(&m.key, 1) == 1 { //标识加1，如果等于1，成功获取到锁
+if xadd(&m.key, 1) == 1 { // 标识加 1，如果等于 1，成功获取到锁
 
 return
 
@@ -1278,36 +600,17 @@ return
 
  }
 
-
-
 func(m *Mutex)Unlock() {
 
-if xadd(&m.key, -1) == 0 { // 将标识减去1，如果等于0，则没有其它等待者
+if xadd(&m.key, -1) == 0 { // 将标识减去 1，如果等于 0，则没有其它等待者
 
 return
 
  }
 
- semrelease(&m.sema) // 唤醒其它阻塞的goroutine
+ semrelease(&m.sema) // 唤醒其它阻塞的 goroutine
 
- } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ }
 
 这里呢，我先简单补充介绍下刚刚提到的 CAS。
 
@@ -1324,7 +627,6 @@ Mutex 结构体包含两个字段：
 字段 key：是一个 flag，用来标识这个排外锁是否被某个 goroutine 所持有，如果 key 大于等于 1，说明这个排外锁已经被持有；
 
 字段 sema：是个信号量变量，用来控制等待 goroutine 的阻塞休眠和唤醒。
-
 
 ![](https://static001.geekbang.org/resource/image/82/25/825e23e1af96e78f3773e0b45de38e25.jpg)
 
@@ -1348,48 +650,6 @@ Unlock 方法可以被任意的 goroutine 调用释放锁，即使是没持有�
 
 以前，我们经常会基于性能的考虑，及时释放掉锁，所以在一些 if-else 分支中加上释放锁的代码，代码看起来很臃肿。而且，在重构的时候，也很容易因为误删或者是漏掉而出现死锁的现象。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type Foo struct {
 
  mu sync.Mutex
@@ -1398,13 +658,9 @@ type Foo struct {
 
 }
 
-
-
 func(f *Foo)Bar() {
 
  f.mu.Lock()
-
-
 
 if f.count < 1000 {
 
@@ -1416,8 +672,6 @@ return
 
  }
 
-
-
  f.count++
 
  f.mu.Unlock() // 此处释放锁
@@ -1426,58 +680,7 @@ return
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 从 1.14 版本起，Go 对 defer 做了优化，采用更有效的内联方式，取代之前的生成 defer 对象到 defer chain 中，defer 对耗时的影响微乎其微了，所以基本上修改成下面简洁的写法也没问题：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(f *Foo)Bar() {
 
@@ -1485,10 +688,6 @@ func(f *Foo)Bar() {
 
 defer f.mu.Unlock()
 
-
-
-
-
 if f.count < 1000 {
 
  f.count += 3
@@ -1497,32 +696,11 @@ return
 
  }
 
-
-
-
-
  f.count++
 
 return
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这样做的好处就是 Lock/Unlock 总是成对紧凑出现，不会遗漏或者多调用，代码更少。
 
@@ -1536,36 +714,7 @@ return
 
 ## 给新人机会
 
-
 Go 开发者在 2011 年 6 月 30 日的 commit 中对 Mutex 做了一次大的调整，调整后的 Mutex 实现如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Mutex struct {
 
@@ -1574,10 +723,6 @@ type Mutex struct {
  sema uint32
 
  }
-
-
-
-
 
 const (
 
@@ -1589,23 +734,6 @@ const (
 
  )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 虽然 Mutex 结构体还是包含两个字段，但是第一个字段已经改成了 state，它的含义也不一样了。
 
 ![](https://static001.geekbang.org/resource/image/4c/15/4c4a3dd2310059821f41af7b84925615.jpg)
@@ -1614,77 +742,15 @@ state 是一个复合型的字段，一个字段包含多个意义，这样可�
 
 请求锁的方法 Lock 也变得复杂了。复杂之处不仅仅在于对字段 state 的操作难以理解，而且代码逻辑也变得相当复杂。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(m *Mutex)Lock() {
 
-// Fast path: 幸运case，能够直接获取到锁
+// Fast path: 幸运 case，能够直接获取到锁
 
 if atomic.CompareAndSwapInt32(&m.state, 0, mutexLocked) {
 
 return
 
  }
-
-
 
  awoke := false
 
@@ -1696,13 +762,13 @@ new := old | mutexLocked // 新状态加锁
 
 if old&mutexLocked != 0 {
 
-new = old + 1<<mutexWaiterShift //等待者数量加一
+new = old + 1<<mutexWaiterShift // 等待者数量加一
 
  }
 
 if awoke {
 
-// goroutine是被唤醒的，
+// goroutine 是被唤醒的，
 
 // 新状态清除唤醒标志
 
@@ -1710,7 +776,7 @@ new &^= mutexWoken
 
  }
 
-if atomic.CompareAndSwapInt32(&m.state, old, new) {//设置新状态
+if atomic.CompareAndSwapInt32(&m.state, old, new) {// 设置新状态
 
 if old&mutexLocked == 0 { // 锁原状态未加锁
 
@@ -1727,23 +793,6 @@ break
  }
 
  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 首先是通过 CAS 检测 state 字段中的标志（第 3 行），如果没有 goroutine 持有锁，也没有等待持有锁的 gorutine，那么，当前的 goroutine 就很幸运，可以直接获得锁，这也是注释中的 Fast path 的意思。
 
@@ -1763,77 +812,29 @@ for 循环是不断尝试获取锁，如果获取不到，就通过 runtime.Sema
 
 刚刚说的都是获取锁，接下来，我们再来看看释放锁。释放锁的 Unlock 方法也有些复杂，我们来看一下。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(m *Mutex)Unlock() {
 
 // Fast path: drop lock bit.
 
-new := atomic.AddInt32(&m.state, -mutexLocked) //去掉锁标志
+new := atomic.AddInt32(&m.state, -mutexLocked) // 去掉锁标志
 
-if (new+mutexLocked)&mutexLocked == 0 { //本来就没有加锁
+if (new+mutexLocked)&mutexLocked == 0 { // 本来就没有加锁
 
 panic("sync: unlock of unlocked mutex")
 
  }
 
-
-
  old := new
 
 for {
 
-if old>>mutexWaiterShift == 0 || old&(mutexLocked|mutexWoken) != 0 { // 没有等待者，或者有唤醒的waiter，或者锁原来已加锁
+if old>>mutexWaiterShift == 0 || old&(mutexLocked|mutexWoken) != 0 { // 没有等待者，或者有唤醒的 waiter，或者锁原来已加锁
 
 return
 
  }
 
-new = (old - 1<<mutexWaiterShift) | mutexWoken // 新状态，准备唤醒goroutine，并设置唤醒标志
+new = (old - 1<<mutexWaiterShift) | mutexWoken // 新状态，准备唤醒 goroutine，并设置唤醒标志
 
 if atomic.CompareAndSwapInt32(&m.state, old, new) {
 
@@ -1848,23 +849,6 @@ return
  }
 
  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 下面我来给你解释一下这个方法。
 
@@ -1884,92 +868,7 @@ return
 
 ## 多给些机会
 
-
 在 2015 年 2 月的改动中，如果新来的 goroutine 或者是被唤醒的 goroutine 首次获取不到锁，它们就会通过自旋（spin，通过循环不断尝试，spin 的逻辑是在[runtime 实现]()的）的方式，尝试检查锁是否被释放。在尝试一定的自旋次数后，再执行原来的逻辑。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(m *Mutex)Lock() {
 
@@ -1981,13 +880,11 @@ return
 
  }
 
-
-
  awoke := false
 
  iter := 0
 
-for { // 不管是新来的请求锁的goroutine, 还是被唤醒的goroutine，都不断尝试请求锁
+for { // 不管是新来的请求锁的 goroutine, 还是被唤醒的 goroutine，都不断尝试请求锁
 
  old := m.state // 先保存当前锁的状态
 
@@ -2049,29 +946,11 @@ break
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这次的优化，增加了第 13 行到 21 行、第 25 行到第 27 行以及第 36 行。我来解释一下主要的逻辑，也就是第 13 行到 21 行。
 
 如果可以 spin 的话，第 9 行的 for 循环会重新检查锁是否释放。对于临界区代码执行非常短的场景来说，这是一个非常好的优化。因为临界区的代码耗时很短，锁很快就能释放，而抢夺锁的 goroutine 不用通过休眠唤醒方式等待调度，直接 spin 几次，可能就获得了锁。
 
 ## 解决饥饿
-
 
 经过几次优化，Mutex 的代码越来越复杂，应对高并发争抢锁的场景也更加公平。但是你有没有想过，因为新来的 goroutine 也参与竞争，有可能每次都会被新来的 goroutine 抢到获取锁的机会，在极端情况下，等待中的 goroutine 可能会一直获取不到锁，这就是饥饿问题。
 
@@ -2091,262 +970,6 @@ Mutex 不能容忍这种事情发生。所以，2016 年 Go 1.9 中 Mutex 增加
 
 当然，你也可以暂时略过这一段，以后慢慢品，只需要记住，Mutex 绝不容忍一个 goroutine 被落下，永远没有机会获取锁。不抛弃不放弃是它的宗旨，而且它也尽可能地让等待较长的 goroutine 更有机会获取到锁。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type Mutex struct {
 
  state int32
@@ -2355,25 +978,19 @@ type Mutex struct {
 
  }
 
-
-
 const (
 
  mutexLocked = 1 << iota// mutex is locked
 
  mutexWoken
 
- mutexStarving // 从state字段中分出一个饥饿标记
+ mutexStarving // 从 state 字段中分出一个饥饿标记
 
  mutexWaiterShift = iota
-
-
 
  starvationThresholdNs = 1e6
 
  )
-
-
 
 func(m *Mutex)Lock() {
 
@@ -2385,19 +1002,17 @@ return
 
  }
 
-// Slow path：缓慢之路，尝试自旋竞争或饥饿状态下饥饿goroutine竞争
+// Slow path：缓慢之路，尝试自旋竞争或饥饿状态下饥饿 goroutine 竞争
 
  m.lockSlow()
 
  }
 
-
-
 func(m *Mutex)lockSlow() {
 
 var waitStartTime int64
 
- starving := false// 此goroutine的饥饿标记
+ starving := false// 此 goroutine 的饥饿标记
 
  awoke := false// 唤醒标记
 
@@ -2439,7 +1054,7 @@ new |= mutexLocked // 非饥饿状态，加锁
 
 if old&(mutexLocked|mutexStarving) != 0 {
 
-new += 1 << mutexWaiterShift // waiter数量加1
+new += 1 << mutexWaiterShift // waiter 数量加 1
 
  }
 
@@ -2475,8 +1090,6 @@ break// locked the mutex with CAS
 
 // 处理饥饿状态
 
-
-
 // 如果以前就在队列里面，加入到队列头
 
  queueLifo := waitStartTime != 0
@@ -2507,13 +1120,13 @@ if old&(mutexLocked|mutexWoken) != 0 || old>>mutexWaiterShift == 0 {
 
  }
 
-// 有点绕，加锁并且将waiter数减1
+// 有点绕，加锁并且将 waiter 数减 1
 
  delta := int32(mutexLocked - 1<<mutexWaiterShift)
 
 if !starving || old>>mutexWaiterShift == 1 {
 
- delta -= mutexStarving // 最后一个waiter或者已经不饥饿了，清除饥饿标记
+ delta -= mutexStarving // 最后一个 waiter 或者已经不饥饿了，清除饥饿标记
 
  }
 
@@ -2537,8 +1150,6 @@ break
 
  }
 
-
-
 func(m *Mutex)Unlock() {
 
 // Fast path: drop lock bit.
@@ -2552,8 +1163,6 @@ ifnew != 0 {
  }
 
  }
-
-
 
 func(m *Mutex)unlockSlow(newint32) {
 
@@ -2597,23 +1206,6 @@ return
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 跟之前的实现相比，当前的 Mutex 最重要的变化，就是增加饥饿模式。第 12 行将饥饿模式的最大等待时间阈值设置成了 1 毫秒，这就意味着，一旦等待者等待的时间超过了这个阈值，Mutex 的处理就有可能进入饥饿模式，优先让等待者先获取到锁，新来的同学主动谦让一下，给老同志一些机会。
 
 通过加入饥饿模式，可以避免把机会全都留给新来的 goroutine，保证了请求锁的 goroutine 获取锁的公平性，对于我们使用锁的业务代码来说，不会有业务一直等待锁不被处理。
@@ -2621,7 +1213,6 @@ return
 那么，接下来的部分就是选学内容了。如果你还有精力，并且对饥饿模式很感兴趣，那就跟着我一起继续来挑战吧。如果你现在理解起来觉得有困难，也没关系，后面可以随时回来复习。
 
 ## 饥饿模式和正常模式
-
 
 Mutex 可能处于两种操作模式下：正常模式和饥饿模式。
 
@@ -2633,12 +1224,11 @@ Mutex 可能处于两种操作模式下：正常模式和饥饿模式。
 
 在饥饿模式下，Mutex 的拥有者将直接把锁交给队列最前面的 waiter。新来的 goroutine 不会尝试获取锁，即使看起来锁没有被持有，它也不会去抢，也不会 spin，它会乖乖地加入到等待队列的尾部。
 
-如果拥有 Mutex 的 waiter 发现下面两种情况的其中之一，它就会把这个 Mutex 转换成正常模式:
+如果拥有 Mutex 的 waiter 发现下面两种情况的其中之一，它就会把这个 Mutex 转换成正常模式：
 
 此 waiter 已经是队列中的最后一个 waiter 了，没有其它的等待锁的 goroutine 了；
 
 此 waiter 的等待时间小于 1 毫秒。
-
 
 正常模式拥有更好的性能，因为即使有等待抢锁的 waiter，goroutine 也可以连续多次获取到锁。
 
@@ -2688,7 +1278,6 @@ Mutex 可能处于两种操作模式下：正常模式和饥饿模式。
 
 ## 总结
 
-
 “罗马不是一天建成的”，Mutex 的设计也是从简单设计到复杂处理逐渐演变的。初版的 Mutex 设计非常简洁，充分展示了 Go 创始者的简单、简洁的设计哲学。但是，随着大家的使用，逐渐暴露出一些缺陷，为了弥补这些缺陷，Mutex 不得不越来越复杂。
 
 有一点值得我们学习的，同时也体现了 Go 创始者的哲学，就是他们强调 GO 语言和标准库的稳定性，新版本要向下兼容，用新的版本总能编译老的代码。Go 语言从出生到现在已经 10 多年了，这个 Mutex 对外的接口却没有变化，依然向下兼容，即使现在 Go 出了两个版本，每个版本也会向下兼容，保持 Go 语言的稳定性，你也能领悟他们软件开发和设计的思想。
@@ -2697,28 +1286,17 @@ Mutex 可能处于两种操作模式下：正常模式和饥饿模式。
 
 ## 思考题
 
-
 最后，给你留两个小问题：
-
-
 
 目前 Mutex 的 state 字段有几个意义，这几个意义分别是由哪些字段表示的？
 
-
-
-
 等待一个 Mutex 的 goroutine 数最大是多少？是否能满足现实的需求？
-
-
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 �收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
-# 03｜Mutex：4种易错场景大盘点
-
+# 03｜Mutex：4 种易错场景大盘点
 
 你好，我是鸟窝。
 
@@ -2728,51 +1306,23 @@ Mutex 可能处于两种操作模式下：正常模式和饥饿模式。
 
 ## 常见的 4 种错误场景
 
-
 我总结了一下，使用 Mutex 常见的错误场景有 4 类，分别是 Lock/Unlock 不是成对出现、Copy 已使用的 Mutex、重入和死锁。下面我们一一来看。
 
 ## Lock/Unlock 不是成对出现
-
 
 Lock/Unlock 没有成对出现，就意味着会出现死锁的情况，或者是因为 Unlock 一个未加锁的 Mutex 而导致 panic。
 
 我们先来看看缺少 Unlock 的场景，常见的有三种情况：
 
-
-
 代码中有太多的 if-else 分支，可能在某个分支中漏写了 Unlock；
-
-
-
 
 在重构的时候把 Unlock 给删除了；
 
-
-
-
 Unlock 误写成了 Lock。
-
-
 
 在这种情况下，锁被获取之后，就不会被释放了，这也就意味着，其它的 goroutine 永远都没机会获取到锁。
 
 我们再来看缺少 Lock 的场景，这就很简单了，一般来说就是误操作删除了 Lock。 比如先前使用 Mutex 都是正常的，结果后来其他人重构代码的时候，由于对代码不熟悉，或者由于开发者的马虎，把 Lock 调用给删除了，或者注释掉了。比如下面的代码，mu.Lock() 一行代码被删除了，直接 Unlock 一个未加锁的 Mutex 会 panic：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcfoo() {
 
@@ -2784,81 +1334,17 @@ defer mu.Unlock()
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 运行的时候 panic：
 
 ![](https://static001.geekbang.org/resource/image/55/4f/5597316079a8fa37abef2a82bdac7b4f.png)
 
 ## Copy 已使用的 Mutex
 
-
 第二种误用是 Copy 已使用的 Mutex。在正式分析这个错误之前，我先交代一个小知识点，那就是 Package sync 的同步原语在使用后是不能复制的。我们知道 Mutex 是最常用的一个同步原语，那它也是不能复制的。为什么呢？
 
 原因在于，Mutex 是一个有状态的对象，它的 state 字段记录这个锁的状态。如果你要复制一个已经加锁的 Mutex 给一个新的变量，那么新的刚初始化的变量居然被加锁了，这显然不符合你的期望，因为你期望的是一个零值的 Mutex。关键是在并发环境下，你根本不知道要复制的 Mutex 状态是什么，因为要复制的 Mutex 是由其它 goroutine 并发访问的，状态可能总是在变化。
 
 当然，你可能说，你说的我都懂，你的警告我都记下了，但是实际在使用的时候，一不小心就踩了这个坑，我们来看一个例子。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Counter struct {
 
@@ -2867,10 +1353,6 @@ type Counter struct {
  Count int
 
 }
-
-
-
-
 
 funcmain() {
 
@@ -2886,9 +1368,7 @@ defer c.Unlock()
 
 }
 
-
-
-// 这里Counter的参数是通过复制的方式传入的
+// 这里 Counter 的参数是通过复制的方式传入的
 
 funcfoo(c Counter) {
 
@@ -2899,23 +1379,6 @@ defer c.Unlock()
  fmt.Println("in foo")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 第 12 行在调用 foo 函数的时候，调用者会复制 Mutex 变量 c 作为 foo 函数的参数，不幸的是，复制之前已经使用了这个锁，这就导致，复制的 Counter 是一个带状态 Counter。
 
@@ -2933,37 +1396,7 @@ defer c.Unlock()
 
 检查是通过[copylock]()分析器静态分析实现的。这个分析器会分析函数调用、range 遍历、复制、声明、函数返回值等位置，有没有锁的值 copy 的情景，以此来判断有没有问题。可以说，只要是实现了 Locker 接口，就会被分析。我们看到，下面的代码就是确定什么类型会被分析，其实就是实现了 Lock/Unlock 两个方法的 Locker 接口：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var lockerType *types.Interface
-
-
 
 // Construct a sync.Locker interface type.
 
@@ -2983,27 +1416,9 @@ funcinit() {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 其实，有些没有实现 Locker 接口的同步原语（比如 WaitGroup），也能被分析。我先卖个关子，后面我们会介绍这种情况是怎么实现的。
 
 ## 重入
-
 
 接下来，我们来讨论“重入”这个问题。在说这个问题前，我先解释一下个概念，叫“可重入锁”。
 
@@ -3019,50 +1434,6 @@ funcinit() {
 
 所以，一旦误用 Mutex 的重入，就会导致报错。下面是一个误用 Mutex 的重入例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcfoo(l sync.Locker) {
 
  fmt.Println("in foo")
@@ -3075,10 +1446,6 @@ funcfoo(l sync.Locker) {
 
 }
 
-
-
-
-
 funcbar(l sync.Locker) {
 
  l.Lock()
@@ -3089,10 +1456,6 @@ funcbar(l sync.Locker) {
 
 }
 
-
-
-
-
 funcmain() {
 
  l := &sync.Mutex{}
@@ -3100,23 +1463,6 @@ funcmain() {
  foo(l)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 写完这个 Mutex 重入的例子后，运行一下，你会发现类似下面的错误。程序一直在请求锁，但是一直没有办法获取到锁，结果就是 Go 运行时发现死锁了，没有其它地方能够释放锁让程序运行下去，你通过下面的错误堆栈信息就能定位到哪一行阻塞请求锁：
 
@@ -3130,7 +1476,6 @@ funcmain() {
 
 方案二：调用 Lock/Unlock 方法时，由 goroutine 提供一个 token，用来标识它自己，而不是我们通过 hacker 的方式获取到 goroutine id，但是，这样一来，就不满足 Locker 接口了。
 
-
 可重入锁（递归锁）解决了代码重入或者递归调用带来的死锁问题，同时它也带来了另一个好处，就是我们可以要求，只有持有锁的 goroutine 才能 unlock 这个锁。这也很容易实现，因为在上面这两个方案中，都已经记录了是哪一个 goroutine 持有这个锁。
 
 下面我们具体来看这两个方案怎么实现。
@@ -3141,70 +1486,13 @@ funcmain() {
 
 简单方式，就是通过 runtime.Stack 方法获取栈帧信息，栈帧信息里包含 goroutine id。你可以看看上面 panic 时候的贴图，goroutine id 明明白白地显示在那里。runtime.Stack 方法可以获取当前的 goroutine 信息，第二个参数为 true 会输出所有的 goroutine 信息，信息的格式如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
 goroutine 1 [running]:
 
 main.main()
 
  ....../main.go:19 +0xb1
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第一行格式为 goroutine xxx，其中 xxx 就是 goroutine id，你只要解析出这个 id 即可。解析的方法可以采用下面的代码：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcGoID()int {
 
@@ -3212,7 +1500,7 @@ var buf [64]byte
 
  n := runtime.Stack(buf[:], false)
 
-// 得到id字符串
+// 得到 id 字符串
 
  idField := strings.Fields(strings.TrimPrefix(string(buf[:n]), "goroutine "))[0]
 
@@ -3227,23 +1515,6 @@ panic(fmt.Sprintf("cannot get goroutine id: %v", err))
 return id
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 了解了简单方式，接下来我们来看 hacker 的方式，这也是我们方案一采取的方式。
 
@@ -3261,101 +1532,23 @@ return id
 
 知道了如何获取 goroutine id，接下来就是最后的关键一步了，我们实现一个可以使用的可重入锁：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// RecursiveMutex 包装一个Mutex,实现可重入
+// RecursiveMutex 包装一个 Mutex, 实现可重入
 
 type RecursiveMutex struct {
 
  sync.Mutex
 
- owner int64// 当前持有锁的goroutine id
+ owner int64// 当前持有锁的 goroutine id
 
- recursion int32// 这个goroutine 重入的次数
+ recursion int32// 这个 goroutine 重入的次数
 
 }
-
-
 
 func(m *RecursiveMutex)Lock() {
 
  gid := goid.Get()
 
-// 如果当前持有锁的goroutine就是这次调用的goroutine,说明是重入
+// 如果当前持有锁的 goroutine 就是这次调用的 goroutine, 说明是重入
 
 if atomic.LoadInt64(&m.owner) == gid {
 
@@ -3367,7 +1560,7 @@ return
 
  m.Mutex.Lock()
 
-// 获得锁的goroutine第一次调用，记录下它的goroutine id,调用次数加1
+// 获得锁的 goroutine 第一次调用，记录下它的 goroutine id, 调用次数加 1
 
  atomic.StoreInt64(&m.owner, gid)
 
@@ -3375,13 +1568,11 @@ return
 
 }
 
-
-
 func(m *RecursiveMutex)Unlock() {
 
  gid := goid.Get()
 
-// 非持有锁的goroutine尝试释放锁，错误的使用
+// 非持有锁的 goroutine 尝试释放锁，错误的使用
 
 if atomic.LoadInt64(&m.owner) != gid {
 
@@ -3389,40 +1580,23 @@ panic(fmt.Sprintf("wrong the owner(%d): %d!", m.owner, gid))
 
  }
 
-// 调用次数减1
+// 调用次数减 1
 
  m.recursion--
 
-if m.recursion != 0 { // 如果这个goroutine还没有完全释放，则直接返回
+if m.recursion != 0 { // 如果这个 goroutine 还没有完全释放，则直接返回
 
 return
 
  }
 
-// 此goroutine最后一次调用，需要释放锁
+// 此 goroutine 最后一次调用，需要释放锁
 
  atomic.StoreInt64(&m.owner, -1)
 
  m.Mutex.Unlock()
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 上面这段代码你可以拿来即用。我们一起来看下这个实现，真是非常巧妙，它相当于给 Mutex 打一个补丁，解决了记录锁的持有者的问题。可以看到，我们用 owner 字段，记录当前锁的拥有者 goroutine 的 id；recursion 是辅助字段，用于记录重入的次数。
 
@@ -3434,77 +1608,7 @@ return
 
 下面的代码是第二种方案。调用者自己提供一个 token，获取锁的时候把这个 token 传入，释放锁的时候也需要把这个 token 传入。通过用户传入的 token 替换方案一中 goroutine id，其它逻辑和方案一一致。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Token方式的递归锁
+// Token 方式的递归锁
 
 type TokenRecursiveMutex struct {
 
@@ -3516,13 +1620,11 @@ type TokenRecursiveMutex struct {
 
 }
 
-
-
-// 请求锁，需要传入token
+// 请求锁，需要传入 token
 
 func(m *TokenRecursiveMutex)Lock(token int64) {
 
-if atomic.LoadInt64(&m.token) == token { //如果传入的token和持有锁的token一致，说明是递归调用
+if atomic.LoadInt64(&m.token) == token { // 如果传入的 token 和持有锁的 token 一致，说明是递归调用
 
  m.recursion++
 
@@ -3530,9 +1632,9 @@ return
 
  }
 
- m.Mutex.Lock() // 传入的token不一致，说明不是递归调用
+ m.Mutex.Lock() // 传入的 token 不一致，说明不是递归调用
 
-// 抢到锁之后记录这个token
+// 抢到锁之后记录这个 token
 
  atomic.StoreInt64(&m.token, token)
 
@@ -3540,19 +1642,17 @@ return
 
 }
 
-
-
 // 释放锁
 
 func(m *TokenRecursiveMutex)Unlock(token int64) {
 
-if atomic.LoadInt64(&m.token) != token { // 释放其它token持有的锁
+if atomic.LoadInt64(&m.token) != token { // 释放其它 token 持有的锁
 
 panic(fmt.Sprintf("wrong the owner(%d): %d!", m.token, token))
 
  }
 
- m.recursion-- // 当前持有这个锁的token释放锁
+ m.recursion-- // 当前持有这个锁的 token 释放锁
 
 if m.recursion != 0 { // 还没有回退到最初的递归调用
 
@@ -3566,27 +1666,7 @@ return
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 死锁
-
 
 接下来，我们来看第四种错误场景：死锁。
 
@@ -3594,26 +1674,13 @@ return
 
 我们来分析一下死锁产生的必要条件。如果你想避免死锁，只要破坏这四个条件中的一个或者几个，就可以了。
 
-
-
 互斥： 至少一个资源是被排他性独享的，其他线程必须处于等待状态，直到资源被释放。
-
-
-
 
 持有和等待：goroutine 持有一个资源，并且还在请求其它 goroutine 持有的资源，也就是咱们常说的“吃着碗里，看着锅里”的意思。
 
-
-
-
 不可剥夺：资源只能由持有它的 goroutine 来释放。
 
-
-
-
 环路等待：一般来说，存在一组等待进程，P={P1，P2，…，PN}，P1 等待 P2 持有的资源，P2 等待 P3 持有的资源，依此类推，最后是 PN 等待 P1 持有的资源，这就形成了一个环路等待的死结。
-
-
 
 ![](https://static001.geekbang.org/resource/image/4a/d5/4ace1eecf856ef80607yyb6f7a45abd5.jpg)
 
@@ -3623,133 +1690,7 @@ return
 
 这是一个最简单的只有两个 goroutine 相互等待的死锁的例子，转化成代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -3761,10 +1702,6 @@ import (
 
 )
 
-
-
-
-
 funcmain() {
 
 // 派出所证明
@@ -3775,35 +1712,19 @@ var psCertificate sync.Mutex
 
 var propertyCertificate sync.Mutex
 
-
-
-
-
 var wg sync.WaitGroup
 
  wg.Add(2) // 需要派出所和物业都处理
 
-
-
-
-
-// 派出所处理goroutine
+// 派出所处理 goroutine
 
 gofunc() {
 
 defer wg.Done() // 派出所处理完成
 
-
-
-
-
  psCertificate.Lock()
 
 defer psCertificate.Unlock()
-
-
-
-
 
 // 检查材料
 
@@ -3817,27 +1738,15 @@ defer psCertificate.Unlock()
 
  }()
 
-
-
-
-
-// 物业处理goroutine
+// 物业处理 goroutine
 
 gofunc() {
 
 defer wg.Done() // 物业处理完成
 
-
-
-
-
  propertyCertificate.Lock()
 
 defer propertyCertificate.Unlock()
-
-
-
-
 
 // 检查材料
 
@@ -3851,32 +1760,11 @@ defer propertyCertificate.Unlock()
 
  }()
 
-
-
-
-
  wg.Wait()
 
  fmt.Println("成功完成")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这个程序没有办法运行成功，因为派出所的处理和物业的处理是一个环路等待的死结。
 
@@ -3892,16 +1780,13 @@ Go 运行时，有死锁探测的功能，能够检查出是否出现了死锁�
 
 ## 流行的 Go 开发项目踩坑记
 
-
 ## Docker
-
 
 Docker 容器是一个开源的应用容器引擎，开发者可以以统一的方式，把他们的应用和依赖包打包到一个可移植的容器中，然后发布到任何安装了 docker 引擎的服务器上。
 
 Docker 是使用 Go 开发的，也算是 Go 的一个杀手级产品了，它的 Mutex 相关的 Bug 也不少，我们来看几个典型的 Bug。
 
 ### issue 36114
-
 
 Docker 的[issue 36114]() 是一个死锁问题。
 
@@ -3912,7 +1797,6 @@ Docker 的[issue 36114]() 是一个死锁问题。
 针对这个问题，解决办法就是，再提供一个不需要锁的 hotRemoveVHDsNoLock 方法，避免 Mutex 的重入。
 
 ### issue 34881
-
 
 [issue 34881]()本来是修复 Docker 的一个简单问题，如果节点在初始化的时候，发现自己不是一个 swarm mananger，就快速返回，这个修复就几行代码，你看出问题来了吗？
 
@@ -3926,16 +1810,13 @@ Docker 的[issue 36114]() 是一个死锁问题。
 
 ## Kubernetes
 
-
 ### issue 72361
-
 
 issue 72361 增加 Mutex 为了保护资源。这是为了解决 data race 问题而做的一个修复，修复方法也很简单，使用互斥锁即可，这也是我们解决 data race 时常用的方法。
 
 ![](https://static001.geekbang.org/resource/image/21/31/2171a7a0de179904ceba463026ee7231.png)
 
 ### issue 45192
-
 
 [issue 45192]()也是一个返回时忘记 Unlock 的典型例子，和 docker issue 34881 犯的错误都是一样的。
 
@@ -3947,13 +1828,11 @@ issue 72361 增加 Mutex 为了保护资源。这是为了解决 data race 问�
 
 ## gRPC
 
-
 gRPC 是 Google 发起的一个开源远程过程调用 （Remote procedure call）系统。该系统基于 HTTP/2 协议传输，使用 Protocol Buffers 作为接口描述语言。它提供 Go 语言的实现。
 
 即使是 Google 官方出品的系统，也有一些 Mutex 的 issue。
 
 ### issue 795
-
 
 [issue 795]()是一个你可能想不到的 bug，那就是将 Unlock 误写成了 Lock。
 
@@ -3963,18 +1842,15 @@ gRPC 是 Google 发起的一个开源远程过程调用 （Remote procedure call
 
 ## etcd
 
-
 etcd 是一个非常知名的分布式一致性的 key-value 存储技术， 被用来做配置共享和服务发现。
 
 ## issue 10419
-
 
 [issue 10419]()是一个锁重入导致的问题。 Store 方法内对请求了锁，而调用的 Compact 的方法内又请求了锁，这个时候，会导致死锁，一直等待，解决办法就是提供不需要加锁的 Compact 方法。
 
 ![](https://static001.geekbang.org/resource/image/5f/7f/5fed22fb735c107d130477562c28477f.png)
 
 ## 总结
-
 
 这节课，我们学习了 Mutex 的一些易错场景，而且，我们还分析了流行的 Go 开源项目的错误，我也给你分享了我自己在开发中的经验总结。需要强调的是，手误和重入导致的死锁，是最常见的使用 Mutex 的 Bug。
 
@@ -3984,17 +1860,13 @@ Go 死锁探测工具只能探测整个程序是否因为死锁而冻结了，�
 
 ## 思考题
 
-
 查找知名的数据库系统 TiDB 的 issue，看看有没有 Mutex 相关的 issue，看看它们都是哪些相关的 Bug。
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 ��收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 04｜ Mutex：骇客编程，如何拓展额外功能？
-
 
 你好，我是鸟窝。
 
@@ -4008,8 +1880,7 @@ Go 死锁探测工具只能探测整个程序是否因为死锁而冻结了，�
 
 实际上，不论是不希望锁的 goroutine 继续等待，还是想监控锁，我们都可以基于标准库中 Mutex 的实现，通过 Hacker 的方式，为 Mutex 增加一些额外的功能。这节课，我就来教你实现几个扩展功能，包括实现 TryLock，获取等待者的数量等指标，以及实现一个线程安全的队列。
 
-# TryLock
-
+## TryLock
 
 我们可以为 Mutex 添加一个 TryLock 的方法，也就是尝试获取排外锁。
 
@@ -4025,73 +1896,7 @@ Go 死锁探测工具只能探测整个程序是否因为死锁而冻结了，�
 
 那怎么实现一个扩展 TryLock 方法的 Mutex 呢？我们直接来看代码。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 复制Mutex定义的常量
+// 复制 Mutex 定义的常量
 
 const (
 
@@ -4101,21 +1906,17 @@ const (
 
  mutexStarving // 锁饥饿标识位置
 
- mutexWaiterShift = iota// 标识waiter的起始bit位置
+ mutexWaiterShift = iota// 标识 waiter 的起始 bit 位置
 
 )
 
-
-
-// 扩展一个Mutex结构
+// 扩展一个 Mutex 结构
 
 type Mutex struct {
 
  sync.Mutex
 
 }
-
-
 
 // 尝试获取锁
 
@@ -4129,9 +1930,7 @@ returntrue
 
  }
 
-
-
-// 如果处于唤醒、加锁或者饥饿状态，这次请求就不参与竞争了，返回false
+// 如果处于唤醒、加锁或者饥饿状态，这次请求就不参与竞争了，返回 false
 
  old := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
 
@@ -4141,8 +1940,6 @@ returnfalse
 
  }
 
-
-
 // 尝试在竞争的状态下请求锁
 
 new := old | mutexLocked
@@ -4150,23 +1947,6 @@ new := old | mutexLocked
 return atomic.CompareAndSwapInt32((*int32)(unsafe.Pointer(&m.Mutex)), old, new)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 第 17 行是一个 fast path，如果幸运，没有其他 goroutine 争这把锁，那么，这把锁就会被这个请求的 goroutine 获取，直接返回。
 
@@ -4178,59 +1958,11 @@ return atomic.CompareAndSwapInt32((*int32)(unsafe.Pointer(&m.Mutex)), old, new)
 
 这个测试程序的工作机制是这样子的：程序运行时会启动一个 goroutine 持有这把我们自己实现的锁，经过随机的时间才释放。主 goroutine 会尝试获取这把锁。如果前一个 goroutine 一秒内释放了这把锁，那么，主 goroutine 就有可能获取到这把锁了，输出“got the lock”，否则没有获取到也不会被阻塞，会直接输出“can't get the lock”。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 functry() {
 
 var mu Mutex
 
-gofunc() { // 启动一个goroutine持有一段时间的锁
+gofunc() { // 启动一个 goroutine 持有一段时间的锁
 
  mu.Lock()
 
@@ -4240,11 +1972,7 @@ gofunc() { // 启动一个goroutine持有一段时间的锁
 
  }()
 
-
-
  time.Sleep(time.Second)
-
-
 
  ok := mu.TryLock() // 尝试获取到锁
 
@@ -4260,51 +1988,17 @@ return
 
  }
 
-
-
 // 没有获取到
 
  fmt.Println("can't get the lock")
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 获取等待者的数量等指标
-
+## 获取等待者的数量等指标
 
 接下来，我想和你聊聊怎么获取等待者数量等指标。
 
 第二讲中，我们已经学习了 Mutex 的结构。先来回顾一下 Mutex 的数据结构，如下面的代码所示。它包含两个字段，state 和 sema。前四个字节（int32）就是 state 字段。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Mutex struct {
 
@@ -4314,68 +2008,9 @@ type Mutex struct {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Mutex 结构中的 state 字段有很多个含义，通过 state 字段，你可以知道锁是否已经被某个 goroutine 持有、当前是否处于饥饿状态、是否有等待的 goroutine 被唤醒、等待者的数量等信息。但是，state 这个字段并没有暴露出来，所以，我们需要想办法获取到这个字段，并进行解析。
 
 怎么获取未暴露的字段呢？很简单，我们可以通过 unsafe 的方式实现。我来举一个例子，你一看就明白了。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const (
 
@@ -4389,90 +2024,29 @@ const (
 
 )
 
-
-
 type Mutex struct {
 
  sync.Mutex
 
 }
 
-
-
 func(m *Mutex)Count()int {
 
-// 获取state字段的值
+// 获取 state 字段的值
 
  v := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
 
- v = v >> mutexWaiterShift //得到等待者的数值
+ v = v >> mutexWaiterShift // 得到等待者的数值
 
- v = v + (v & mutexLocked) //再加上锁持有者的数量，0或者1
+ v = v + (v & mutexLocked) // 再加上锁持有者的数量，0 或者 1
 
 returnint(v)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这个例子的第 14 行通过 unsafe 操作，我们可以得到 state 字段的值。第 15 行我们右移三位（这里的常量 mutexWaiterShift 的值为 3），就得到了当前等待者的数量。如果当前的锁已经被其他 goroutine 持有，那么，我们就稍微调整一下这个值，加上一个 1（第 16 行），你基本上可以把它看作是当前持有和等待这把锁的 goroutine 的总数。
 
 state 这个字段的第一位是用来标记锁是否被持有，第二位用来标记是否已经唤醒了一个等待者，第三位标记锁是否处于饥饿状态，通过分析这个 state 字段我们就可以得到这些状态信息。我们可以为这些状态提供查询的方法，这样就可以实时地知道锁的状态了。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 锁是否被持有
 
@@ -4484,8 +2058,6 @@ return state&mutexLocked == mutexLocked
 
 }
 
-
-
 // 是否有等待者被唤醒
 
 func(m *Mutex)IsWoken()bool {
@@ -4495,8 +2067,6 @@ func(m *Mutex)IsWoken()bool {
 return state&mutexWoken == mutexWoken
 
 }
-
-
 
 // 锁是否处于饥饿状态
 
@@ -4508,64 +2078,13 @@ return state&mutexStarving == mutexStarving
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我们可以写一个程序测试一下，比如，在 1000 个 goroutine 并发访问的情况下，我们可以把锁的状态信息输出出来：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funccount() {
 
 var mu Mutex
 
-for i := 0; i < 1000; i++ { // 启动1000个goroutine
+for i := 0; i < 1000; i++ { // 启动 1000 个 goroutine
 
 gofunc() {
 
@@ -4579,8 +2098,6 @@ gofunc() {
 
  }
 
-
-
  time.Sleep(time.Second)
 
 // 输出锁的信息
@@ -4589,95 +2106,15 @@ gofunc() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 有一点你需要注意一下，在获取 state 字段的时候，并没有通过 Lock 获取这把锁，所以获取的这个 state 的值是一个瞬态的值，可能在你解析出这个字段之后，锁的状态已经发生了变化。不过没关系，因为你查看的就是调用的那一时刻的锁的状态。
 
-# 使用 Mutex 实现一个线程安全的队列
-
+## 使用 Mutex 实现一个线程安全的队列
 
 最后，我们来讨论一下，如何使用 Mutex 实现一个线程安全的队列。
 
 为什么要讨论这个话题呢？因为 Mutex 经常会和其他非线程安全（对于 Go 来说，我们其实指的是 goroutine 安全）的数据结构一起，组合成一个线程安全的数据结构。新数据结构的业务逻辑由原来的数据结构提供，而 Mutex 提供了锁的机制，来保证线程安全。
 
 比如队列，我们可以通过 Slice 来实现，但是通过 Slice 实现的队列不是线程安全的，出队（Dequeue）和入队（Enqueue）会有 data race 的问题。这个时候，Mutex 就要隆重出场了，通过它，我们可以在出队和入队的时候加上锁的保护。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type SliceQueue struct {
 
@@ -4687,15 +2124,11 @@ type SliceQueue struct {
 
 }
 
-
-
 funcNewSliceQueue(n int)(q *SliceQueue) {
 
 return &SliceQueue{data: make([]interface{}, 0, n)}
 
 }
-
-
 
 // Enqueue 把值放在队尾
 
@@ -4708,8 +2141,6 @@ func(q *SliceQueue)Enqueue(v interface{}) {
  q.mu.Unlock()
 
 }
-
-
 
 // Dequeue 移去队头并返回
 
@@ -4735,27 +2166,9 @@ return v
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 因为标准库中没有线程安全的队列数据结构的实现，所以，你可以通过 Mutex 实现一个简单的队列。通过 Mutex 我们就可以为一个非线程安全的 data interface{}实现线程安全的访问。
 
 ## 总结
-
 
 好了，我们来做个总结。
 
@@ -4773,17 +2186,13 @@ Mutex 是 package sync 的基石，其他的一些同步原语也是基于它实
 
 ## 思考题
 
-
 你可以为 Mutex 获取锁时加上 Timeout 机制吗？会有什么问题吗？
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 05｜ RWMutex：读写锁的实现原理及避坑指南
-
 
 你好，我是鸟窝。
 
@@ -4797,8 +2206,7 @@ Mutex 是 package sync 的基石，其他的一些同步原语也是基于它实
 
 Go 标准库中的 RWMutex（读写锁）就是用来解决这类 readers-writers 问题的。所以，这节课，我们就一起来学习 RWMutex。我会给你介绍读写锁的使用场景、实现原理以及容易掉入的坑，你一定要记住这些陷阱，避免在实际的开发中犯相同的错误。
 
-# 什么是 RWMutex？
-
+## 什么是 RWMutex？
 
 我先简单解释一下读写锁 RWMutex。标准库中的 RWMutex 是一个 reader/writer 互斥锁。RWMutex 在某一时刻只能由任意数量的 reader 持有，或者是只被单个的 writer 持有。
 
@@ -4810,94 +2218,17 @@ RLock/RUnlock：读操作时调用的方法。如果锁已经被 writer 持有�
 
 RLocker：这个方法的作用是为读操作返回一个 Locker 接口的对象。它的 Lock 方法会调用 RWMutex 的 RLock 方法，它的 Unlock 方法会调用 RWMutex 的 RUnlock 方法。
 
-
 RWMutex 的零值是未加锁的状态，所以，当你使用 RWMutex 的时候，无论是声明变量，还是嵌入到其它 struct 中，都不必显式地初始化。
 
-我以计数器为例，来说明一下，如何使用 RWMutex 保护共享资源。计数器的 count++操作是写操作，而获取 count 的值是读操作，这个场景非常适合读写锁，因为读操作可以并行执行，写操作时只允许一个线程执行，这正是 readers-writers 问题。
+我以计数器为例，来说明一下，如何使用 RWMutex 保护共享资源。计数器的 count++ 操作是写操作，而获取 count 的值是读操作，这个场景非常适合读写锁，因为读操作可以并行执行，写操作时只允许一个线程执行，这正是 readers-writers 问题。
 
 在这个例子中，使用 10 个 goroutine 进行读操作，每读取一次，sleep 1 毫秒，同时，还有一个 gorotine 进行写操作，每一秒写一次，这是一个 1 writer-n reader 的读写场景，而且写操作还不是很频繁（一秒一次）：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
 var counter Counter
 
-for i := 0; i < 10; i++ { // 10个reader
+for i := 0; i < 10; i++ { // 10 个 reader
 
 gofunc() {
 
@@ -4913,9 +2244,7 @@ for {
 
  }
 
-
-
-for { // 一个writer
+for { // 一个 writer
 
  counter.Incr() // 计数器写操作
 
@@ -4935,8 +2264,6 @@ type Counter struct {
 
 }
 
-
-
 // 使用写锁保护
 
 func(c *Counter)Incr() {
@@ -4948,8 +2275,6 @@ func(c *Counter)Incr() {
  c.mu.Unlock()
 
 }
-
-
 
 // 使用读锁保护
 
@@ -4963,23 +2288,6 @@ return c.count
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可以看到，Incr 方法会修改计数器的值，是一个写操作，我们使用 Lock/Unlock 进行保护。Count 方法会读取当前计数器的值，是一个读操作，我们使用 RLock/RUnlock 方法进行保护。
 
 Incr 方法每秒才调用一次，所以，writer 竞争锁的频次是比较低的，而 10 个 goroutine 每毫秒都要执行一次查询，通过读写锁，可以极大提升计数器的性能，因为在读取的时候，可以并发进行。如果使用 Mutex，性能就不会像读写锁这么好。因为多个 reader 并发读的时候，使用互斥锁导致了 reader 要排队读的情况，没有 RWMutex 并发读的性能好。
@@ -4988,8 +2296,7 @@ Incr 方法每秒才调用一次，所以，writer 竞争锁的频次是比较�
 
 在实际使用 RWMutex 的时候，如果我们在 struct 中使用 RWMutex 保护某个字段，一般会把它和这个字段放在一起，用来指示两个字段是一组字段。除此之外，我们还可以采用匿名字段的方式嵌入 struct，这样，在使用这个 struct 时，我们就可以直接调用 Lock/Unlock、RLock/RUnlock 方法了，这和我们前面在[01 讲]()中介绍 Mutex 的使用方法很类似，你可以回去复习一下。
 
-# RWMutex 的实现原理
-
+## RWMutex 的实现原理
 
 RWMutex 是很常见的并发原语，很多编程语言的库都提供了类似的并发类型。RWMutex 一般都是基于互斥锁、条件变量（condition variables）或者信号量（semaphores）等并发原语来实现。Go 标准库中的 RWMutex 是基于 Mutex 实现的。
 
@@ -5001,69 +2308,25 @@ Write-preferring：写优先的设计意味着，如果已经有一个 writer �
 
 不指定优先级：这种设计比较简单，不区分 reader 和 writer 优先级，某些场景下这种不指定优先级的设计反而更有效，因为第一类优先级会导致写饥饿，第二类优先级可能会导致读饥饿，这种不指定优先级的访问不再区分读写，大家都是同一个优先级，解决了饥饿的问题。
 
-
 Go 标准库中的 RWMutex 设计是 Write-preferring 方案。一个正在阻塞的 Lock 调用会排除新的 reader 请求到锁。
 
 RWMutex 包含一个 Mutex，以及四个辅助字段 writerSem、readerSem、readerCount 和 readerWait：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type RWMutex struct {
 
- w Mutex // 互斥锁解决多个writer的竞争
+ w Mutex // 互斥锁解决多个 writer 的竞争
 
- writerSem uint32// writer信号量
+ writerSem uint32// writer 信号量
 
- readerSem uint32// reader信号量
+ readerSem uint32// reader 信号量
 
- readerCount int32// reader的数量
+ readerCount int32// reader 的数量
 
- readerWait int32// writer等待完成的reader的数量
+ readerWait int32// writer 等待完成的 reader 的数量
 
 }
 
-
-
 const rwmutexMaxReaders = 1 << 30
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我来简单解释一下这几个字段。
 
@@ -5075,61 +2338,19 @@ readerWait：记录 writer 请求锁时需要等待 read 完成的 reader 的数
 
 writerSem 和 readerSem：都是为了阻塞设计的信号量。
 
-
 这里的常量 rwmutexMaxReaders，定义了最大的 reader 数量。
 
 好了，知道了 RWMutex 的设计方案和具体字段，下面我来解释一下具体的方法实现。
 
 ## RLock/RUnlock 的实现
 
-
 首先，我们看一下移除了 race 等无关紧要的代码后的 RLock 和 RUnlock 方法：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(rw *RWMutex)RLock() {
 
 if atomic.AddInt32(&rw.readerCount, 1) < 0 {
 
-// rw.readerCount是负值的时候，意味着此时有writer等待请求锁，因为writer优先级高，所以把后来的reader阻塞休眠
+// rw.readerCount 是负值的时候，意味着此时有 writer 等待请求锁，因为 writer 优先级高，所以把后来的 reader 阻塞休眠
 
  runtime_SemacquireMutex(&rw.readerSem, false, 0)
 
@@ -5141,7 +2362,7 @@ func(rw *RWMutex)RUnlock() {
 
 if r := atomic.AddInt32(&rw.readerCount, -1); r < 0 {
 
- rw.rUnlockSlow(r) // 有等待的writer
+ rw.rUnlockSlow(r) // 有等待的 writer
 
  }
 
@@ -5151,7 +2372,7 @@ func(rw *RWMutex)rUnlockSlow(r int32) {
 
 if atomic.AddInt32(&rw.readerWait, -1) == 0 {
 
-// 最后一个reader了，writer终于有机会获得锁了
+// 最后一个 reader 了，writer 终于有机会获得锁了
 
  runtime_Semrelease(&rw.writerSem, false, 1)
 
@@ -5159,29 +2380,11 @@ if atomic.AddInt32(&rw.readerWait, -1) == 0 {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第 2 行是对 reader 计数加 1。你可能比较困惑的是，readerCount 怎么还可能为负数呢？其实，这是因为，readerCount 这个字段有双重含义：
 
 没有 writer 竞争或持有锁时，readerCount 和我们正常理解的 reader 的计数是一样的；
 
 但是，如果有 writer 竞争锁或者持有锁时，那么，readerCount 不仅仅承担着 reader 的计数功能，还能够标识当前是否有 writer 竞争或持有锁，在这种情况下，请求锁的 reader 的处理进入第 4 行，阻塞等待锁的释放。
-
 
 调用 RUnlock 的时候，我们需要将 Reader 的计数减去 1（第 8 行），因为 reader 的数量减少了一个。但是，第 8 行的 AddInt32 的返回值还有另外一个含义。如果它是负值，就表示当前有 writer 竞争锁，在这种情况下，还会调用 rUnlockSlow 方法，检查是不是 reader 都释放读锁了，如果读锁都释放了，那么可以唤醒请求写锁的 writer 了。
 
@@ -5191,50 +2394,23 @@ if atomic.AddInt32(&rw.readerWait, -1) == 0 {
 
 ## Lock
 
-
 RWMutex 是一个多 writer 多 reader 的读写锁，所以同时可能有多个 writer 和 reader。那么，为了避免 writer 之间的竞争，RWMutex 就会使用一个 Mutex 来保证 writer 的互斥。
 
 一旦一个 writer 获得了内部的互斥锁，就会反转 readerCount 字段，把它从原来的正整数 readerCount(>=0) 修改为负数（readerCount-rwmutexMaxReaders），让这个字段保持两个含义（既保存了 reader 的数量，又表示当前有 writer）。
 
 我们来看下下面的代码。第 5 行，还会记录当前活跃的 reader 数量，所谓活跃的 reader，就是指持有读锁还没有释放的那些 reader。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(rw *RWMutex)Lock() {
 
-// 首先解决其他writer竞争问题
+// 首先解决其他 writer 竞争问题
 
  rw.w.Lock()
 
-// 反转readerCount，告诉reader有writer竞争锁
+// 反转 readerCount，告诉 reader 有 writer 竞争锁
 
  r := atomic.AddInt32(&rw.readerCount, -rwmutexMaxReaders) + rwmutexMaxReaders
 
-// 如果当前有reader持有锁，那么需要等待
+// 如果当前有 reader 持有锁，那么需要等待
 
 if r != 0 && atomic.AddInt32(&rw.readerWait, r) != 0 {
 
@@ -5244,29 +2420,11 @@ if r != 0 && atomic.AddInt32(&rw.readerWait, r) != 0 {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果 readerCount 不是 0，就说明当前有持有读锁的 reader，RWMutex 需要把这个当前 readerCount 赋值给 readerWait 字段保存下来（第 7 行）， 同时，这个 writer 进入阻塞等待状态（第 8 行）。
 
 每当一个 reader 释放读锁的时候（调用 RUnlock 方法时），readerWait 字段就减 1，直到所有的活跃的 reader 都释放了读锁，才会唤醒这个 writer。
 
 ## Unlock
-
 
 当一个 writer 释放锁的时候，它会再次反转 readerCount 字段。可以肯定的是，因为当前锁由 writer 持有，所以，readerCount 字段是反转过的，并且减去了 rwmutexMaxReaders 这个常数，变成了负数。所以，这里的反转方法就是给它增加 rwmutexMaxReaders 这个常数值。
 
@@ -5274,43 +2432,13 @@ if r != 0 && atomic.AddInt32(&rw.readerWait, r) != 0 {
 
 在 RWMutex 的 Unlock 返回之前，需要把内部的互斥锁释放。释放完毕后，其他的 writer 才可以继续竞争这把锁。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(rw *RWMutex)Unlock() {
 
-// 告诉reader没有活跃的writer了
+// 告诉 reader 没有活跃的 writer 了
 
  r := atomic.AddInt32(&rw.readerCount, rwmutexMaxReaders)
 
-
-
-// 唤醒阻塞的reader们
+// 唤醒阻塞的 reader 们
 
 for i := 0; i < int(r); i++ {
 
@@ -5324,23 +2452,6 @@ for i := 0; i < int(r); i++ {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在这段代码中，我删除了 race 的处理和异常情况的检查，总体看来还是比较简单的。这里有几个重点，我要再提醒你一下。首先，你要理解 readerCount 这个字段的含义以及反转方式。其次，你还要注意字段的更改和内部互斥锁的顺序关系。在 Lock 方法中，是先获取内部互斥锁，才会修改的其他字段；而在 Unlock 方法中，是先修改的其他字段，才会释放内部互斥锁，这样才能保证字段的修改也受到互斥锁的保护。
 
 好了，到这里我们就完整学习了 RWMutex 的概念和实现原理。RWMutex 的应用场景非常明确，就是解决 readers-writers 问题。学完了今天的内容，之后当你遇到这类问题时，要优先想到 RWMutex。另外，Go 并发原语代码实现的质量都很高，非常精炼和高效，所以，你可以通过看它们的实现原理，学习一些编程的技巧。当然，还有非常重要的一点就是要知道 reader 或者 writer 请求锁的时候，既有的 reader/writer 和后续请求锁的 reader/writer 之间的（释放锁 / 请求锁）顺序关系。
@@ -5349,22 +2460,17 @@ for i := 0; i < int(r); i++ {
 
 A RWMutex is a reader/writer mutual exclusion lock.
 
-
 The lock can be held by any number of readers or a single writer, and
 
-
 a blocked writer also blocks new readers from acquiring the lock.
-
 
 这个描述是相当精确的，它指出了 RWMutex 可以被谁持有，以及 writer 比后续的 reader 有获取锁的优先级。
 
 虽然 RWMutex 暴露的 API 也很简单，使用起来也没有复杂的逻辑，但是和 Mutex 一样，在实际使用的时候，也会很容易踩到一些坑。接下来，我给你重点介绍 3 个常见的踩坑点。
 
-# RWMutex 的 3 个踩坑点
+## RWMutex 的 3 个踩坑点
 
-
-## 坑点 1：不可复制
-
+### 坑点 1：不可复制
 
 前面刚刚说过，RWMutex 是由一个互斥锁和四个辅助字段组成的。我们很容易想到，互斥锁是不可复制的，再加上四个有状态的字段，RWMutex 就更加不能复制使用了。
 
@@ -5372,54 +2478,14 @@ a blocked writer also blocks new readers from acquiring the lock.
 
 那该怎么办呢？其实，解决方案也和互斥锁一样。你可以借助 vet 工具，在变量赋值、函数传参、函数返回值、遍历数据、struct 初始化等时，检查是否有读写锁隐式复制的情景。
 
-## 坑点 2：重入导致死锁
-
+### 坑点 2：重入导致死锁
 
 读写锁因为重入（或递归调用）导致死锁的情况更多。
 
 我先介绍第一种情况。因为读写锁内部基于互斥锁实现对 writer 的并发访问，而互斥锁本身是有重入问题的，所以，writer 重入调用 Lock 的时候，就会出现死锁的现象，这个问题，我们在学习互斥锁的时候已经了解过了。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-funcfoo(l *sync.RWMutex) {
+```go
+func foo(l *sync.RWMutex) {
 
  fmt.Println("in foo")
 
@@ -5431,8 +2497,6 @@ funcfoo(l *sync.RWMutex) {
 
 }
 
-
-
 funcbar(l *sync.RWMutex) {
 
  l.Lock()
@@ -5443,8 +2507,6 @@ funcbar(l *sync.RWMutex) {
 
 }
 
-
-
 funcmain() {
 
  l := &sync.RWMutex{}
@@ -5452,24 +2514,7 @@ funcmain() {
  foo(l)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 运行这个程序，你就会得到死锁的错误输出，在 Go 运行的时候，很容易就能检测出来。
 
 第二种死锁的场景有点隐蔽。我们知道，有活跃 reader 的时候，writer 会等待，如果我们在 reader 的读操作时调用 writer 的写操作（它会调用 Lock 方法），那么，这个 reader 和 writer 就会形成互相依赖的死锁状态。Reader 想等待 writer 完成后再释放锁，而 writer 需要这个 reader 释放锁之后，才能不阻塞地继续执行。这是一个读写锁常见的死锁场景。
@@ -5482,87 +2527,11 @@ funcmain() {
 
 这个死锁相当隐蔽，原因在于它和 RWMutex 的设计和实现有关。啥意思呢？我们来看一个计算阶乘 (n!) 的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var mu sync.RWMutex
 
-
-
-// writer,稍微等待，然后制造一个调用Lock的场景
+// writer, 稍微等待，然后制造一个调用 Lock 的场景
 
 gofunc() {
 
@@ -5580,27 +2549,21 @@ gofunc() {
 
  }()
 
-
-
 gofunc() {
 
- factorial(&mu, 10) // 计算10的阶乘, 10!
+ factorial(&mu, 10) // 计算 10 的阶乘，10!
 
  }()
-
-
 
 select {}
 
 }
 
-
-
 // 递归调用计算阶乘
 
 funcfactorial(m *sync.RWMutex, n int)int {
 
-if n < 1 { // 阶乘退出条件 
+if n < 1 { // 阶乘退出条件
 
 return0
 
@@ -5624,23 +2587,6 @@ return factorial(m, n-1) * n // 递归调用
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 factoria 方法是一个递归计算阶乘的方法，我们用它来模拟 reader。为了更容易地制造出死锁场景，我在这里加上了 sleep 的调用，延缓逻辑的执行。这个方法会调用读锁（第 27 行），在第 33 行递归地调用此方法，每次调用都会产生一次读锁的调用，所以可以不断地产生读锁的调用，而且必须等到新请求的读锁释放，这个读锁才能释放。
 
 同时，我们使用另一个 goroutine 去调用 Lock 方法，来实现 writer，这个 writer 会等待 200 毫秒后才会调用 Lock，这样在调用 Lock 的时候，factoria 方法还在执行中不断调用 RLock。
@@ -5651,29 +2597,23 @@ factoria 方法是一个递归计算阶乘的方法，我们用它来模拟 read
 
 ## 坑点 3：释放未加锁的 RWMutex
 
-
 和互斥锁一样，Lock 和 Unlock 的调用总是成对出现的，RLock 和 RUnlock 的调用也必须成对出现。Lock 和 RLock 多余的调用会导致锁没有被释放，可能会出现死锁，而 Unlock 和 RUnlock 多余的调用会导致 panic。在生产环境中出现 panic 是大忌，你总不希望半夜爬起来处理生产环境程序崩溃的问题吧？所以，在使用读写锁的时候，一定要注意，不遗漏不多余。
 
-# 流行的 Go 开发项目中的坑
-
+## 流行的 Go 开发项目中的坑
 
 好了，又到了泡一杯宁夏枸杞加新疆大滩枣的养生茶，静静地欣赏知名项目出现 Bug 的时候了，这次被拉出来的是 RWMutex 的 Bug。
 
-## Docker
+### Docker
 
-
-### issue 36840
-
+#### issue 36840
 
 [issue 36840]()修复的是错误地把 writer 当成 reader 的 Bug。 这个地方本来需要修改数据，需要调用的是写锁，结果用的却是读锁。或许是被它紧挨着的 findNode 方法调用迷惑了，认为这只是一个读操作。可实际上，代码后面还会有 changeNodeState 方法的调用，这是一个写操作。修复办法也很简单，只需要改成 Lock/Unlock 即可。
 
 ![](https://static001.geekbang.org/resource/image/e4/4b/e4d153cb5f81873a726b09bc436b8a4b.png)
 
-## Kubernetes
+### Kubernetes
 
-
-### issue 62464
-
+#### issue 62464
 
 [issue 62464]()就是读写锁第二种死锁的场景，这是一个典型的 reader 导致的死锁的例子。知道墨菲定律吧？“凡是可能出错的事，必定会出错”。你可能觉得我前面讲的 RWMutex 的坑绝对不会被人踩的，因为道理大家都懂，但是你看，Kubernetes 就踩了这个重入的坑。
 
@@ -5682,7 +2622,6 @@ factoria 方法是一个递归计算阶乘的方法，我们用它来模拟 read
 ![](https://static001.geekbang.org/resource/image/06/c2/062ae5d2a6190f86cb7bf57db643d8c2.png)
 
 ## 总结
-
 
 在开发过程中，一开始考虑共享资源并发访问问题的时候，我们就会想到互斥锁 Mutex。因为刚开始的时候，我们还并不太了解并发的情况，所以，就会使用最简单的同步原语来解决问题。等到系统成熟，真正到了需要性能优化的时候，我们就能静下心来分析并发场景的可能性，这个时候，我们就要考虑将 Mutex 修改为 RWMutex，来压榨系统的性能。
 
@@ -5698,17 +2637,13 @@ factoria 方法是一个递归计算阶乘的方法，我们用它来模拟 read
 
 ## 思考题
 
-
 请你写一个扩展的读写锁，比如提供 TryLock，查询当前是否有 writer、reader 的数量等方法。
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 ��一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 06 | WaitGroup：协同等待，任务编排利器
-
 
 你好，我是鸟窝。
 
@@ -5726,43 +2661,13 @@ WaitGroup，我们以前都多多少少学习过，或者是使用过。其实�
 
 ## WaitGroup 的基本用法
 
-
 Go 标准库中的 WaitGroup 提供了三个方法，保持了 Go 简洁的风格。
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(wg *WaitGroup)Add(delta int)
 
 func(wg *WaitGroup)Done()
 
 func(wg *WaitGroup)Wait()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我们分别看下这三个方法：
 
@@ -5772,92 +2677,9 @@ Done，用来将 WaitGroup 的计数值减 1，其实就是调用了 Add(-1)；
 
 Wait，调用这个方法的 goroutine 会一直阻塞，直到 WaitGroup 的计数值变为 0。
 
-
 接下来，我们通过一个使用 WaitGroup 的例子，来看下 Add、Done、Wait 方法的基本用法。
 
 在这个例子中，我们使用了以前实现的计数器 struct。我们启动了 10 个 worker，分别对计数值加一，10 个 worker 都完成后，我们期望输出计数器的值。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 线程安全的计数器
 
@@ -5893,7 +2715,7 @@ return c.count
 
 }
 
-// sleep 1秒，然后计数值加1
+// sleep 1 秒，然后计数值加 1
 
 funcworker(c *Counter, wg *sync.WaitGroup) {
 
@@ -5905,27 +2727,21 @@ defer wg.Done()
 
 }
 
-
-
 funcmain() {
 
 var counter Counter
 
-
-
 var wg sync.WaitGroup
 
- wg.Add(10) // WaitGroup的值设置为10
+ wg.Add(10) // WaitGroup 的值设置为 10
 
-
-
-for i := 0; i < 10; i++ { // 启动10个goroutine执行加1任务
+for i := 0; i < 10; i++ { // 启动 10 个 goroutine 执行加 1 任务
 
 go worker(&counter, &wg)
 
  }
 
-// 检查点，等待goroutine都完成任务
+// 检查点，等待 goroutine 都完成任务
 
  wg.Wait()
 
@@ -5934,23 +2750,6 @@ go worker(&counter, &wg)
  fmt.Println(counter.Count())
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我们一起来分析下这段代码。
 
@@ -5962,13 +2761,11 @@ go worker(&counter, &wg)
 
 第 32 行，启动了 goroutine，并把我们定义的 WaitGroup 指针当作参数传递进去。goroutine 完成后，需要调用 Done 方法，把 WaitGroup 的计数值减 1。等 10 个 goroutine 都调用了 Done 方法后，WaitGroup 的计数值降为 0，这时，第 35 行的主 goroutine 就不再阻塞，会继续执行，在第 37 行输出计数值。
 
-
 这就是我们使用 WaitGroup 编排这类任务的常用方式。而“这类任务”指的就是，需要启动多个 goroutine 执行任务，主 goroutine 需要等待子 goroutine 都完成后才继续执行。
 
 熟悉了 WaitGroup 的基本用法后，我们再看看它具体是如何实现的吧。
 
 ## WaitGroup 的实现
-
 
 首先，我们看看 WaitGroup 的数据结构。它包括了一个 noCopy 的辅助字段，一个 state1 记录 WaitGroup 状态的数组。
 
@@ -5976,115 +2773,45 @@ noCopy 的辅助字段，主要就是辅助 vet 工具检查是否通过 copy �
 
 state1，一个具有复合意义的字段，包含 WaitGroup 的计数、阻塞在检查点的 waiter 数和信号量。
 
-
 WaitGroup 的数据结构定义以及 state 信息的获取方法如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type WaitGroup struct {
 
-// 避免复制使用的一个技巧，可以告诉vet工具违反了复制使用的规则
+// 避免复制使用的一个技巧，可以告诉 vet 工具违反了复制使用的规则
 
  noCopy noCopy
 
-// 64bit(8bytes)的值分成两段，高32bit是计数值，低32bit是waiter的计数
+// 64bit(8bytes) 的值分成两段，高 32bit 是计数值，低 32bit 是 waiter 的计数
 
-// 另外32bit是用作信号量的
+// 另外 32bit 是用作信号量的
 
-// 因为64bit值的原子操作需要64bit对齐，但是32bit编译器不支持，所以数组中的元素在不同的架构中不一样，具体处理看下面的方法
+// 因为 64bit 值的原子操作需要 64bit 对齐，但是 32bit 编译器不支持，所以数组中的元素在不同的架构中不一样，具体处理看下面的方法
 
-// 总之，会找到对齐的那64bit作为state，其余的32bit做信号量
+// 总之，会找到对齐的那 64bit 作为 state，其余的 32bit 做信号量
 
  state1 [3]uint32
 
 }
 
-
-
-
-
-// 得到state的地址和信号量的地址
+// 得到 state 的地址和信号量的地址
 
 func(wg *WaitGroup)state()(statep *uint64, semap *uint32) {
 
 ifuintptr(unsafe.Pointer(&wg.state1))%8 == 0 {
 
-// 如果地址是64bit对齐的，数组前两个元素做state，后一个元素做信号量
+// 如果地址是 64bit 对齐的，数组前两个元素做 state，后一个元素做信号量
 
 return (*uint64)(unsafe.Pointer(&wg.state1)), &wg.state1[2]
 
  } else {
 
-// 如果地址是32bit对齐的，数组后两个元素用来做state，它可以用来做64bit的原子操作，第一个元素32bit用来做信号量
+// 如果地址是 32bit 对齐的，数组后两个元素用来做 state，它可以用来做 64bit 的原子操作，第一个元素 32bit 用来做信号量
 
 return (*uint64)(unsafe.Pointer(&wg.state1[1])), &wg.state1[0]
 
  }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 因为对 64 位整数的原子操作要求整数的地址是 64 位对齐的，所以针对 64 位和 32 位环境的 state 字段的组成是不一样的。
 
@@ -6104,65 +2831,11 @@ return (*uint64)(unsafe.Pointer(&wg.state1[1])), &wg.state1[0]
 
 它的实现代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(wg *WaitGroup)Add(delta int) {
 
  statep, semap := wg.state()
 
-// 高32bit是计数值v，所以把delta左移32，增加到计数上
+// 高 32bit 是计数值 v，所以把 delta 左移 32，增加到计数上
 
  state := atomic.AddUint64(statep, uint64(delta)<<32)
 
@@ -6170,19 +2843,15 @@ func(wg *WaitGroup)Add(delta int) {
 
  w := uint32(state) // waiter count
 
-
-
 if v > 0 || w == 0 {
 
 return
 
  }
 
+// 如果计数值 v 为 0 并且 waiter 的数量 w 不为 0，那么 state 的值就是 waiter 的数量
 
-
-// 如果计数值v为0并且waiter的数量w不为0，那么state的值就是waiter的数量
-
-// 将waiter的数量设置为0，因为计数值v也是0,所以它们俩的组合*statep直接设置为0即可。此时需要并唤醒所有的waiter
+// 将 waiter 的数量设置为 0，因为计数值 v 也是 0, 所以它们俩的组合*statep 直接设置为 0 即可。此时需要并唤醒所有的 waiter
 
  *statep = 0
 
@@ -6194,11 +2863,7 @@ for ; w != 0; w-- {
 
 }
 
-
-
-
-
-// Done方法实际就是计数器减1
+// Done 方法实际就是计数器减 1
 
 func(wg *WaitGroup)Done() {
 
@@ -6206,78 +2871,13 @@ func(wg *WaitGroup)Done() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Wait 方法的实现逻辑是：不断检查 state 的值。如果其中的计数值变为了 0，那么说明所有的任务已完成，调用者不必再等待，直接返回。如果计数值大于 0，说明此时还有任务没完成，那么调用者就变成了等待者，需要加入 waiter 队列，并且阻塞住自己。
 
 其主干实现代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(wg *WaitGroup)Wait() {
 
  statep, semap := wg.state()
-
-
 
 for {
 
@@ -6285,17 +2885,17 @@ for {
 
  v := int32(state >> 32) // 当前计数值
 
- w := uint32(state) // waiter的数量
+ w := uint32(state) // waiter 的数量
 
 if v == 0 {
 
-// 如果计数值为0, 调用这个方法的goroutine不必再等待，继续执行它后面的逻辑即可
+// 如果计数值为 0, 调用这个方法的 goroutine 不必再等待，继续执行它后面的逻辑即可
 
 return
 
  }
 
-// 否则把waiter数量加1。期间可能有并发调用Wait的情况，所以最外层使用了一个for循环
+// 否则把 waiter 数量加 1。期间可能有并发调用 Wait 的情况，所以最外层使用了一个 for 循环
 
 if atomic.CompareAndSwapUint64(statep, state, state+1) {
 
@@ -6313,32 +2913,13 @@ return
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 使用 WaitGroup 时的常见错误
-
 
 在分析 WaitGroup 的 Add、Done 和 Wait 方法的实现的时候，为避免干扰，我删除了异常检查的代码。但是，这些异常检查非常有用。
 
 我们在开发的时候，经常会遇见或看到误用 WaitGroup 的场景，究其原因就是没有弄明白这些检查的逻辑。所以接下来，我们就通过几个小例子，一起学习下在开发时绝对要避免的 3 个问题。
 
 ### 常见问题一：计数器设置为负值
-
 
 WaitGroup 的计数器的值必须大于等于 0。我们在更改这个计数值的时候，WaitGroup 会先做检查，如果计数值被设置为负数，就会导致 panic。
 
@@ -6348,60 +2929,17 @@ WaitGroup 的计数器的值必须大于等于 0。我们在更改这个计数�
 
 比如下面这段代码，计数器的初始值为 10，当第一次传入 -10 的时候，计数值被设置为 0，不会有啥问题。但是，再紧接着传入 -1 以后，计数值就被设置为负数了，程序就会出现 panic。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var wg sync.WaitGroup
 
  wg.Add(10)
 
+ wg.Add(-10)// 将 -10 作为参数调用 Add，计数值被设置为 0
 
-
- wg.Add(-10)//将-10作为参数调用Add，计数值被设置为0
-
-
-
- wg.Add(-1)//将-1作为参数调用Add，如果加上-1计数值就会变为负数。这是不对的，所以会触发panic
+ wg.Add(-1)// 将 -1 作为参数调用 Add，如果加上 -1 计数值就会变为负数。这是不对的，所以会触发 panic
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 第二个方法是：调用 Done 方法的次数过多，超过了 WaitGroup 的计数值。
 
@@ -6411,244 +2949,79 @@ var wg sync.WaitGroup
 
 比如下面这个例子中，多调用了一次 Done 方法后，会导致计数值为负，所以程序运行到这一行会出现 panic。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var wg sync.WaitGroup
 
  wg.Add(1)
 
-
-
  wg.Done()
-
-
 
  wg.Done()
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### 常见问题二：不期望的 Add 时机
-
 
 在使用 WaitGroup 的时候，你一定要遵循的原则就是，等所有的 Add 方法调用之后再调用 Wait，否则就可能导致 panic 或者不期望的结果。
 
 我们构造这样一个场景：只有部分的 Add/Done 执行完后，Wait 就返回。我们看一个例子：启动四个 goroutine，每个 goroutine 内部调用 Add(1) 然后调用 Done()，主 goroutine 调用 Wait 等待任务完成。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var wg sync.WaitGroup
 
-go dosomething(100, &wg) // 启动第一个goroutine
+go dosomething(100, &wg) // 启动第一个 goroutine
 
-go dosomething(110, &wg) // 启动第二个goroutine
+go dosomething(110, &wg) // 启动第二个 goroutine
 
-go dosomething(120, &wg) // 启动第三个goroutine
+go dosomething(120, &wg) // 启动第三个 goroutine
 
-go dosomething(130, &wg) // 启动第四个goroutine
+go dosomething(130, &wg) // 启动第四个 goroutine
 
-
-
- wg.Wait() // 主goroutine等待完成
+ wg.Wait() // 主 goroutine 等待完成
 
  fmt.Println("Done")
 
 }
-
-
 
 funcdosomething(millisecs time.Duration, wg *sync.WaitGroup) {
 
  duration := millisecs * time.Millisecond
 
- time.Sleep(duration) // 故意sleep一段时间
-
-
+ time.Sleep(duration) // 故意 sleep 一段时间
 
  wg.Add(1)
 
- fmt.Println("后台执行, duration:", duration)
+ fmt.Println("后台执行，duration:", duration)
 
  wg.Done()
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在这个例子中，我们原本设想的是，等四个 goroutine 都执行完毕后输出 Done 的信息，但是它的错误之处在于，将 WaitGroup.Add 方法的调用放在了子 gorotuine 中。等主 goorutine 调用 Wait 的时候，因为四个任务 goroutine 一开始都休眠，所以可能 WaitGroup 的 Add 方法还没有被调用，WaitGroup 的计数还是 0，所以它并没有等待四个子 goroutine 执行完毕才继续执行，而是立刻执行了下一步。
 
 导致这个错误的原因是，没有遵循先完成所有的 Add 之后才 Wait。要解决这个问题，一个方法是，预先设置计数值：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
 var wg sync.WaitGroup
 
- wg.Add(4) // 预先设定WaitGroup的计数值
+ wg.Add(4) // 预先设定 WaitGroup 的计数值
 
+go dosomething(100, &wg) // 启动第一个 goroutine
 
+go dosomething(110, &wg) // 启动第二个 goroutine
 
-go dosomething(100, &wg) // 启动第一个goroutine
+go dosomething(120, &wg) // 启动第三个 goroutine
 
-go dosomething(110, &wg) // 启动第二个goroutine
+go dosomething(130, &wg) // 启动第四个 goroutine
 
-go dosomething(120, &wg) // 启动第三个goroutine
-
-go dosomething(130, &wg) // 启动第四个goroutine
-
-
-
- wg.Wait() // 主goroutine等待
+ wg.Wait() // 主 goroutine 等待
 
  fmt.Println("Done")
 
 }
-
-
 
 funcdosomething(millisecs time.Duration, wg *sync.WaitGroup) {
 
@@ -6656,116 +3029,35 @@ funcdosomething(millisecs time.Duration, wg *sync.WaitGroup) {
 
  time.Sleep(duration)
 
-
-
- fmt.Println("后台执行, duration:", duration)
+ fmt.Println("后台执行，duration:", duration)
 
  wg.Done()
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 另一种方法是在启动子 goroutine 之前才调用 Add：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
 var wg sync.WaitGroup
 
+ dosomething(100, &wg) // 调用方法，把计数值加 1，并启动任务 goroutine
 
+ dosomething(110, &wg) // 调用方法，把计数值加 1，并启动任务 goroutine
 
- dosomething(100, &wg) // 调用方法，把计数值加1，并启动任务goroutine
+ dosomething(120, &wg) // 调用方法，把计数值加 1，并启动任务 goroutine
 
- dosomething(110, &wg) // 调用方法，把计数值加1，并启动任务goroutine
+ dosomething(130, &wg) // 调用方法，把计数值加 1，并启动任务 goroutine
 
- dosomething(120, &wg) // 调用方法，把计数值加1，并启动任务goroutine
-
- dosomething(130, &wg) // 调用方法，把计数值加1，并启动任务goroutine
-
-
-
- wg.Wait() // 主goroutine等待，代码逻辑保证了四次Add(1)都已经执行完了
+ wg.Wait() // 主 goroutine 等待，代码逻辑保证了四次 Add(1) 都已经执行完了
 
  fmt.Println("Done")
 
 }
 
-
-
 funcdosomething(millisecs time.Duration, wg *sync.WaitGroup) {
 
- wg.Add(1) // 计数值加1，再启动goroutine
-
-
+ wg.Add(1) // 计数值加 1，再启动 goroutine
 
 gofunc() {
 
@@ -6773,7 +3065,7 @@ gofunc() {
 
  time.Sleep(duration)
 
- fmt.Println("后台执行, duration:", duration)
+ fmt.Println("后台执行，duration:", duration)
 
  wg.Done()
 
@@ -6781,61 +3073,15 @@ gofunc() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可见，无论是怎么修复，都要保证所有的 Add 方法是在 Wait 方法之前被调用的。
 
 ### 常见问题三：前一个 Wait 还没结束就重用 WaitGroup
-
 
 “前一个 Wait 还没结束就重用 WaitGroup”这一点似乎不太好理解，我借用田径比赛的例子和你解释下吧。在田径比赛的百米小组赛中，需要把选手分成几组，一组选手比赛完之后，就可以进行下一组了。为了确保两组比赛时间上没有冲突，我们在模型化这个场景的时候，可以使用 WaitGroup。
 
 WaitGroup 等一组比赛的所有选手都跑完后 5 分钟，才开始下一组比赛。下一组比赛还可以使用这个 WaitGroup 来控制，因为 WaitGroup 是可以重用的。只要 WaitGroup 的计数值恢复到零值的状态，那么它就可以被看作是新创建的 WaitGroup，被重复使用。
 
 但是，如果我们在 WaitGroup 的计数值还没有恢复到零值的时候就重用，就会导致程序 panic。我们看一个例子，初始设置 WaitGroup 的计数值为 1，启动一个 goroutine 先调用 Done 方法，接着就调用 Add 方法，Add 方法有可能和主 goroutine 并发执行。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -6847,39 +3093,21 @@ gofunc() {
 
  time.Sleep(time.Millisecond)
 
- wg.Done() // 计数器减1
+ wg.Done() // 计数器减 1
 
- wg.Add(1) // 计数值加1
+ wg.Add(1) // 计数值加 1
 
  }()
 
- wg.Wait() // 主goroutine等待，有可能和第7行并发执行
+ wg.Wait() // 主 goroutine 等待，有可能和第 7 行并发执行
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 在这个例子中，第 6 行虽然让 WaitGroup 的计数恢复到 0，但是因为第 9 行有个 waiter 在等待，如果等待 Wait 的 goroutine，刚被唤醒就和 Add 调用（第 7 行）有并发执行的冲突，所以就会出现 panic。
 
 总结一下：WaitGroup 虽然可以重用，但是是有一个前提的，那就是必须等到上一轮的 Wait 完成之后，才能重用 WaitGroup 执行下一轮的 Add/Wait，如果你在 Wait 还没执行完的时候就调用下一轮 Add 方法，就有可能出现 panic。
 
 ## noCopy：辅助 vet 检查
-
 
 我们刚刚在学习 WaitGroup 的数据结构时，提到了里面有一个 noCopy 字段。你还记得它的作用吗？其实，它就是指示 vet 工具在做检查的时候，这个数据结构不能做值复制使用。更严谨地说，是不能在第一次使用之后复制使用 ( must not be copied after first use)。
 
@@ -6889,29 +3117,9 @@ gofunc() {
 
 其实是可以的。通过给 WaitGroup 添加一个 noCopy 字段，我们就可以为 WaitGroup 实现 Locker 接口，这样 vet 工具就可以做复制检查了。而且因为 noCopy 字段是未输出类型，所以 WaitGroup 不会暴露 Lock/Unlock 方法。
 
-noCopy 字段的类型是 noCopy，它只是一个辅助的、用来帮助 vet 检查用的类型:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+noCopy 字段的类型是 noCopy，它只是一个辅助的、用来帮助 vet 检查用的类型：
 
 type noCopy struct{}
-
-
 
 // Lock is a no-op used by -copylocks checker from `go vet`.
 
@@ -6919,75 +3127,19 @@ func(*noCopy)Lock() {}
 
 func(*noCopy)Unlock() {}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果你想要自己定义的数据结构不被复制使用，或者说，不能通过 vet 工具检查出复制使用的报警，就可以通过嵌入 noCopy 这个数据类型来实现。
 
 ## 流行的 Go 开发项目中的坑
 
-
 接下来又到了喝枸杞红枣茶的时间了。你可以稍微休息一下，心态放轻松地跟我一起围观下知名项目犯过的错，比如 copy Waitgroup、Add/Wait 并发执行问题、遗漏 Add 等 Bug。
 
 有网友在 Go 的[issue 28123]()中提了以下的例子，你能发现这段代码有什么问题吗？
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type TestStruct struct {
 
  Wait sync.WaitGroup
 
 }
-
-
 
 funcmain() {
 
@@ -7001,30 +3153,11 @@ funcmain() {
 
  }
 
-
-
  t.Wait.Done()
 
  fmt.Println("Finished")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这段代码最大的一个问题，就是第 9 行 copy 了 WaitGroup 的实例 w。虽然这段代码能执行成功，但确实是违反了 WaitGroup 使用之后不要复制的规则。在项目中，我们可以通过 vet 工具检查出这样的错误。
 
@@ -7040,7 +3173,6 @@ Kubernetes [issue 59574]() 的 Bug 是忘记 Wait 之前增加计数了，这就
 
 ## 总结
 
-
 学完这一讲，我们知道了使用 WaitGroup 容易犯的错，是不是有些手脚被束缚的感觉呢？其实大可不必，只要我们不是特别复杂地使用 WaitGroup，就不用有啥心理负担。
 
 而关于如何避免错误使用 WaitGroup 的情况，我们只需要尽量保证下面 5 点就可以了：
@@ -7055,21 +3187,17 @@ Kubernetes [issue 59574]() 的 Bug 是忘记 Wait 之前增加计数了，这就
 
 不遗漏 Done 方法的调用，否则会导致 Wait hang 住无法返回。
 
-
 这一讲我们详细学习了 WaitGroup 的相关知识，这里我整理了一份关于 WaitGroup 的知识地图，方便你复习。
 
 ![](https://static001.geekbang.org/resource/image/84/ff/845yyf00c6db85c0yy59867e6de77dff.jpg)
 
 ## 思考题
 
-
 通常我们可以把 WaitGroup 的计数值，理解为等待要完成的 waiter 的数量。你可以试着扩展下 WaitGroup，来查询 WaitGroup 的当前的计数值吗？
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 07 | Cond：条件变量的实现机制及避坑指南
-
 
 你好，我是鸟窝。
 
@@ -7080,7 +3208,6 @@ Kubernetes [issue 59574]() 的 Bug 是忘记 Wait 之前增加计数了，这就
 那么今天这一讲，我们就学习下 Cond 这个并发原语。
 
 ## Go 标准库的 Cond
-
 
 Go 标准库提供 Cond 原语的目的是，为等待 / 通知场景下的并发问题提供支持。Cond 通常应用于等待某个条件的一组 goroutine，等条件变为 true 的时候，其中一个 goroutine 或者所有的 goroutine 都会被唤醒执行。
 
@@ -7094,26 +3221,9 @@ Go 标准库提供 Cond 原语的目的是，为等待 / 通知场景下的并�
 
 ## Cond 的基本用法
 
-
 标准库中的 Cond 并发原语初始化的时候，需要关联一个 Locker 接口的实例，一般我们使用 Mutex 或者 RWMutex。
 
 我们看一下 Cond 的实现：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Cond
 
@@ -7124,23 +3234,6 @@ func(c *Cond)Broadcast()
 func(c *Cond)Signal()
 
 func(c *Cond)Wait()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 首先，Cond 关联的 Locker 实例可以通过 c.L 访问，它内部维护着一个先入先出的等待队列。
 
@@ -7166,85 +3259,17 @@ Go 实现的 sync.Cond 的方法名是 Wait、Signal 和 Broadcast，这是计�
 
 裁判员会等待运动员都准备好（第 22 行）。虽然每个运动员准备好之后都唤醒了裁判员，但是裁判员被唤醒之后需要检查等待条件是否满足（运动员都准备好了）。可以看到，裁判员被唤醒之后一定要检查等待条件，如果条件不满足还是要继续等待。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
  c := sync.NewCond(&sync.Mutex{})
 
 var ready int
 
-
-
 for i := 0; i < 10; i++ {
 
 gofunc(i int) {
 
  time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
-
-
 
 // 加锁更改等待条件
 
@@ -7254,9 +3279,7 @@ gofunc(i int) {
 
  c.L.Unlock()
 
-
-
- log.Printf("运动员#%d 已准备就绪\n", i)
+ log.Printf("运动员#%d 已准备就绪、n", i)
 
 // 广播唤醒所有的等待者
 
@@ -7265,8 +3288,6 @@ gofunc(i int) {
  }(i)
 
  }
-
-
 
  c.L.Lock()
 
@@ -7280,30 +3301,11 @@ for ready != 10 {
 
  c.L.Unlock()
 
-
-
-//所有的运动员是否就绪
+// 所有的运动员是否就绪
 
  log.Println("所有运动员都准备就绪。比赛开始，3，2，1, ......")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 你看，Cond 的使用其实没那么简单。它的复杂在于：一，这段代码有时候需要加锁，有时候可以不加；二，Wait 唤醒后需要检查条件；三，条件变量的更改，其实是需要原子操作或者互斥锁保护的。所以，有的开发者会认为，Cond 是唯一难以掌握的 Go 并发原语。
 
@@ -7311,94 +3313,15 @@ for ready != 10 {
 
 ## Cond 的实现原理
 
-
 其实，Cond 的实现非常简单，或者说复杂的逻辑已经被 Locker 或者 runtime 的等待队列实现了。我们直接看看 Cond 的源码吧。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Cond struct {
 
  noCopy noCopy
 
-
-
 // 当观察或者修改等待条件的时候需要加锁
 
  L Locker
-
-
 
 // 等待队列
 
@@ -7408,15 +3331,11 @@ type Cond struct {
 
 }
 
-
-
 funcNewCond(l Locker) *Cond {
 
 return &Cond{L: l}
 
 }
-
-
 
 func(c *Cond)Wait() {
 
@@ -7436,8 +3355,6 @@ func(c *Cond)Wait() {
 
 }
 
-
-
 func(c *Cond)Signal() {
 
  c.checker.check()
@@ -7446,8 +3363,6 @@ func(c *Cond)Signal() {
 
 }
 
-
-
 func(c *Cond)Broadcast() {
 
  c.checker.check()
@@ -7455,23 +3370,6 @@ func(c *Cond)Broadcast() {
  runtime_notifyListNotifyAll(&c.notify）
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这部分源码确实很简单，我来带你学习下其中比较关键的逻辑。
 
@@ -7487,74 +3385,9 @@ Wait 把调用者加入到等待队列时会释放锁，在被唤醒之后还会
 
 ## 使用 Cond 的 2 个常见错误
 
-
 我们先看 Cond 最常见的使用错误，也就是调用 Wait 的时候没有加锁。
 
 以前面百米赛跑的程序为例，在调用 cond.Wait 时，把前后的 Lock/Unlock 注释掉，如下面的代码中的第 20 行和第 25 行：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -7562,15 +3395,11 @@ funcmain() {
 
 var ready int
 
-
-
 for i := 0; i < 10; i++ {
 
 gofunc(i int) {
 
  time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
-
-
 
 // 加锁更改等待条件
 
@@ -7580,9 +3409,7 @@ gofunc(i int) {
 
  c.L.Unlock()
 
-
-
- log.Printf("运动员#%d 已准备就绪\n", i)
+ log.Printf("运动员#%d 已准备就绪、n", i)
 
 // 广播唤醒所有的等待者
 
@@ -7591,8 +3418,6 @@ gofunc(i int) {
  }(i)
 
  }
-
-
 
 // c.L.Lock()
 
@@ -7606,30 +3431,11 @@ for ready != 10 {
 
 // c.L.Unlock()
 
-
-
-//所有的运动员是否就绪
+// 所有的运动员是否就绪
 
  log.Println("所有运动员都准备就绪。比赛开始，3，2，1, ......")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 再运行程序，就会报释放未加锁的 panic：
 
@@ -7639,85 +3445,17 @@ for ready != 10 {
 
 使用 Cond 的另一个常见错误是，只调用了一次 Wait，没有检查等待条件是否满足，结果条件没满足，程序就继续执行了。出现这个问题的原因在于，误以为 Cond 的使用，就像 WaitGroup 那样调用一下 Wait 方法等待那么简单。比如下面的代码中，把第 21 行和第 24 行注释掉：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
  c := sync.NewCond(&sync.Mutex{})
 
 var ready int
 
-
-
 for i := 0; i < 10; i++ {
 
 gofunc(i int) {
 
  time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
-
-
 
 // 加锁更改等待条件
 
@@ -7727,9 +3465,7 @@ gofunc(i int) {
 
  c.L.Unlock()
 
-
-
- log.Printf("运动员#%d 已准备就绪\n", i)
+ log.Printf("运动员#%d 已准备就绪、n", i)
 
 // 广播唤醒所有的等待者
 
@@ -7738,8 +3474,6 @@ gofunc(i int) {
  }(i)
 
  }
-
-
 
  c.L.Lock()
 
@@ -7753,30 +3487,11 @@ gofunc(i int) {
 
  c.L.Unlock()
 
-
-
-//所有的运动员是否就绪
+// 所有的运动员是否就绪
 
  log.Println("所有运动员都准备就绪。比赛开始，3，2，1, ......")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 运行这个程序，你会发现，可能只有几个运动员准备好之后程序就运行完了，而不是我们期望的所有运动员都准备好才进行下一步。原因在于，每一个运动员准备好之后都会唤醒所有的等待者，也就是这里的裁判员，比如第一个运动员准备好后就唤醒了裁判员，结果这个裁判员傻傻地没做任何检查，以为所有的运动员都准备好了，就继续执行了。
 
@@ -7785,7 +3500,6 @@ gofunc(i int) {
 到这里，我们小结下。如果你想在使用 Cond 的时候避免犯错，只要时刻记住调用 cond.Wait 方法之前一定要加锁，以及 waiter goroutine 被唤醒不等于等待条件被满足这两个知识点。
 
 ## 知名项目中 Cond 的使用
-
 
 Cond 在实际项目中被使用的机会比较少，原因总结起来有两个。
 
@@ -7801,7 +3515,6 @@ Cond 可以同时支持 Signal 和 Broadcast 方法，而 Channel 只能同时�
 
 Cond 的 Broadcast 方法可以被重复调用。等待条件再次变成不满足的状态后，我们又可以调用 Broadcast 再次唤醒等待的 goroutine。这也是 Channel 不能支持的，Channel 被 close 掉了之后不支持再 open。
 
-
 开源项目中使用 sync.Cond 的代码少之又少，包括标准库原先一些使用 Cond 的代码也改成使用 Channel 实现了，所以别说找 Cond 相关的使用 Bug 了，想找到的一个使用的例子都不容易，我找了 Kubernetes 中的一个例子，我们一起看看它是如何使用 Cond 的。
 
 Kubernetes 项目中定义了优先级队列 [PriorityQueue]() 这样一个数据结构，用来实现 Pod 的调用。它内部有三个 Pod 的队列，即 activeQ、podBackoffQ 和 unschedulableQ，其中 activeQ 就是用来调度的活跃队列（heap）。
@@ -7809,40 +3522,6 @@ Kubernetes 项目中定义了优先级队列 [PriorityQueue]() 这样一个数�
 Pop 方法调用的时候，如果这个队列为空，并且这个队列没有 Close 的话，会调用 Cond 的 Wait 方法等待。
 
 你可以看到，调用 Wait 方法的时候，调用者是持有锁的，并且被唤醒的时候检查等待条件（队列是否为空）。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 从队列中取出一个元素
 
@@ -7870,60 +3549,7 @@ return pInfo, err
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 当 activeQ 增加新的元素时，会调用条件变量的 Boradcast 方法，通知被 Pop 阻塞的调用者。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 增加元素到队列中
 
@@ -7935,7 +3561,7 @@ defer p.lock.Unlock()
 
  pInfo := p.newQueuedPodInfo(pod)
 
-if err := p.activeQ.Add(pInfo); err != nil {//增加元素到队列中
+if err := p.activeQ.Add(pInfo); err != nil {// 增加元素到队列中
 
  klog.Errorf("Error adding pod %v to the scheduling queue: %v", nsNameForPod(pod), err)
 
@@ -7945,52 +3571,13 @@ return err
 
  ......
 
- p.cond.Broadcast() //通知其它等待的goroutine，队列中有元素了
-
-
+ p.cond.Broadcast() // 通知其它等待的 goroutine，队列中有元素了
 
 returnnil
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这个优先级队列被关闭的时候，也会调用 Broadcast 方法，避免被 Pop 阻塞的调用者永远 hang 住。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(p *PriorityQueue)Close() {
 
@@ -8002,31 +3589,13 @@ close(p.stop)
 
  p.closed = true
 
- p.cond.Broadcast() //关闭时通知等待的goroutine，避免它们永远等待
+ p.cond.Broadcast() // 关闭时通知等待的 goroutine，避免它们永远等待
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 你可以思考一下，这里为什么使用 Cond 这个并发原语，能不能换成 Channel 实现呢？
 
 ## 总结
-
 
 好了，我们来做个总结。
 
@@ -8042,23 +3611,13 @@ Cond 是为等待 / 通知场景下的并发问题提供支持的。它提供了
 
 ## 思考题
 
-
-
-
 一个 Cond 的 waiter 被唤醒的时候，为什么需要再检查等待条件，而不是唤醒后进行下一步？
-
-
-
 
 你能否利用 Cond 实现一个容量有限的 queue？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 08 | Once：一个简约而不简单的并发原语
-
 
 你好，我是鸟窝。
 
@@ -8068,80 +3627,17 @@ Cond 是为等待 / 通知场景下的并发问题提供支持的。它提供了
 
 初始化单例资源有很多方法，比如定义 package 级别的变量，这样程序在启动的时候就可以初始化：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package abc
-
-
 
 import time
 
-
-
 var startTime = time.Now()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 或者在 init 函数中进行初始化：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package abc
 
-
-
 var startTime time.Time
-
-
 
 funcinit() {
 
@@ -8149,60 +3645,11 @@ funcinit() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 又或者在 main 函数开始执行的时候，执行一个初始化的函数：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 package abc
 
-
-
 var startTime time.Tim
-
-
 
 funcinitApp() {
 
@@ -8216,102 +3663,11 @@ funcmain() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这三种方法都是线程安全的，并且后两种方法还可以根据传入的参数实现定制化的初始化操作。
 
 但是很多时候我们是要延迟进行初始化的，所以有时候单例资源的初始化，我们会使用下面的方法：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -8323,23 +3679,17 @@ import (
 
 )
 
-
-
-// 使用互斥锁保证线程(goroutine)安全
+// 使用互斥锁保证线程 (goroutine) 安全
 
 var connMu sync.Mutex
 
 var conn net.Conn
-
-
 
 funcgetConn()net.Conn {
 
  connMu.Lock()
 
 defer connMu.Unlock()
-
-
 
 // 返回已创建好的连接
 
@@ -8349,8 +3699,6 @@ return conn
 
  }
 
-
-
 // 创建连接
 
  conn, _ = net.DialTimeout("tcp", "baidu.com:80", 10*time.Second)
@@ -8358,8 +3706,6 @@ return conn
 return conn
 
 }
-
-
 
 // 使用连接
 
@@ -8375,118 +3721,19 @@ panic("conn is nil")
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这种方式虽然实现起来简单，但是有性能问题。一旦连接创建好，每次请求的时候还是得竞争锁才能读取到这个连接，这是比较浪费资源的，因为连接如果创建好之后，其实就不需要锁的保护了。怎么办呢？
 
 这个时候就可以使用这一讲要介绍的 Once 并发原语了。接下来我会详细介绍 Once 的使用、实现和易错场景。
 
-# Once 的使用场景
-
+## Once 的使用场景
 
 sync.Once 只暴露了一个方法 Do，你可以多次调用 Do 方法，但是只有第一次调用 Do 方法时 f 参数才会执行，这里的 f 是一个无参数无返回值的函数。
 
-
-
-
-
-
-
-
-
 func(o *Once)Do(f func())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 因为当且仅当第一次调用 Do 方法的时候参数 f 才会执行，即使第二次、第三次、第 n 次调用时 f 参数的值不一样，也不会被执行，比如下面的例子，虽然 f1 和 f2 是不同的函数，但是第二个函数 f2 就不会执行。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -8496,13 +3743,9 @@ import (
 
 )
 
-
-
 funcmain() {
 
 var once sync.Once
-
-
 
 // 第一个初始化函数
 
@@ -8513,8 +3756,6 @@ var once sync.Once
  }
 
  once.Do(f1) // 打印出 in f1
-
-
 
 // 第二个初始化函数
 
@@ -8528,56 +3769,13 @@ var once sync.Once
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 因为这里的 f 参数是一个无参数无返回的函数，所以你可能会通过闭包的方式引用外面的参数，比如：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var addr = "baidu.com"
-
-
 
 var conn net.Conn
 
 var err error
-
-
 
  once.Do(func() {
 
@@ -8585,94 +3783,21 @@ var err error
 
  })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 而且在实际的使用中，绝大多数情况下，你会使用闭包的方式去初始化外部的一个资源。
 
 你看，Once 的使用场景很明确，所以，在标准库内部实现中也常常能看到 Once 的身影。
 
 比如标准库内部[cache]()的实现上，就使用了 Once 初始化 Cache 资源，包括 defaultDir 值的获取：
 
+funcDefault() *Cache { // 获取默认的 Cache
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-funcDefault() *Cache { // 获取默认的Cache
-
- defaultOnce.Do(initDefaultCache) // 初始化cache
+ defaultOnce.Do(initDefaultCache) // 初始化 cache
 
 return defaultCache
 
  }
 
-
-
-// 定义一个全局的cache变量，使用Once初始化，所以也定义了一个Once变量
+// 定义一个全局的 cache 变量，使用 Once 初始化，所以也定义了一个 Once 变量
 
 var (
 
@@ -8682,9 +3807,7 @@ var (
 
  )
 
-
-
-funcinitDefaultCache() { //初始化cache,也就是Once.Do使用的f函数
+funcinitDefaultCache() { // 初始化 cache, 也就是 Once.Do 使用的 f 函数
 
  ......
 
@@ -8692,9 +3815,7 @@ funcinitDefaultCache() { //初始化cache,也就是Once.Do使用的f函数
 
  }
 
-
-
-// 其它一些Once初始化的变量，比如defaultDir
+// 其它一些 Once 初始化的变量，比如 defaultDir
 
 var (
 
@@ -8706,111 +3827,23 @@ var (
 
  )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 还有一些测试的时候初始化测试的资源（[export_windows_test]()）：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 测试window系统调用时区相关函数
+// 测试 window 系统调用时区相关函数
 
 funcForceAusFromTZIForTesting() {
 
  ResetLocalOnceForTest()
 
-// 使用Once执行一次初始化
+// 使用 Once 执行一次初始化
 
  localOnce.Do(func() { initLocalFromTZI(&aus) })
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 除此之外，还有保证只调用一次 copyenv 的 envOnce，strings 包下的 Replacer，time 包中的[测试]()，Go 拉取库时的[proxy]()，net.pipe，crc64，Regexp，…，数不胜数。我给你重点介绍一下很值得我们学习的 math/big/sqrt.go 中实现的一个数据结构，它通过 Once 封装了一个只初始化一次的值：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 值是3.0或者0.0的一个数据结构
+// 值是 3.0 或者 0.0 的一个数据结构
 
 var threeOnce struct {
 
@@ -8820,13 +3853,11 @@ var threeOnce struct {
 
  }
 
-
-
-// 返回此数据结构的值，如果还没有初始化为3.0，则初始化
+// 返回此数据结构的值，如果还没有初始化为 3.0，则初始化
 
 functhree() *Float {
 
- threeOnce.Do(func() { // 使用Once初始化
+ threeOnce.Do(func() { // 使用 Once 初始化
 
  threeOnce.v = NewFloat(3.0)
 
@@ -8836,23 +3867,6 @@ return threeOnce.v
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 它将 sync.Once 和 *Float 封装成一个对象，提供了只初始化一次的值 v。 你看它的 three 方法的实现，虽然每次都调用 threeOnce.Do 方法，但是参数只会被调用一次。
 
 当你使用 Once 的时候，你也可以尝试采用这种结构，将值和 Once 封装成一个新的数据结构，提供只初始化一次的值。
@@ -8861,44 +3875,15 @@ return threeOnce.v
 
 了解了 Once 的使用场景，那应该怎样实现一个 Once 呢？
 
-# 如何实现一个 Once？
-
+## 如何实现一个 Once？
 
 很多人认为实现一个 Once 一样的并发原语很简单，只需使用一个 flag 标记是否初始化过即可，最多是用 atomic 原子操作这个 flag，比如下面的实现：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Once struct {
 
  done uint32
 
 }
-
-
 
 func(o *Once)Do(f func()) {
 
@@ -8912,78 +3897,13 @@ return
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这确实是一种实现方式，但是，这个实现有一个很大的问题，就是如果参数 f 执行很慢的话，后续调用 Do 方法的 goroutine 虽然看到 done 已经设置为执行过了，但是获取某些初始化资源的时候可能会得到空的资源，因为 f 还没有执行完。
 
-所以，一个正确的 Once 实现要使用一个互斥锁，这样初始化的时候如果有并发的 goroutine，就会进入doSlow 方法。互斥锁的机制保证只有一个 goroutine 进行初始化，同时利用双检查的机制（double-checking），再次判断 o.done 是否为 0，如果为 0，则是第一次执行，执行完毕后，就将 o.done 设置为 1，然后释放锁。
+所以，一个正确的 Once 实现要使用一个互斥锁，这样初始化的时候如果有并发的 goroutine，就会进入 doSlow 方法。互斥锁的机制保证只有一个 goroutine 进行初始化，同时利用双检查的机制（double-checking），再次判断 o.done 是否为 0，如果为 0，则是第一次执行，执行完毕后，就将 o.done 设置为 1，然后释放锁。
 
 即使此时有多个 goroutine 同时进入了 doSlow 方法，因为双检查的机制，后续的 goroutine 会看到 o.done 的值为 1，也不会再次执行 f。
 
 这样既保证了并发的 goroutine 会等待 f 完成，而且还不会多次执行 f。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Once struct {
 
@@ -8992,8 +3912,6 @@ type Once struct {
  m Mutex
 
 }
-
-
 
 func(o *Once)Do(f func()) {
 
@@ -9004,10 +3922,6 @@ if atomic.LoadUint32(&o.done) == 0 {
  }
 
 }
-
-
-
-
 
 func(o *Once)doSlow(f func()) {
 
@@ -9027,54 +3941,13 @@ defer atomic.StoreUint32(&o.done, 1)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 好了，到这里我们就了解了 Once 的使用场景，很明确，同时呢，也感受到 Once 的实现也是相对简单的。在实践中，其实很少会出现错误使用 Once 的情况，但是就像墨菲定律说的，凡是可能出错的事就一定会出错。使用 Once 也有可能出现两种错误场景，尽管非常罕见。我这里提前讲给你，咱打个预防针。
 
-# 使用 Once 可能出现的 2 种错误
+## 使用 Once 可能出现的 2 种错误
 
-
-## 第一种错误：死锁
-
+### 第一种错误：死锁
 
 你已经知道了 Do 方法会执行一次 f，但是如果 f 中再次调用这个 Once 的 Do 方法的话，就会导致死锁的情况出现。这还不是无限递归的情况，而是的的确确的 Lock 的递归调用导致的死锁。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -9092,79 +3965,29 @@ var once sync.Once
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 当然，想要避免这种情况的出现，就不要在 f 参数中调用当前的这个 Once，不管是直接的还是间接的。
 
-## 第二种错误：未初始化
-
+### 第二种错误：未初始化
 
 如果 f 方法执行的时候 panic，或者 f 执行初始化资源的时候失败了，这个时候，Once 还是会认为初次执行已经成功了，即使再次调用 Do 方法，也不会再次执行 f。
 
 比如下面的例子，由于一些防火墙的原因，googleConn 并没有被正确的初始化，后面如果想当然认为既然执行了 Do 方法 googleConn 就已经初始化的话，会抛出空指针的错误：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var once sync.Once
 
-var googleConn net.Conn // 到Google网站的一个连接
-
-
+var googleConn net.Conn // 到 Google 网站的一个连接
 
  once.Do(func() {
 
-// 建立到google.com的连接，有可能因为网络的原因，googleConn并没有建立成功，此时它的值为nil
+// 建立到 google.com 的连接，有可能因为网络的原因，googleConn 并没有建立成功，此时它的值为 nil
 
  googleConn, _ = net.Dial("tcp", "google.com:80")
 
  })
 
-// 发送http请求
+// 发送 http 请求
 
  googleConn.Write([]byte("GET / HTTP/1.1\r\nHost: google.com\r\n Accept: */*\r\n\r\n"))
 
@@ -9172,86 +3995,11 @@ var googleConn net.Conn // 到Google网站的一个连接
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 既然执行过 Once.Do 方法也可能因为函数执行失败的原因未初始化资源，并且以后也没机会再次初始化资源，那么这种初始化未完成的问题该怎么解决呢？
 
 这里我来告诉你一招独家秘笈，我们可以自己实现一个类似 Once 的并发原语，既可以返回当前调用 Do 方法是否正确完成，还可以在初始化失败后调用 Do 方法再次尝试初始化，直到初始化成功才不再初始化了。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 一个功能更加强大的Once
+// 一个功能更加强大的 Once
 
 type Once struct {
 
@@ -9261,9 +4009,9 @@ type Once struct {
 
 }
 
-// 传入的函数f有返回值error，如果初始化失败，需要返回失败的error
+// 传入的函数 f 有返回值 error，如果初始化失败，需要返回失败的 error
 
-// Do方法会把这个error返回给调用者
+// Do 方法会把这个 error 返回给调用者
 
 func(o *Once)Do(f func()error) error {
 
@@ -9303,23 +4051,6 @@ return err
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我们所做的改变就是 Do 方法和参数 f 函数都会返回 error，如果 f 执行失败，会把这个错误信息返回。
 
 对 slowDo 方法也做了调整，如果 f 调用失败，我们不会更改 done 字段的值，这样后续 degoroutine 还会继续调用 f。如果 f 执行成功，才会修改 done 的值为 1。
@@ -9327,38 +4058,6 @@ return err
 可以说，真是一顿操作猛如虎，我们使用 Once 有点得心应手的感觉了。等等，还有个问题，我们怎么查询是否初始化过呢？
 
 目前的 Once 实现可以保证你调用任意次数的 once.Do 方法，它只会执行这个方法一次。但是，有时候我们需要打一个标记。如果初始化后我们就去执行其它的操作，标准库的 Once 并不会告诉你是否初始化完成了，只是让你放心大胆地去执行 Do 方法，所以，你还需要一个辅助变量，自己去检查是否初始化过了，比如通过下面的代码中的 inited 字段：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type AnimalStore struct {once sync.Once;inited uint32}
 
@@ -9374,7 +4073,7 @@ a.once.Do(func() {
 
 }
 
-func(a *AnimalStore)CountOfCats()(int, error) { // 另外一个goroutine
+func(a *AnimalStore)CountOfCats()(int, error) { // 另外一个 goroutine
 
 if atomic.LoadUint32(&a.inited) == 0 { // 初始化后才会执行真正的业务逻辑
 
@@ -9386,76 +4085,9 @@ return0, NotYetInitedError
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 当然，通过这段代码，我们可以解决这类问题，但是，如果官方的 Once 类型有 Done 这样一个方法的话，我们就可以直接使用了。这是有人在 Go 代码库中提出的一个 issue([#41690]())。对于这类问题，一般都会被建议采用其它类型，或者自己去扩展。我们可以尝试扩展这个并发原语：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Once 是一个扩展的sync.Once类型，提供了一个Done方法
+// Once 是一个扩展的 sync.Once 类型，提供了一个 Done 方法
 
 type Once struct {
 
@@ -9463,13 +4095,11 @@ type Once struct {
 
 }
 
+// Done 返回此 Once 是否执行过
 
+// 如果执行过则返回 true
 
-// Done 返回此Once是否执行过
-
-// 如果执行过则返回true
-
-// 如果没有执行过或者正在执行，返回false
+// 如果没有执行过或者正在执行，返回 false
 
 func(o *Once)Done()bool {
 
@@ -9477,15 +4107,11 @@ return atomic.LoadUint32((*uint32)(unsafe.Pointer(&o.Once))) == 1
 
 }
 
-
-
 funcmain() {
 
 var flag Once
 
  fmt.Println(flag.Done()) //false
-
-
 
  flag.Do(func() {
 
@@ -9493,28 +4119,9 @@ var flag Once
 
  })
 
-
-
  fmt.Println(flag.Done()) //true
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 好了，到这里关于并发原语 Once 的内容我讲得就差不多了。最后呢，和你分享一个 Once 的踩坑案例。
 
@@ -9522,44 +4129,9 @@ var flag Once
 
 所以查看大部分的 Go 项目，几乎找不到 Once 的错误使用场景，不过我还是发现了一个。这个 issue 先从另外一个需求 ([go#25955]()) 谈起。
 
-# Once 的踩坑案例
-
+## Once 的踩坑案例
 
 go#25955 有网友提出一个需求，希望 Once 提供一个 Reset 方法，能够将 Once 重置为初始化的状态。比如下面的例子，St 通过两个 Once 控制它的 Open/Close 状态。但是在 Close 之后再调用 Open 的话，不会再执行 init 函数，因为 Once 只会执行一次初始化函数。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type St struct {
 
@@ -9569,8 +4141,6 @@ type St struct {
 
 }
 
-
-
 func(st *St)Open(){
 
  st.openOnce.Do(func() { ... }) // init
@@ -9578,8 +4148,6 @@ func(st *St)Open(){
  ...
 
 }
-
-
 
 func(st *St)Close(){
 
@@ -9589,124 +4157,13 @@ func(st *St)Close(){
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 所以提交这个 Issue 的开发者希望 Once 增加一个 Reset 方法，Reset 之后再调用 once.Do 就又可以初始化了。
 
 Go 的核心开发者 Ian Lance Taylor 给他了一个简单的解决方案。在这个例子中，只使用一个 ponce *sync.Once 做初始化，Reset 的时候给 ponce 这个变量赋值一个新的 Once 实例即可 (ponce = new(sync.Once))。Once 的本意就是执行一次，所以 Reset 破坏了这个并发原语的本意。
 
 这个解决方案一点都没问题，可以很好地解决这位开发者的需求。Docker 较早的版本（1.11.2）中使用了它们的一个网络库 libnetwork，这个网络库在使用 Once 的时候就使用 Ian Lance Taylor 介绍的方法，但是不幸的是，它的 Reset 方法中又改变了 Once 指针的值，导致程序 panic 了。原始逻辑比较复杂，一个简化版可重现的[代码]()如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -9717,8 +4174,6 @@ import (
 "time"
 
 )
-
-
 
 // 一个组合的并发原语
 
@@ -9734,9 +4189,7 @@ type MuOnce struct {
 
 }
 
-
-
-// 相当于reset方法，会将m.Once重新复制一个Once
+// 相当于 reset 方法，会将 m.Once 重新复制一个 Once
 
 func(m *MuOnce)refresh() {
 
@@ -9752,9 +4205,7 @@ defer m.Unlock()
 
 }
 
-
-
-// 获取某个初始化的值，如果超过某个时间，会reset Once
+// 获取某个初始化的值，如果超过某个时间，会 reset Once
 
 func(m *MuOnce)strings() []string {
 
@@ -9764,7 +4215,7 @@ func(m *MuOnce)strings() []string {
 
 if now.After(m.mtime) {
 
-defer m.Do(m.refresh) // 使用refresh函数重新初始化
+defer m.Do(m.refresh) // 使用 refresh 函数重新初始化
 
  }
 
@@ -9775,8 +4226,6 @@ defer m.Do(m.refresh) // 使用refresh函数重新初始化
 return vals
 
 }
-
-
 
 funcmain() {
 
@@ -9790,23 +4239,6 @@ funcmain() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果你执行这段代码就会 panic:
 
 ![](https://static001.geekbang.org/resource/image/f3/af/f3401f75a86e1d0c3b257f52696228af.png)
@@ -9815,63 +4247,7 @@ funcmain() {
 
 如果你还不太明白，我再给你简化成一个更简单的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -9879,15 +4255,11 @@ import (
 
 )
 
-
-
 type Once struct {
 
  m sync.Mutex
 
 }
-
-
 
 func(o *Once)doSlow() {
 
@@ -9895,15 +4267,11 @@ func(o *Once)doSlow() {
 
 defer o.m.Unlock()
 
-
-
-// 这里更新的o指针的值!!!!!!!, 会导致上一行Unlock出错
+// 这里更新的 o 指针的值！!!!!!!, 会导致上一行 Unlock 出错
 
  *o = Once{}
 
 }
-
-
 
 funcmain() {
 
@@ -9913,29 +4281,11 @@ var once Once
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 doSlow 方法就演示了这个错误。Ian Lance Taylor 介绍的 Reset 方法没有错误，但是你在使用的时候千万别再初始化函数中 Reset 这个 Once，否则势必会导致 Unlock 一个未加锁的 Mutex 的错误。
 
 总的来说，这还是对 Once 的实现机制不熟悉，又进行复杂使用导致的错误。不过最新版的 libnetwork 相关的地方已经去掉了 Once 的使用了。所以，我带你一起来看这个案例，主要目的还是想巩固一下我们对 Once 的理解。
 
 ## 总结
-
 
 今天我们一起学习了 Once，我们常常使用它来实现单例模式。
 
@@ -9943,61 +4293,11 @@ doSlow 方法就演示了这个错误。Ian Lance Taylor 介绍的 Reset 方法�
 
 因为 Go 没有 immutable 类型，导致我们声明的全局变量都是可变的，别的地方或者第三方库可以随意更改这些变量。比如 package io 中定义了几个全局变量，比如 io.EOF：
 
-
-
-
-
-
-
-
-
 var EOF = errors.New("EOF")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 因为它是一个 package 级别的变量，我们可以在程序中偷偷把它改了，这会导致一些依赖 io.EOF 这个变量做判断的代码出错。
 
-
-
-
-
-
-
-
-
-io.EOF = errors.New("我们自己定义的EOF")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+io.EOF = errors.New("我们自己定义的 EOF")
 
 从我个人的角度来说，一些单例（全局变量）的确很方便，比如 Buffer 池或者连接池，所以有时候我们也不要谈虎色变。虽然有人把单例模式称之为反模式，但毕竟只能代表一部分开发者的观点，否则也不会把它列在 23 种设计模式中了。
 
@@ -10011,26 +4311,15 @@ io.EOF = errors.New("我们自己定义的EOF")
 
 ## 思考题
 
-
-
-
 我已经分析了几个并发原语的实现，你可能注意到总是有些 slowXXXX 的方法，从 XXXX 方法中单独抽取出来，你明白为什么要这么做吗，有什么好处？
-
-
-
 
 Once 在第一次使用之后，还能复制给其它变量使用吗？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
-
 
 �们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
-# 09 | map：如何实现线程安全的map类型？
-
+# 09 | map：如何实现线程安全的 map 类型？
 
 你好，我是鸟窝。
 
@@ -10040,35 +4329,9 @@ Once 在第一次使用之后，还能复制给其它变量使用吗？
 
 ## map 的基本使用方法
 
-
 Go 内建的 map 类型如下：
 
-
-
-
-
-
-
-
-
 map[K]V
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 其中，key 类型的 K 必须是可比较的（comparable），也就是可以通过 == 和 != 操作符进行比较；value 的值和类型无所谓，可以是任意的类型，或者为 nil。
 
@@ -10078,53 +4341,11 @@ map[K]V
 
 这里有一点需要注意，如果使用 struct 类型做 key 其实是有坑的，因为如果 struct 的某个字段值修改了，查询 map 时无法获取它 add 进去的值，如下面的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type mapKey struct {
 
  key int
 
 }
-
-
 
 funcmain() {
 
@@ -10132,70 +4353,21 @@ var m = make(map[mapKey]string)
 
 var key = mapKey{10}
 
-
-
-
-
  m[key] = "hello"
 
  fmt.Printf("m[key]=%s\n", m[key])
 
-
-
-
-
-// 修改key的字段的值后再次查询map，无法获取刚才add进去的值
+// 修改 key 的字段的值后再次查询 map，无法获取刚才 add 进去的值
 
  key.key = 100
 
- fmt.Printf("再次查询m[key]=%s\n", m[key])
+ fmt.Printf("再次查询 m[key]=%s\n", m[key])
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 那该怎么办呢？如果要使用 struct 作为 key，我们要保证 struct 对象在逻辑上是不可变的，这样才会保证 map 的逻辑没有问题。
 
-以上就是选取 key 类型的注意点了。接下来，我们看一下使用 map[key]函数时需要注意的一个知识点。在 Go 中，map[key]函数返回结果可以是一个值，也可以是两个值，这是容易让人迷惑的地方。原因在于，如果获取一个不存在的 key 对应的值时，会返回零值。为了区分真正的零值和 key 不存在这两种情况，可以根据第二个返回值来区分，如下面的代码的第 6 行、第 7 行：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+以上就是选取 key 类型的注意点了。接下来，我们看一下使用 map[key] 函数时需要注意的一个知识点。在 Go 中，map[key] 函数返回结果可以是一个值，也可以是两个值，这是容易让人迷惑的地方。原因在于，如果获取一个不存在的 key 对应的值时，会返回零值。为了区分真正的零值和 key 不存在这两种情况，可以根据第二个返回值来区分，如下面的代码的第 6 行、第 7 行：
 
 funcmain() {
 
@@ -10205,8 +4377,6 @@ var m = make(map[string]int)
 
  fmt.Printf("a=%d; b=%d\n", m["a"], m["b"])
 
-
-
  av, aexisted := m["a"]
 
  bv, bexisted := m["b"]
@@ -10215,50 +4385,17 @@ var m = make(map[string]int)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 map 是无序的，所以当遍历一个 map 对象的时候，迭代的元素的顺序是不确定的，无法保证两次遍历的顺序是一样的，也不能保证和插入的顺序一致。那怎么办呢？如果我们想要按照 key 的顺序获取 map 的值，需要先取出所有的 key 进行排序，然后按照这个排序的 key 依次获取对应的值。而如果我们想要保证元素有序，比如按照元素插入的顺序进行遍历，可以使用辅助的数据结构，比如[orderedmap]()，来记录插入顺序。
 
 好了，总结下关于 map 我们需要掌握的内容：map 的类型是 map[key]，key 类型的 K 必须是可比较的，通常情况下，我们会选择内建的基本类型，比如整数、字符串做 key 的类型。如果要使用 struct 作为 key，我们要保证 struct 对象在逻辑上是不可变的。在 Go 中，map[key]函数返回结果可以是一个值，也可以是两个值。map 是无序的，如果我们想要保证遍历 map 时元素有序，可以使用辅助的数据结构，比如[orderedmap]()。
 
 ## 使用 map 的 2 种常见错误
 
-
 那接下来，我们来看使用 map 最常犯的两个错误，就是未初始化和并发读写。
 
 ### 常见错误一：未初始化
 
-
 和 slice 或者 Mutex、RWmutex 等 struct 类型不同，map 对象必须在使用之前初始化。如果不初始化就直接赋值的话，会出现 panic 异常，比如下面的例子，m 实例还没有初始化就直接进行操作会导致 panic（第 3 行）:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -10268,40 +4405,9 @@ var m map[int]int
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 解决办法就是在第 2 行初始化这个实例（m := make(map[int]int)）。
 
-从一个 nil 的 map 对象中获取值不会 panic，而是会得到零值，所以下面的代码不会报错:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+从一个 nil 的 map 对象中获取值不会 panic，而是会得到零值，所以下面的代码不会报错：
 
 funcmain() {
 
@@ -10311,56 +4417,7 @@ var m map[int]int
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这个例子很简单，我们可以意识到 map 的初始化问题。但有时候 map 作为一个 struct 字段的时候，就很容易忘记初始化了。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Counter struct {
 
@@ -10372,43 +4429,19 @@ type Counter struct {
 
 }
 
-
-
 funcmain() {
 
 var c Counter
 
  c.Website = "baidu.com"
 
-
-
-
-
  c.PageCounters["/"]++
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 所以，关于初始化这一点，我再强调一下，目前还没有工具可以检查，我们只能记住“别忘记初始化”这一条规则。
 
 ### 常见错误二：并发读写
-
 
 对于 map 类型，另一个很容易犯的错误就是并发访问问题。这个易错点，相当令人讨厌，如果没有注意到并发问题，程序在运行的时候就有可能出现并发读写导致的 panic。
 
@@ -10416,63 +4449,25 @@ Go 内建的 map 对象不是线程（goroutine）安全的，并发读写的时
 
 我们一起看一个并发访问 map 实例导致 panic 的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
-var m = make(map[int]int,10) // 初始化一个map
+var m = make(map[int]int,10) // 初始化一个 map
 
 gofunc() {
 
 for {
 
- m[1] = 1//设置key
+ m[1] = 1// 设置 key
 
  }
 
  }()
 
-
-
 gofunc() {
 
 for {
 
- _ = m[2] //访问这个map
+ _ = m[2] // 访问这个 map
 
  }
 
@@ -10481,23 +4476,6 @@ for {
 select {}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 虽然这段代码看起来是读写 goroutine 各自操作不同的元素，貌似 map 也没有扩容的问题，但是运行时检测到同时对 map 对象有并发访问，就会直接 panic。panic 信息会告诉我们代码中哪一行有读写问题，根据这个错误信息你就能快速定位出来是哪一个 map 对象在哪里出的问题了。
 
@@ -10515,11 +4493,9 @@ Docker issue 40772，Docker issue 35588、34540、39643 等等，也都有并发
 
 ## 如何实现线程安全的 map 类型？
 
-
 避免 map 并发读写 panic 的方式之一就是加锁，考虑到读写性能，可以使用读写锁提供性能。
 
 ### 加读写锁：扩展 map，支持并发读写
-
 
 比较遗憾的是，目前 Go 还没有正式发布泛型特性，我们还不能实现一个通用的支持泛型的加锁 map。但是，将要发布的泛型方案已经可以验证测试了，离发布也不远了，也许发布之后 sync.Map 就支持泛型了。
 
@@ -10527,113 +4503,15 @@ Docker issue 40772，Docker issue 35588、34540、39643 等等，也都有并发
 
 这里我以一个具体的 map 类型为例，来演示利用读写锁实现线程安全的 map[int]int 类型：
 
+type RWMap struct { // 一个读写锁保护的线程安全的 map
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-type RWMap struct { // 一个读写锁保护的线程安全的map
-
- sync.RWMutex // 读写锁保护下面的map字段
+ sync.RWMutex // 读写锁保护下面的 map 字段
 
  m map[int]int
 
 }
 
-// 新建一个RWMap
+// 新建一个 RWMap
 
 funcNewRWMap(n int) *RWMap {
 
@@ -10645,19 +4523,17 @@ return &RWMap{
 
 }
 
-func(m *RWMap)Get(k int)(int, bool) { //从map中读取一个值
+func(m *RWMap)Get(k int)(int, bool) { // 从 map 中读取一个值
 
  m.RLock()
 
 defer m.RUnlock()
 
- v, existed := m.m[k] // 在锁的保护下从map中读取
+ v, existed := m.m[k] // 在锁的保护下从 map 中读取
 
 return v, existed
 
 }
-
-
 
 func(m *RWMap)Set(k int, v int) { // 设置一个键值对
 
@@ -10669,9 +4545,7 @@ defer m.Unlock()
 
 }
 
-
-
-func(m *RWMap)Delete(k int) { //删除一个键
+func(m *RWMap)Delete(k int) { // 删除一个键
 
  m.Lock() // 锁保护
 
@@ -10681,9 +4555,7 @@ delete(m.m, k)
 
 }
 
-
-
-func(m *RWMap)Len()int { // map的长度
+func(m *RWMap)Len()int { // map 的长度
 
  m.RLock() // 锁保护
 
@@ -10693,15 +4565,11 @@ returnlen(m.m)
 
 }
 
+func(m *RWMap)Each(f func(k, v int)bool) { // 遍历 map
 
-
-func(m *RWMap)Each(f func(k, v int)bool) { // 遍历map
-
- m.RLock() //遍历期间一直持有读锁
+ m.RLock() // 遍历期间一直持有读锁
 
 defer m.RUnlock()
-
-
 
 for k, v := range m.m {
 
@@ -10715,29 +4583,9 @@ return
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 正如这段代码所示，对 map 对象的操作，无非就是增删改查和遍历等几种常见操作。我们可以把这些操作分为读和写两类，其中，查询和遍历可以看做读操作，增加、修改和删除可以看做写操作。如例子所示，我们可以通过读写锁对相应的操作进行保护。
 
 ### 分片加锁：更高效的并发 map
-
 
 虽然使用读写锁可以提供线程安全的 map，但是在大量并发读写的情况下，锁的竞争会非常激烈。我在[第 4 讲]()中提到过，锁是性能下降的万恶之源之一。
 
@@ -10749,77 +4597,13 @@ return
 
 它默认采用 32 个分片，GetShard 是一个关键的方法，能够根据 key 计算出分片索引。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var SHARD_COUNT = 32
 
-
-
-// 分成SHARD_COUNT个分片的map
+// 分成 SHARD_COUNT 个分片的 map
 
 type ConcurrentMap []*ConcurrentMapShared
 
-
-
-// 通过RWMutex保护的线程安全的分片，包含一个map
+// 通过 RWMutex 保护的线程安全的分片，包含一个 map
 
 type ConcurrentMapShared struct {
 
@@ -10829,9 +4613,7 @@ type ConcurrentMapShared struct {
 
  }
 
-
-
-// 创建并发map
+// 创建并发 map
 
 funcNew()ConcurrentMap {
 
@@ -10847,11 +4629,7 @@ return m
 
  }
 
-
-
-
-
-// 根据key计算分片索引
+// 根据 key 计算分片索引
 
 func(m ConcurrentMap)GetShard(key string) *ConcurrentMapShared {
 
@@ -10859,72 +4637,15 @@ return m[uint(fnv32(key))%uint(SHARD_COUNT)]
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 增加或者查询的时候，首先根据分片索引得到分片对象，然后对分片对象加锁进行操作：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(m ConcurrentMap)Set(key string, value interface{}) {
 
-// 根据key计算出对应的分片
+// 根据 key 计算出对应的分片
 
  shard := m.GetShard(key)
 
- shard.Lock() //对这个分片加锁，执行业务操作
+ shard.Lock() // 对这个分片加锁，执行业务操作
 
  shard.items[key] = value
 
@@ -10932,17 +4653,15 @@ func(m ConcurrentMap)Set(key string, value interface{}) {
 
 }
 
-
-
 func(m ConcurrentMap)Get(key string)(interface{}, bool) {
 
-// 根据key计算出对应的分片
+// 根据 key 计算出对应的分片
 
  shard := m.GetShard(key)
 
  shard.RLock()
 
-// 从这个分片读取key的值
+// 从这个分片读取 key 的值
 
  val, ok := shard.items[key]
 
@@ -10951,23 +4670,6 @@ func(m ConcurrentMap)Get(key string)(interface{}, bool) {
 return val, ok
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 当然，除了 GetShard 方法，ConcurrentMap 还提供了很多其他的方法。这些方法都是通过计算相应的分片实现的，目的是保证把锁的粒度限制在分片上。
 
@@ -10979,28 +4681,19 @@ return val, ok
 
 ## 应对特殊场景的 sync.Map
 
-
 Go 内建的 map 类型不是线程安全的，所以 Go 1.9 中增加了一个线程安全的 map，也就是 sync.Map。但是，我们一定要记住，这个 sync.Map 并不是用来替换内建的 map 类型的，它只能被应用在一些特殊的场景里。
 
 那这些特殊的场景是啥呢？[官方的文档]()中指出，在以下两个场景中使用 sync.Map，会比使用 map+RWMutex 的方式，性能要好得多：
 
-
-
 只会增长的缓存系统中，一个 key 只写入一次而被读很多次；
 
-
-
-
 多个 goroutine 为不相交的键集读、写和重写键值对。
-
-
 
 这两个场景说得都比较笼统，而且，这些场景中还包含了一些特殊的情况。所以，官方建议你针对自己的场景做性能评测，如果确实能够显著提高性能，再使用 sync.Map。
 
 这么来看，我们能用到 sync.Map 的场景确实不多。即使是 sync.Map 的作者 Bryan C. Mills，也很少使用 sync.Map，即便是在使用 sync.Map 的时候，也是需要临时查询它的 API，才能清楚记住它的功能。所以，我们可以把 sync.Map 看成一个生产环境中很少使用的同步原语。
 
 ### sync.Map 的实现
-
 
 那 sync.Map 是怎么实现的呢？它是如何解决并发问题提升性能的呢？其实 sync.Map 的实现有几个优化点，这里先列出来，我们后面慢慢分析。
 
@@ -11014,141 +4707,53 @@ double-checking。加锁之后先还要再检查 read 字段，确定真的不�
 
 延迟删除。删除一个键值只是打标记，只有在提升 dirty 字段为 read 字段的时候才清理删除的数据。
 
-
 要理解 sync.Map 这些优化点，我们还是得深入到它的设计和实现上，去学习它的处理方式。
 
 我们先看一下 map 的数据结构：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Map struct {
 
  mu Mutex
 
-// 基本上你可以把它看成一个安全的只读的map
+// 基本上你可以把它看成一个安全的只读的 map
 
-// 它包含的元素其实也是通过原子操作更新的，但是已删除的entry就需要加锁操作了
+// 它包含的元素其实也是通过原子操作更新的，但是已删除的 entry 就需要加锁操作了
 
  read atomic.Value // readOnly
 
-
-
 // 包含需要加锁才能访问的元素
 
-// 包括所有在read字段中但未被expunged（删除）的元素以及新加的元素
+// 包括所有在 read 字段中但未被 expunged（删除）的元素以及新加的元素
 
  dirty map[interface{}]*entry
 
-
-
-// 记录从read中读取miss的次数，一旦miss数和dirty长度一样了，就会把dirty提升为read，并把dirty置空
+// 记录从 read 中读取 miss 的次数，一旦 miss 数和 dirty 长度一样了，就会把 dirty 提升为 read，并把 dirty 置空
 
  misses int
 
 }
 
-
-
 type readOnly struct {
 
  m map[interface{}]*entry
 
- amended bool// 当dirty中包含read没有的数据时为true，比如新增一条数据
+ amended bool// 当 dirty 中包含 read 没有的数据时为 true，比如新增一条数据
 
 }
 
+// expunged 是用来标识此项已经删掉的指针
 
-
-// expunged是用来标识此项已经删掉的指针
-
-// 当map中的一个项目被删除了，只是把它的值标记为expunged，以后才有机会真正删除此项
+// 当 map 中的一个项目被删除了，只是把它的值标记为 expunged，以后才有机会真正删除此项
 
 var expunged = unsafe.Pointer(new(interface{}))
 
-
-
-// entry代表一个值
+// entry 代表一个值
 
 type entry struct {
 
  p unsafe.Pointer // *interface{}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果 dirty 字段非 nil 的话，map 的 read 字段和 dirty 字段会包含相同的非 expunged 的项，所以如果通过 read 字段更改了这个项的值，从 dirty 字段中也会读取到这个项的新值，因为本来它们指向的就是同一个地址。
 
@@ -11160,78 +4765,13 @@ Store、Load 和 Delete 这三个核心函数的操作都是先从 read 字段�
 
 #### Store 方法
 
-
 我们先来看 Store 方法，它是用来设置一个键值对，或者更新一个键值对的。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(m *Map)Store(key, value interface{}) {
 
  read, _ := m.read.Load().(readOnly)
 
-// 如果read字段包含这个项，说明是更新，cas更新项目的值即可
+// 如果 read 字段包含这个项，说明是更新，cas 更新项目的值即可
 
 if e, ok := read.m[key]; ok && e.tryStore(&value) {
 
@@ -11239,19 +4779,17 @@ return
 
  }
 
-
-
-// read中不存在，或者cas更新失败，就需要加锁访问dirty了
+// read 中不存在，或者 cas 更新失败，就需要加锁访问 dirty 了
 
  m.mu.Lock()
 
  read, _ = m.read.Load().(readOnly)
 
-if e, ok := read.m[key]; ok { // 双检查，看看read是否已经存在了
+if e, ok := read.m[key]; ok { // 双检查，看看 read 是否已经存在了
 
 if e.unexpungeLocked() {
 
-// 此项目先前已经被删除了，通过将它的值设置为nil，标记为unexpunged
+// 此项目先前已经被删除了，通过将它的值设置为 nil，标记为 unexpunged
 
  m.dirty[key] = e
 
@@ -11259,17 +4797,17 @@ if e.unexpungeLocked() {
 
  e.storeLocked(&value) // 更新
 
- } elseif e, ok := m.dirty[key]; ok { // 如果dirty中有此项
+ } elseif e, ok := m.dirty[key]; ok { // 如果 dirty 中有此项
 
  e.storeLocked(&value) // 直接更新
 
- } else { // 否则就是一个新的key
+ } else { // 否则就是一个新的 key
 
-if !read.amended { //如果dirty为nil
+if !read.amended { // 如果 dirty 为 nil
 
-// 需要创建dirty对象，并且标记read的amended为true,
+// 需要创建 dirty 对象，并且标记 read 的 amended 为 true,
 
-// 说明有元素它不包含而dirty包含
+// 说明有元素它不包含而 dirty 包含
 
  m.dirtyLocked()
 
@@ -11277,7 +4815,7 @@ if !read.amended { //如果dirty为nil
 
  }
 
- m.dirty[key] = newEntry(value) //将新值增加到dirty对象中
+ m.dirty[key] = newEntry(value) // 将新值增加到 dirty 对象中
 
  }
 
@@ -11285,78 +4823,27 @@ if !read.amended { //如果dirty为nil
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可以看出，Store 既可以是新增元素，也可以是更新元素。如果运气好的话，更新的是已存在的未被删除的元素，直接更新即可，不会用到锁。如果运气不好，需要更新（重用）删除的对象、更新还未提升的 dirty 中的对象，或者新增加元素的时候就会使用到了锁，这个时候，性能就会下降。
 
 所以从这一点来看，sync.Map 适合那些只会增长的缓存系统，可以进行更新，但是不要删除，并且不要频繁地增加新元素。
 
 新加的元素需要放入到 dirty 中，如果 dirty 为 nil，那么需要从 read 字段中复制出来一个 dirty 对象：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(m *Map)dirtyLocked() {
 
-if m.dirty != nil { // 如果dirty字段已经存在，不需要创建了
+if m.dirty != nil { // 如果 dirty 字段已经存在，不需要创建了
 
 return
 
  }
 
-
-
- read, _ := m.read.Load().(readOnly) // 获取read字段
+ read, _ := m.read.Load().(readOnly) // 获取 read 字段
 
  m.dirty = make(map[interface{}]*entry, len(read.m))
 
-for k, e := range read.m { // 遍历read字段
+for k, e := range read.m { // 遍历 read 字段
 
-if !e.tryExpungeLocked() { // 把非punged的键值对复制到dirty中
+if !e.tryExpungeLocked() { // 把非 punged 的键值对复制到 dirty 中
 
  m.dirty[k] = e
 
@@ -11366,99 +4853,33 @@ if !e.tryExpungeLocked() { // 把非punged的键值对复制到dirty中
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #### Load 方法
-
 
 Load 方法用来读取一个 key 对应的值。它也是从 read 开始处理，一开始并不需要锁。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(m *Map)Load(key interface{})(value interface{}, ok bool) {
 
-// 首先从read处理
+// 首先从 read 处理
 
  read, _ := m.read.Load().(readOnly)
 
  e, ok := read.m[key]
 
-if !ok && read.amended { // 如果不存在并且dirty不为nil(有新的元素)
+if !ok && read.amended { // 如果不存在并且 dirty 不为 nil（有新的元素）
 
  m.mu.Lock()
 
-// 双检查，看看read中现在是否存在此key
+// 双检查，看看 read 中现在是否存在此 key
 
  read, _ = m.read.Load().(readOnly)
 
  e, ok = read.m[key]
 
-if !ok && read.amended {//依然不存在，并且dirty不为nil
+if !ok && read.amended {// 依然不存在，并且 dirty 不为 nil
 
- e, ok = m.dirty[key]// 从dirty中读取
+ e, ok = m.dirty[key]// 从 dirty 中读取
 
-// 不管dirty中存不存在，miss数都加1
+// 不管 dirty 中存不存在，miss 数都加 1
 
  m.missLocked()
 
@@ -11474,176 +4895,37 @@ returnnil, false
 
  }
 
-return e.load() //返回读取的对象，e既可能是从read中获得的，也可能是从dirty中获得的
+return e.load() // 返回读取的对象，e 既可能是从 read 中获得的，也可能是从 dirty 中获得的
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果幸运的话，我们从 read 中读取到了这个 key 对应的值，那么就不需要加锁了，性能会非常好。但是，如果请求的 key 不存在或者是新加的，就需要加锁从 dirty 中读取。所以，读取不存在的 key 会因为加锁而导致性能下降，读取还没有提升的新值的情况下也会因为加锁性能下降。
 
 其中，missLocked 增加 miss 的时候，如果 miss 数等于 dirty 长度，会将 dirty 提升为 read，并将 dirty 置空。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(m *Map)missLocked() {
 
- m.misses++ // misses计数加一
+ m.misses++ // misses 计数加一
 
-if m.misses < len(m.dirty) { // 如果没达到阈值(dirty字段的长度),返回
+if m.misses < len(m.dirty) { // 如果没达到阈值 (dirty 字段的长度）, 返回
 
 return
 
  }
 
- m.read.Store(readOnly{m: m.dirty}) //把dirty字段的内存提升为read字段
+ m.read.Store(readOnly{m: m.dirty}) // 把 dirty 字段的内存提升为 read 字段
 
- m.dirty = nil// 清空dirty
+ m.dirty = nil// 清空 dirty
 
- m.misses = 0// misses数重置为0
+ m.misses = 0// misses 数重置为 0
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #### Delete 方法
-
 
 sync.map 的第 3 个核心方法是 Delete 方法。在 Go 1.15 中欧长坤提供了一个 LoadAndDelete 的实现（[go#issue 33762]()），所以 Delete 方法的核心改在了对 LoadAndDelete 中实现了。
 
 同样地，Delete 方法是先从 read 操作开始，原因我们已经知道了，因为不需要锁。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(m *Map)LoadAndDelete(key interface{})(value interface{}, loaded bool) {
 
@@ -11665,11 +4947,11 @@ if !ok && read.amended {
 
  e, ok = m.dirty[key]
 
-// 这一行长坤在1.15中实现的时候忘记加上了，导致在特殊的场景下有些key总是没有被回收
+// 这一行长坤在 1.15 中实现的时候忘记加上了，导致在特殊的场景下有些 key 总是没有被回收
 
 delete(m.dirty, key)
 
-// miss数加1
+// miss 数加 1
 
  m.missLocked()
 
@@ -11688,8 +4970,6 @@ return e.delete()
 returnnil, false
 
 }
-
-
 
 func(m *Map)Delete(key interface{}) {
 
@@ -11719,29 +4999,11 @@ return *(*interface{})(p), true
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果 read 中不存在，那么就需要从 dirty 中寻找这个项目。最终，如果项目存在就删除（将它的值标记为 nil）。如果项目不为 nil 或者没有被标记为 expunged，那么还可以把它的值返回。
 
 最后，我补充一点，sync.map 还有一些 LoadAndDelete、LoadOrStore、Range 等辅助方法，但是没有 Len 这样查询 sync.Map 的包含项目数量的方法，并且官方也不准备提供。如果你想得到 sync.Map 的项目数量的话，你可能不得不通过 Range 逐个计数。
 
 ## 总结
-
 
 Go 内置的 map 类型使用起来很方便，但是它有一个非常致命的缺陷，那就是它存在着并发问题，所以如果有多个 goroutine 同时并发访问这个 map，就会导致程序崩溃。所以 Go 官方 Blog 很早就提供了一种加锁的[方法]()，还有后来提供了适用特定场景的线程安全的 sync.Map，还有第三方实现的分片式的 map，这些方法都可以应用于并发访问的场景。
 
@@ -11753,23 +5015,13 @@ Go 内置的 map 类型使用起来很方便，但是它有一个非常致命的
 
 ## 思考题
 
-
-
-
 为什么 sync.Map 中的集合核心方法的实现中，如果 read 中项目不存在，加锁后还要双检查，再检查一次 read？
-
-
-
 
 你看到 sync.map 元素删除的时候只是把它的值设置为 nil，那么什么时候这个 key 才会真正从 map 对象中删除？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 10 | Pool：性能提升大杀器
-
 
 你好，我是鸟窝。
 
@@ -11789,8 +5041,7 @@ Go 标准库中提供了一个通用的 Pool 数据结构，也就是 sync.Pool�
 
 除此之外，我还会专门介绍一个池的应用场景： Worker Pool，或者叫做 goroutine pool，这也是常用的一种并发模式，可以使用有限的 goroutine 资源去处理大量的业务数据。
 
-# sync.Pool
-
+## sync.Pool
 
 首先，我们来学习下标准库提供的 sync.Pool 数据类型。
 
@@ -11800,19 +5051,11 @@ sync.Pool 数据类型用来保存一组可独立访问的临时对象。请注�
 
 有两个知识点你需要记住：
 
-
-
 sync.Pool 本身就是线程安全的，多个 goroutine 可以并发地调用它的方法存取对象；
-
-
-
 
 sync.Pool 不可在使用之后再复制使用。
 
-
-
 ## sync.Pool 的使用方法
-
 
 知道了 sync.Pool 这个数据类型的特点，接下来，我们来学习下它的使用方法。其实，这个数据类型不难，它只提供了三个对外的方法：New、Get 和 Put。
 
@@ -11824,7 +5067,7 @@ Pool struct 包含一个 New 字段，这个字段的类型是函数 func() inte
 
 2.Get
 
-如果调用这个方法，就会从 Pool取走一个元素，这也就意味着，这个元素会从 Pool 中移除，返回给调用者。不过，除了返回值是正常实例化的元素，Get 方法的返回值还可能会是一个 nil（Pool.New 字段没有设置，又没有空闲元素可以返回），所以你在使用的时候，可能需要判断。
+如果调用这个方法，就会从 Pool 取走一个元素，这也就意味着，这个元素会从 Pool 中移除，返回给调用者。不过，除了返回值是正常实例化的元素，Get 方法的返回值还可能会是一个 nil（Pool.New 字段没有设置，又没有空闲元素可以返回），所以你在使用的时候，可能需要判断。
 
 3.Put
 
@@ -11834,43 +5077,9 @@ Pool struct 包含一个 New 字段，这个字段的类型是函数 func() inte
 
 因为 byte slice 是经常被创建销毁的一类对象，使用 buffer 池可以缓存已经创建的 byte slice，比如，著名的静态网站生成工具 Hugo 中，就包含这样的实现[bufpool]()，你可以看一下下面这段代码：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var buffers = sync.Pool{
 
- New: func()interface{} { 
+ New: func()interface{} {
 
 returnnew(bytes.Buffer)
 
@@ -11878,15 +5087,11 @@ returnnew(bytes.Buffer)
 
 }
 
-
-
 funcGetBuffer() *bytes.Buffer {
 
 return buffers.Get().(*bytes.Buffer)
 
 }
-
-
 
 funcPutBuffer(buf *bytes.Buffer) {
 
@@ -11896,27 +5101,9 @@ funcPutBuffer(buf *bytes.Buffer) {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 除了 Hugo，这段 buffer 池的代码非常常用。很可能你在阅读其它项目的代码的时候就碰到过，或者是你自己实现 buffer 池的时候也会这么去实现，但是请你注意了，这段代码是有问题的，你一定不要将上面的代码应用到实际的产品中。它可能会有内存泄漏的问题，下面我会重点讲这个问题。
 
 ## 实现原理
-
 
 了解了 sync.Pool 的基本使用方法，下面我们就来重点学习下它的实现。
 
@@ -11942,49 +5129,9 @@ victim 中的元素如果被 Get 取走，那么这个元素就很幸运，因�
 
 下面的代码是垃圾回收时 sync.Pool 的处理逻辑：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcpoolCleanup() {
 
-// 丢弃当前victim, STW所以不用加锁
+// 丢弃当前 victim, STW 所以不用加锁
 
 for _, p := range oldPools {
 
@@ -11994,9 +5141,7 @@ for _, p := range oldPools {
 
  }
 
-
-
-// 将local复制给victim, 并将原local置为nil
+// 将 local 复制给 victim, 并将原 local 置为 nil
 
 for _, p := range allPools {
 
@@ -12010,28 +5155,9 @@ for _, p := range allPools {
 
  }
 
-
-
  oldPools, allPools = allPools, nil
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 在这段代码中，你需要关注一下 local 字段，因为所有当前主要的空闲可用的元素都存放在 local 字段中，请求元素时也是优先从 local 字段中查找可用的元素。local 字段包含一个 poolLocalInternal 字段，并提供 CPU 缓存对齐，从而避免 false sharing。
 
@@ -12041,75 +5167,29 @@ private，代表一个缓存的元素，而且只能由相应的一个 P 存取�
 
 shared，可以由任意的 P 访问，但是只有本地的 P 才能 pushHead/popHead，其它 P 可以 popTail，相当于只有一个本地的 P 作为生产者（Producer），多个 P 作为消费者（Consumer），它是使用一个 local-free 的 queue 列表实现的。
 
-
 ### Get 方法
-
 
 我们来看看 Get 方法的具体实现原理。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(p *Pool)Get()interface{} {
 
-// 把当前goroutine固定在当前的P上
+// 把当前 goroutine 固定在当前的 P 上
 
  l, pid := p.pin()
 
- x := l.private // 优先从local的private字段取，快速
+ x := l.private // 优先从 local 的 private 字段取，快速
 
  l.private = nil
 
 if x == nil {
 
-// 从当前的local.shared弹出一个，注意是从head读取并移除
+// 从当前的 local.shared 弹出一个，注意是从 head 读取并移除
 
  x, _ = l.shared.popHead()
 
 if x == nil { // 如果没有，则去偷一个
 
- x = p.getSlow(pid) 
+ x = p.getSlow(pid)
 
  }
 
@@ -12117,7 +5197,7 @@ if x == nil { // 如果没有，则去偷一个
 
  runtime_procUnpin()
 
-// 如果没有获取到，尝试使用New函数生成一个新的
+// 如果没有获取到，尝试使用 New 函数生成一个新的
 
 if x == nil && p.New != nil {
 
@@ -12129,23 +5209,6 @@ return x
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我来给你解释下这段代码。首先，从本地的 private 字段中获取可用元素，因为没有锁，获取元素的过程会非常快，如果没有获取到，就尝试从本地的 shared 获取一个，如果还没有，会使用 getSlow 方法去其它的 shared 中“偷”一个。最后，如果没有获取到，就尝试使用 New 函数创建一个新的。
 
 这里的重点是 getSlow 方法，我们来分析下。看名字也就知道了，它的耗时可能比较长。它首先要遍历所有的 local，尝试从它们的 shared 弹出一个元素。如果还没找到一个，那么，就开始对 victim 下手了。
@@ -12154,91 +5217,13 @@ return x
 
 下面的代码是 getSlow 方法的主要逻辑：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func(p *Pool)getSlow(pid int)interface{} {
-
-
 
  size := atomic.LoadUintptr(&p.localSize)
 
- locals := p.local 
+ locals := p.local
 
-// 从其它proc中尝试偷取一个元素
+// 从其它 proc 中尝试偷取一个元素
 
 for i := 0; i < int(size); i++ {
 
@@ -12252,9 +5237,7 @@ return x
 
  }
 
-
-
-// 如果其它proc也没有可用元素，那么尝试从vintim中获取
+// 如果其它 proc 也没有可用元素，那么尝试从 vintim 中获取
 
  size = atomic.LoadUintptr(&p.victimSize)
 
@@ -12268,7 +5251,7 @@ returnnil
 
  l := indexLocal(locals, pid)
 
-if x := l.private; x != nil { // 同样的逻辑，先从vintim中的local private获取
+if x := l.private; x != nil { // 同样的逻辑，先从 vintim 中的 local private 获取
 
  l.private = nil
 
@@ -12276,7 +5259,7 @@ return x
 
  }
 
-for i := 0; i < int(size); i++ { // 从vintim其它proc尝试偷取
+for i := 0; i < int(size); i++ { // 从 vintim 其它 proc 尝试偷取
 
  l := indexLocal(locals, (pid+i)%int(size))
 
@@ -12288,79 +5271,23 @@ return x
 
  }
 
-
-
-// 如果victim中都没有，则把这个victim标记为空，以后的查找可以快速跳过了
+// 如果 victim 中都没有，则把这个 victim 标记为空，以后的查找可以快速跳过了
 
  atomic.StoreUintptr(&p.victimSize, 0)
-
-
 
 returnnil
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这里我没列出 pin 代码的实现，你只需要知道，pin 方法会将此 goroutine 固定在当前的 P 上，避免查找元素期间被其它的 P 执行。固定的好处就是查找元素期间直接得到跟这个 P 相关的 local。有一点需要注意的是，pin 方法在执行的时候，如果跟这个 P 相关的 local 还没有创建，或者运行时 P 的数量被修改了的话，就会新创建 local。
 
 ### Put 方法
 
-
 我们来看看 Put 方法的具体实现原理。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(p *Pool)Put(x interface{}) {
 
-if x == nil { // nil值直接丢弃
+if x == nil { // nil 值直接丢弃
 
 return
 
@@ -12368,7 +5295,7 @@ return
 
  l, _ := p.pin()
 
-if l.private == nil { // 如果本地private没有值，直接设置这个值即可
+if l.private == nil { // 如果本地 private 没有值，直接设置这个值即可
 
  l.private = x
 
@@ -12386,32 +5313,13 @@ if x != nil { // 否则加入到本地队列中
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Put 的逻辑相对简单，优先设置本地 private，如果 private 字段已经有值了，那么就把此元素 push 到本地队列中。
 
 ## sync.Pool 的坑
 
-
 到这里，我们就掌握了 sync.Pool 的使用方法和实现原理，接下来，我要再和你聊聊容易踩的两个坑，分别是内存泄漏和内存浪费。
 
 ### 内存泄漏
-
 
 这节课刚开始的时候，我讲到，可以使用 sync.Pool 做 buffer 池，但是，如果用刚刚的那种方式做 buffer 池的话，可能会有内存泄漏的风险。为啥这么说呢？我们来分析一下。
 
@@ -12429,7 +5337,6 @@ package fmt 中也有这个问题，修改方法是一样的，超过一定大�
 
 ### 内存浪费
 
-
 除了内存泄漏以外，还有一种浪费的情况，就是池子中的 buffer 都比较大，但在实际使用的时候，很多时候只需要一个小的 buffer，这也是一种浪费现象。接下来，我就讲解一下这种情况的处理方法。
 
 要做到物尽其用，尽可能不浪费的话，我们可以将 buffer 池分成几层。首先，小于 512 byte 的元素的 buffer 占一个池子；其次，小于 1K byte 大小的元素占一个池子；再次，小于 4K byte 大小的元素占一个池子。这样分成几个池子以后，就可以根据需要，到所需大小的池子中获取 buffer 了。
@@ -12442,8 +5349,7 @@ YouTube 开源的知名项目 vitess 中提供了[bucketpool]()的实现，它�
 
 ![](https://static001.geekbang.org/resource/image/c5/08/c5cd474aa53fe57e0722d840a6c7f308.png)
 
-# 第三方库
-
+## 第三方库
 
 除了这种分层的为了节省空间的 buffer 设计外，还有其它的一些第三方的库也会提供 buffer 池的功能。接下来我带你熟悉几个常用的第三方的库。
 
@@ -12463,20 +5369,17 @@ bpool.BytesPool：提供一个固定元素数量的 byte slice 池，元素类�
 
 bpool.SizedBufferPool： 提供一个固定元素数量的 buffer 池，如果超过这个数量，Put 的时候就丢弃，如果池中的元素都被取光了，会新建一个返回。Put 回去的时候，会检测 buffer 的大小，超过指定的大小的话，就会创建一个新的满足条件的 buffer 放回去。
 
-
 bpool 最大的特色就是能够保持池子中元素的数量，一旦 Put 的数量多于它的阈值，就会自动丢弃，而 sync.Pool 是一个没有限制的池子，只要 Put 就会收进去。
 
 bpool 是基于 Channel 实现的，不像 sync.Pool 为了提高性能而做了很多优化，所以，在性能上比不过 sync.Pool。不过，它提供了限制 Pool 容量的功能，所以，如果你想控制 Pool 的容量的话，可以考虑这个库。
 
-# 连接池
-
+## 连接池
 
 Pool 的另一个很常用的一个场景就是保持 TCP 的连接。一个 TCP 的连接创建，需要三次握手等过程，如果是 TLS 的，还会需要更多的步骤，如果加上身份认证等逻辑的话，耗时会更长。所以，为了避免每次通讯的时候都新创建连接，我们一般会建立一个连接的池子，预先把连接创建好，或者是逐步把连接放在池子中，减少连接创建的耗时，从而提高系统的性能。
 
 事实上，我们很少会使用 sync.Pool 去池化连接对象，原因就在于，sync.Pool 会无通知地在某个时候就把连接移除垃圾回收掉了，而我们的场景是需要长久保持这个连接，所以，我们一般会使用其它方法来池化连接，比如接下来我要讲到的几种需要保持长连接的 Pool。
 
-## 标准库中的 http client 池
-
+### 标准库中的 http client 池
 
 标准库的 http.Client 是一个 http client 的库，可以用它来访问 web 服务器。为了提高性能，这个 Client 的实现也是通过池的方法来缓存一定数量的连接，以便后续重用这些连接。
 
@@ -12486,88 +5389,27 @@ http.Client 实现连接池的代码是在 Transport 类型中，它使用 idleC
 
 ## TCP 连接池
 
-
 最常用的一个 TCP 连接池是 fatih 开发的[fatih/pool]()，虽然这个项目已经被 fatih 归档（Archived），不再维护了，但是因为它相当稳定了，我们可以开箱即用。即使你有一些特殊的需求，也可以 fork 它，然后自己再做修改。
 
 它的使用套路如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 工厂模式，提供创建连接的工厂方法
 
 factory := func()(net.Conn, error) { return net.Dial("tcp", "127.0.0.1:4000") }
 
-
-
-// 创建一个tcp池，提供初始容量和最大容量以及工厂方法
+// 创建一个 tcp 池，提供初始容量和最大容量以及工厂方法
 
 p, err := pool.NewChannelPool(5, 30, factory)
-
-
 
 // 获取一个连接
 
 conn, err := p.Get()
 
-
-
-// Close并不会真正关闭这个连接，而是把它放回池子，所以你不必显式地Put这个对象到池子中
+// Close 并不会真正关闭这个连接，而是把它放回池子，所以你不必显式地 Put 这个对象到池子中
 
 conn.Close()
 
-
-
-// 通过调用MarkUnusable, Close的时候就会真正关闭底层的tcp的连接了
+// 通过调用 MarkUnusable, Close 的时候就会真正关闭底层的 tcp 的连接了
 
 if pc, ok := conn.(*pool.PoolConn); ok {
 
@@ -12577,84 +5419,17 @@ if pc, ok := conn.(*pool.PoolConn); ok {
 
 }
 
-
-
-// 关闭池子就会关闭=池子中的所有的tcp连接
+// 关闭池子就会关闭 = 池子中的所有的 tcp 连接
 
 p.Close()
-
-
 
 // 当前池子中的连接的数量
 
 current := p.Len()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 虽然我一直在说 TCP，但是它管理的是更通用的 net.Conn，不局限于 TCP 连接。
 
 它通过把 net.Conn 包装成 PoolConn，实现了拦截 net.Conn 的 Close 方法，避免了真正地关闭底层连接，而是把这个连接放回到池中：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type PoolConn struct {
 
@@ -12668,17 +5443,13 @@ type PoolConn struct {
 
  }
 
-
-
-//拦截Close
+// 拦截 Close
 
 func(p *PoolConn)Close()error {
 
  p.mu.RLock()
 
 defer p.mu.RUnlock()
-
-
 
 if p.unusable {
 
@@ -12696,60 +5467,15 @@ return p.c.put(p.Conn)
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 它的 Pool 是通过 Channel 实现的，空闲的连接放入到 Channel 中，这也是 Channel 的一个应用场景：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type channelPool struct {
 
-// 存储连接池的channel
+// 存储连接池的 channel
 
  mu sync.RWMutex
 
  conns chan net.Conn
-
-
-
-
 
 // net.Conn 的产生器
 
@@ -12757,25 +5483,7 @@ type channelPool struct {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 数据库连接池
-
 
 标准库 sql.DB 还提供了一个通用的数据库的连接池，通过 MaxOpenConns 和 MaxIdleConns 控制最大的连接数和最大的 idle 的连接数。默认的 MaxIdleConns 是 2，这个数对于数据库相关的应用来说太小了，我们一般都会调整它。
 
@@ -12787,78 +5495,9 @@ DB 的 freeConn 保存了 idle 的连接，这样，当我们获取数据库连�
 
 ## Memcached Client 连接池
 
-
 Brad Fitzpatrick 是知名缓存库 Memcached 的原作者，前 Go 团队成员。[gomemcache]()是他使用 Go 开发的 Memchaced 的客户端，其中也用了连接池的方式池化 Memcached 的连接。接下来让我们看看它的连接池的实现。
 
 gomemcache Client 有一个 freeconn 的字段，用来保存空闲的连接。当一个请求使用完之后，它会调用 putFreeConn 放回到池子中，请求的时候，调用 getFreeConn 优先查询 freeConn 中是否有可用的连接。它采用 Mutex+Slice 实现 Pool：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 放回一个待重用的连接
 
@@ -12868,15 +5507,15 @@ func(c *Client)putFreeConn(addr net.Addr, cn *conn) {
 
 defer c.lk.Unlock()
 
-if c.freeconn == nil { // 如果对象为空，创建一个map对象
+if c.freeconn == nil { // 如果对象为空，创建一个 map 对象
 
  c.freeconn = make(map[string][]*conn)
 
  }
 
- freelist := c.freeconn[addr.String()] //得到此地址的连接列表
+ freelist := c.freeconn[addr.String()] // 得到此地址的连接列表
 
-iflen(freelist) >= c.maxIdleConns() {//如果连接已满,关闭，不再放入
+iflen(freelist) >= c.maxIdleConns() {// 如果连接已满，关闭，不再放入
 
  cn.nc.Close()
 
@@ -12888,8 +5527,6 @@ return
 
  }
 
-
-
 // 得到一个空闲连接
 
 func(c *Client)getFreeConn(addr net.Addr)(cn *conn, ok bool) {
@@ -12898,7 +5535,7 @@ func(c *Client)getFreeConn(addr net.Addr)(cn *conn, ok bool) {
 
 defer c.lk.Unlock()
 
-if c.freeconn == nil { 
+if c.freeconn == nil {
 
 returnnil, false
 
@@ -12920,27 +5557,7 @@ return cn, true
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Worker Pool
-
+## Worker Pool
 
 最后，我再讲一个 Pool 应用得非常广泛的场景。
 
@@ -12960,7 +5577,6 @@ Worker 的实现也是五花八门的：
 
 有些只是临时使用，执行完毕后，Pool 就销毁了。
 
-
 大部分的 Worker Pool 都是通过 Channel 来缓存任务的，因为 Channel 能够比较方便地实现并发的保护，有的是多个 Worker 共享同一个任务 Channel，有些是每个 Worker 都有一个独立的 Channel。
 
 综合下来，精挑细选，我给你推荐三款易用的 Worker Pool，这三个 Worker Pool 的 API 设计简单，也比较相似，易于和项目集成，而且提供的功能也是我们常用的功能。
@@ -12971,13 +5587,11 @@ Worker 的实现也是五花八门的：
 
 [dpaks/goworkers]()：dpaks/goworkers 提供了更便利的 Submi 方法提交任务以及 Worker 数、任务数等查询方法、关闭 Pool 的方法。它的任务的执行结果需要在 ResultChan 和 ErrChan 中去获取，没有提供阻塞的方法，但是它可以在初始化的时候设置 Worker 的数量和任务数。
 
-
 类似的 Worker Pool 的实现非常多，比如还有[panjf2000/ants]()、[Jeffail/tunny]() 、[benmanns/goworker]()、[go-playground/pool]()、[Sherifabdlnaby/gpool]()等第三方库。[pond]()也是一个非常不错的 Worker Pool，关注度目前不是很高，但是功能非常齐全。
 
 其实，你也可以自己去开发自己的 Worker Pool，但是，对于我这种“懒惰”的人来说，只要满足我的实际需求，我还是倾向于从这个几个常用的库中选择一个来使用。所以，我建议你也从常用的库中进行选择。
 
 ## 总结
-
 
 Pool 是一个通用的概念，也是解决对象重用和预先分配的一个常用的优化手段。即使你自己没在项目中直接使用过，但肯定在使用其它库的时候，就享受到应用 Pool 的好处了，比如数据库的访问、http API 的请求等等。
 
@@ -12991,17 +5605,13 @@ Pool 是一个通用的概念，也是解决对象重用和预先分配的一个
 
 ## 思考题
 
-
 在标准库 net/rpc 包中，Server 端需要解析大量客户端的请求（[Request]()），这些短暂使用的 Request 是可以重用的。请你检查相关的代码，看看 Go 开发者都使用了什么样的方式来重用这些对象。
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 你把今天的内容分享给你的朋友或同事。
 
-
 # 11 | Context：信息穿透上下文
-
 
 你好，我是鸟窝。
 
@@ -13017,8 +5627,7 @@ Pool 是一个通用的概念，也是解决对象重用和预先分配的一个
 
 不过，Go 标准库中的 Context 功能还不止于此，它还提供了超时（Timeout）和取消（Cancel）的机制，下面就让我一一道来。
 
-# Context 的来历
-
+## Context 的来历
 
 在学习 Context 的功能之前呢，我先带你了解下它的来历。毕竟，知道了它的来龙去脉，我们才能应用得更加得心应手一些。
 
@@ -13028,56 +5637,15 @@ Go 在 1.7 的版本中才正式把 Context 加入到标准库中。在这之前
 
 所以，在 Go1.9 中，还专门实现了一个叫做 type alias 的新特性，然后把 x/net/context 中的 Context 定义成标准库 Context 的别名，以解决新旧 Context 类型冲突问题，你可以看一下下面这段代码：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // +build go1.9
 
 package context
 
-
-
 import"context"
-
-
 
 type Context = context.Context
 
 type CancelFunc = context.CancelFunc
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Go 标准库的 Context 不仅提供了上下文传递的信息，还提供了 cancel、timeout 等其它信息，这些信息貌似和 context 这个包名没关系，但是还是得到了广泛的应用。所以，你看，context 包中的 Context 不仅仅传递上下文信息，还有 timeout 等其它功能，是不是“名不副实”呢？
 
@@ -13095,7 +5663,6 @@ Context 包名容易误导人，实际上，Context 最主要的功能是取消 
 
 Context 漫天飞，函数污染。
 
-
 尽管有很多的争议，但是，在很多场景下，使用 Context 其实会很方便，所以现在它已经在 Go 生态圈中传播开来了，包括很多的 Web 应用框架，都切换成了标准库的 Context。标准库中的 database/sql、os/exec、net、net/http 等包中都使用到了 Context。而且，如果我们遇到了下面的一些场景，也可以考虑使用 Context：
 
 上下文信息传递 （request-scoped），比如处理 http 请求、在请求处理链路上传递信息；
@@ -13106,33 +5673,13 @@ Context 漫天飞，函数污染。
 
 可以取消的方法调用。
 
-
 所以，我们需要掌握 Context 的具体用法，这样才能在不影响主要业务流程实现的时候，实现一些通用的信息传递，或者是能够和其它 goroutine 协同工作，提供 timeout、cancel 等机制。
 
-# Context 基本使用方法
-
+## Context 基本使用方法
 
 首先，我们来学习一下 Context 接口包含哪些方法，这些方法都是干什么用的。
 
 包 context 定义了 Context 接口，Context 的具体实现包括 4 个方法，分别是 Deadline、Done、Err 和 Value，如下所示：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Context interface {
 
@@ -13145,23 +5692,6 @@ type Context interface {
  Value(key interface{}) interface{}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 下面我来具体解释下这 4 个方法。
 
@@ -13179,38 +5709,7 @@ context.Background()：返回一个非 nil 的、空的 Context，没有任何�
 
 context.TODO()：返回一个非 nil 的、空的 Context，没有任何值，不会被 cancel，不会超时，没有截止日期。当你不清楚是否该用 Context，或者目前还不知道要传递一些什么上下文信息的时候，就可以使用这个方法。
 
-
 官方文档是这么讲的，你可能会觉得像没说一样，因为界限并不是很明显。其实，你根本不用费脑子去考虑，可以直接使用 context.Background。事实上，它们两个底层的实现是一模一样的：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var (
 
@@ -13220,15 +5719,11 @@ var (
 
 )
 
-
-
 funcBackground()Context {
 
 return background
 
 }
-
-
 
 funcTODO()Context {
 
@@ -13236,78 +5731,29 @@ return todo
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在使用 Context 的时候，有一些约定俗成的规则。
-
-
 
 一般函数使用 Context 的时候，会把这个参数放在第一个参数的位置。
 
-
-
-
 从来不把 nil 当做 Context 类型的参数值，可以使用 context.Background() 创建一个空的上下文对象，也不要使用 nil。
-
-
-
 
 Context 只用来临时做函数之间的上下文透传，不能持久化 Context 或者把 Context 长久保存。把 Context 持久化到数据库、本地文件或者全局变量、缓存中都是错误的用法。
 
-
-
-
 key 的类型不应该是字符串类型或者其它内建类型，否则容易在包之间使用 Context 时候产生冲突。使用 WithValue 时，key 的类型应该是自己定义的类型。
-
-
-
 
 常常使用 struct{}作为底层类型定义 key 的类型。对于 exported key 的静态类型，常常是接口或者指针。这样可以尽量减少内存分配。
 
-
-
 其实官方的文档也是比较搞笑的，文档中强调 key 的类型不要使用 string，结果接下来的例子中就是用 string 类型作为 key 的类型。你自己把握住这个要点就好，如果你能保证别人使用你的 Context 时不会和你定义的 key 冲突，那么 key 的类型就比较随意，因为你自己保证了不同包的 key 不会冲突，否则建议你尽量采用保守的 unexported 的类型。
 
-# 创建特殊用途 Context 的方法
-
+## 创建特殊用途 Context 的方法
 
 接下来，我会介绍标准库中几种创建特殊用途 Context 的方法：WithValue、WithCancel、WithTimeout 和 WithDeadline，包括它们的功能以及实现方式。
 
-## WithValue
-
+### WithValue
 
 WithValue 基于 parent Context 生成一个新的 Context，保存了一个 key-value 键值对。它常常用来传递上下文。
 
 WithValue 方法其实是创建了一个类型为 valueCtx 的 Context，它的类型定义如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type valueCtx struct {
 
@@ -13317,46 +5763,9 @@ type valueCtx struct {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 它持有一个 key-value 键值对，还持有 parent 的 Context。它覆盖了 Value 方法，优先从自己的存储中检查这个 key，不存在的话会从 parent 中继续检查。
 
 Go 标准库实现的 Context 还实现了链式查找。如果不存在，还会向 parent Context 去查找，如果 parent 还是 valueCtx 的话，还是遵循相同的原则：valueCtx 会嵌入 parent，所以还是会查找 parent 的 Value 方法的。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ctx = context.TODO()
 
@@ -13368,31 +5777,11 @@ ctx = context.WithValue(ctx, "key3", "0001")
 
 ctx = context.WithValue(ctx, "key4", "0004")
 
-
-
 fmt.Println(ctx.Value("key1"))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ![](https://static001.geekbang.org/resource/image/03/fe/035a1b8e090184c1feba1ef194ec53fe.jpg)
 
-## WithCancel
-
+### WithCancel
 
 WithCancel 方法返回 parent 的副本，只是副本中的 Done Channel 是新建的对象，它的类型是 cancelCtx。
 
@@ -13404,43 +5793,15 @@ WithCancel 返回值中的第二个值是一个 cancel 函数。其实，这个�
 
 我们来看下 WithCancel 方法的实现代码：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcWithCancel(parent Context)(ctx Context, cancel CancelFunc) {
 
  c := newCancelCtx(parent)
 
- propagateCancel(parent, &c)// 把c朝上传播
+ propagateCancel(parent, &c)// 把 c 朝上传播
 
 return &c, func() { c.cancel(true, Canceled) }
 
 }
-
-
 
 // newCancelCtx returns an initialized cancelCtx.
 
@@ -13450,23 +5811,6 @@ return cancelCtx{Context: parent}
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 代码中调用的 propagateCancel 方法会顺着 parent 路径往上找，直到找到一个 cancelCtx，或者为 nil。如果不为空，就把自己加入到这个 cancelCtx 的 child，以便这个 cancelCtx 被取消的时候通知自己。如果为空，会新起一个 goroutine，由它来监听 parent 的 Done 是否已关闭。
 
 当这个 cancelCtx 的 cancel 函数被调用的时候，或者 parent 的 Done 被 close 的时候，这个 cancelCtx 的 Done 才会被 close。
@@ -13475,79 +5819,21 @@ cancel 是向下传递的，如果一个 WithCancel 生成的 Context 被 cancel
 
 cancelCtx 被取消时，它的 Err 字段就是下面这个 Canceled 错误：
 
-
-
-
-
-
-
-
-
 var Canceled = errors.New("context canceled")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## WithTimeout
 
-
 WithTimeout 其实是和 WithDeadline 一样，只不过一个参数是超时时间，一个参数是截止时间。超时时间加上当前时间，其实就是截止时间，因此，WithTimeout 的实现是：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcWithTimeout(parent Context, timeout time.Duration)(Context, CancelFunc) {
 
-// 当前时间+timeout就是deadline
+// 当前时间 +timeout 就是 deadline
 
 return WithDeadline(parent, time.Now().Add(timeout))
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## WithDeadline
-
 
 WithDeadline 会返回一个 parent 的副本，并且设置了一个不晚于参数 d 的截止时间，类型为 timerCtx（或者是 cancelCtx）。
 
@@ -13563,68 +5849,11 @@ cancel 函数被调用；
 
 parent 的 Done 被 close。
 
-
 下面的代码是 WithDeadline 方法的实现：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcWithDeadline(parent Context, d time.Time)(Context, CancelFunc) {
 
-// 如果parent的截止时间更早，直接返回一个cancelCtx即可
+// 如果 parent 的截止时间更早，直接返回一个 cancelCtx 即可
 
 if cur, ok := parent.Deadline(); ok && cur.Before(d) {
 
@@ -13640,11 +5869,11 @@ return WithCancel(parent)
 
  }
 
- propagateCancel(parent, c) // 同cancelCtx的处理逻辑
+ propagateCancel(parent, c) // 同 cancelCtx 的处理逻辑
 
  dur := time.Until(d)
 
-if dur <= 0 { //当前时间已经超过了截止时间，直接cancel
+if dur <= 0 { // 当前时间已经超过了截止时间，直接 cancel
 
  c.cancel(true, DeadlineExceeded)
 
@@ -13672,128 +5901,25 @@ return c, func() { c.cancel(true, Canceled) }
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 和 cancelCtx 一样，WithDeadline（WithTimeout）返回的 cancel 一定要调用，并且要尽可能早地被调用，这样才能尽早释放资源，不要单纯地依赖截止时间被动取消。正确的使用姿势是啥呢？我们来看一个例子。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcslowOperationWithTimeout(ctx context.Context)(Result, error) {
 
  ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 
-defer cancel() // 一旦慢操作完成就立马调用cancel
+defer cancel() // 一旦慢操作完成就立马调用 cancel
 
 return slowOperation(ctx)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
 
-
 我们经常使用 Context 来取消一个 goroutine 的运行，这是 Context 最常用的场景之一，Context 也被称为 goroutine 生命周期范围（goroutine-scoped）的 Context，把 Context 传递给 goroutine。但是，goroutine 需要尝试检查 Context 的 Done 是否关闭了：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
  ctx, cancel := context.WithCancel(context.Background())
-
-
 
 gofunc() {
 
@@ -13802,8 +5928,6 @@ deferfunc() {
  fmt.Println("goroutine exit")
 
  }()
-
-
 
 for {
 
@@ -13823,8 +5947,6 @@ default:
 
  }()
 
-
-
  time.Sleep(time.Second)
 
  cancel()
@@ -13832,23 +5954,6 @@ default:
  time.Sleep(2 * time.Second)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果你要为 Context 实现一个带超时功能的调用，比如访问远程的一个微服务，超时并不意味着你会通知远程微服务已经取消了这次调用，大概率的实现只是避免客户端的长时间等待，远程的服务器依然还执行着你的请求。
 
@@ -13858,17 +5963,13 @@ default:
 
 ## 思考题
 
-
 使用 WithCancel 和 WithValue 写一个级联的使用 Context 的例子，验证一下 parent Context 被 cancel 后，子 conext 是否也立刻被 cancel 了。
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 ��果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 12 | atomic：要保证原子操作，一定要使用这几种方法
-
 
 你好，我是鸟窝。
 
@@ -13878,8 +5979,7 @@ default:
 
 所以，现在，我会专门用一节课，带你仔细地了解一下什么是原子操作，atomic 包都提供了哪些实现原子操作的方法。另外，我还会带你实现一个基于原子操作的数据结构。好了，接下来我们先来学习下什么是原子操作。
 
-# 原子操作的基础知识
-
+## 原子操作的基础知识
 
 Package sync/atomic 实现了同步算法底层的原子的内存操作原语，我们把它叫做原子操作原语，它提供了一些实现原子操作的方法。
 
@@ -13897,27 +5997,7 @@ CPU 提供了基础的原子操作，不过，不同架构的系统的原子操�
 
 有的代码也会因为架构的不同而不同。有时看起来貌似一个操作是原子操作，但实际上，对于不同的架构来说，情况是不一样的。比如下面的代码的第 4 行，是将一个 64 位的值赋值给变量 i：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const x int64 = 1 + 1<<33
-
-
 
 funcmain() {
 
@@ -13926,23 +6006,6 @@ var i = x
  _ = i
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果你使用 GOARCH=386 的架构去编译这段代码，那么，第 5 行其实是被拆成了两个指令，分别操作低 32 位和高 32 位（使用 GOARCH=386 go tool compile -N -l test.go；GOARCH=386 go tool objdump -gnu test.o 反编译试试）：
 
@@ -13956,8 +6019,7 @@ var i = x
 
 好了，了解了什么是原子操作以及不同系统的不同原子操作，接下来，我来介绍下 atomic 原子操作的应用场景。
 
-# atomic 原子操作的应用场景
-
+## atomic 原子操作的应用场景
 
 开篇我说过，使用 atomic 的一些方法，我们可以实现更底层的一些优化。如果使用 Mutex 等并发原语进行这些优化，虽然可以解决问题，但是这些并发原语的实现逻辑比较复杂，对性能还是有一定的影响的。
 
@@ -13981,8 +6043,7 @@ var i = x
 
 看到这里，你是不是觉得 atomic 非常重要呢？不过，要想能够灵活地应用 atomic，我们首先得知道 atomic 提供的所有方法。
 
-# atomic 提供的方法
-
+## atomic 提供的方法
 
 目前的 Go 的泛型的特性还没有发布，Go 的标准库中的很多实现会显得非常啰嗦，多个类型会实现很多类似的方法，尤其是 atomic 包，最为明显。相信泛型支持之后，atomic 的 API 会清爽很多。
 
@@ -13994,7 +6055,6 @@ atomic 为了支持 int32、int64、uint32、uint64、uintptr、Pointer（Add �
 
 ## Add
 
-
 首先，我们来看 Add 方法的签名：
 
 ![](https://static001.geekbang.org/resource/image/95/de/95dcf8742593b1191e87beaca16f59de.png)
@@ -14005,119 +6065,27 @@ atomic 为了支持 int32、int64、uint32、uint64、uintptr、Pointer（Add �
 
 我来跟你说一种方法。你可以利用计算机补码的规则，把减法变成加法。以 uint32 类型为例：
 
-
-
-
-
-
-
-
-
 AddUint32(&x, ^uint32(c-1)).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果是对 uint64 的值进行操作，那么，就把上面的代码中的 uint32 替换成 uint64。
 
 尤其是减 1 这种特殊的操作，我们可以简化为：
 
-
-
-
-
-
-
-
-
 AddUint32(&x, ^uint32(0))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 好了，我们再来看看 CAS 方法。
 
 ## CAS （CompareAndSwap）
 
-
 以 int32 为例，我们学习一下 CAS 提供的功能。在 CAS 的方法签名中，需要提供要操作的地址、原数据值、新值，如下所示：
 
-
-
-
-
-
-
-
-
 funcCompareAndSwapInt32(addr *int32, old, newint32)(swapped bool)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我们来看下这个方法的功能。
 
 这个方法会比较当前 addr 地址里的值是不是 old，如果不等于 old，就返回 false；如果等于 old，就把此地址的值替换成 new 值，返回 true。这就相当于“判断相等才替换”。
 
 如果使用伪代码来表示这个原子操作，代码如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 if *addr == old {
 
@@ -14129,43 +6097,13 @@ returntrue
 
 returnfalse
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 它支持的类型和方法如图所示：
 
 ![](https://static001.geekbang.org/resource/image/1b/77/1b0ffac37d8f952ca485ff58daf27177.png)
 
 ## Swap
 
-
 如果不需要比较旧值，只是比较粗暴地替换的话，就可以使用 Swap 方法，它替换后还可以返回旧值，伪代码如下：
-
-
-
-
-
-
-
-
-
-
-
-
 
 old = *addr
 
@@ -14173,29 +6111,11 @@ old = *addr
 
 return old
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 它支持的数据类型和方法如图所示：
 
 ![](https://static001.geekbang.org/resource/image/c0/0a/c02e210607aa45734bb1812c97f77c0a.png)
 
 ## Load
-
 
 Load 方法会取出 addr 地址中的值，即使在多处理器、多核、有 CPU cache 的情况下，这个操作也能保证 Load 是一个原子操作。
 
@@ -14205,7 +6125,6 @@ Load 方法会取出 addr 地址中的值，即使在多处理器、多核、有
 
 ## Store
 
-
 Store 方法会把一个值存入到指定的 addr 地址中，即使在多处理器、多核、有 CPU cache 的情况下，这个操作也能保证 Store 是一个原子操作。别的 goroutine 通过 Load 读取出来，不会看到存取了一半的值。
 
 它支持的数据类型和方法如图所示：
@@ -14213,7 +6132,6 @@ Store 方法会把一个值存入到指定的 addr 地址中，即使在多处�
 ![](https://static001.geekbang.org/resource/image/8b/a0/8b77dc0e1ede98394aa21cf10fecc9a0.png)
 
 ## Value 类型
-
 
 刚刚说的都是一些比较常见的类型，其实，atomic 还提供了一个特殊的类型：Value。它可以原子地存取对象类型，但也只能存取，不能 CAS 和 Swap，常常用在配置变更等场景中。
 
@@ -14227,90 +6145,6 @@ Store 方法会把一个值存入到指定的 addr 地址中，即使在多处�
 
 通过这个例子，你可以了解到 Value 的 Store/Load 方法的使用，因为它只有这两个方法，只要掌握了它们的使用，你就完全掌握了 Value 类型。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type Config struct {
 
  NodeName string
@@ -14320,8 +6154,6 @@ type Config struct {
  Count int32
 
 }
-
-
 
 funcloadNewConfig()Config {
 
@@ -14345,9 +6177,7 @@ var config atomic.Value
 
 var cond = sync.NewCond(&sync.Mutex{})
 
-
-
-// 设置新的config
+// 设置新的 config
 
 gofunc() {
 
@@ -14362,8 +6192,6 @@ for {
  }
 
  }()
-
-
 
 gofunc() {
 
@@ -14383,33 +6211,13 @@ for {
 
  }()
 
-
-
 select {}
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 好了，关于标准库的 atomic 提供的方法，到这里我们就学完了。事实上，atomic 包提供了非常好的支持各种平台的一致性的 API，绝大部分项目都是直接使用它。接下来，我再给你介绍一下第三方库，帮助你稍微开拓一下思维。
 
-# 第三方库的扩展
-
+## 第三方库的扩展
 
 其实，atomic 的 API 已经算是很简单的了，它提供了包一级的函数，可以对几种类型的数据执行原子操作。
 
@@ -14419,20 +6227,6 @@ select {}
 
 其它的数据类型也和 Bool 类型相似，使用起来就像面向对象的编程一样，你可以看下下面的这段代码。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var running atomic.Bool
 
  running.Store(true)
@@ -14441,179 +6235,11 @@ var running atomic.Bool
 
  fmt.Println(running.Load()) // false
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 使用 atomic 实现 Lock-Free queue
-
+## 使用 atomic 实现 Lock-Free queue
 
 atomic 常常用来实现 Lock-Free 的数据结构，这次我会给你展示一个 Lock-Free queue 的实现。
 
 Lock-Free queue 最出名的就是 Maged M. Michael 和 Michael L. Scott 1996 年发表的[论文]()中的算法，算法比较简单，容易实现，伪代码的每一行都提供了注释，我就不在这里贴出伪代码了，因为我们使用 Go 实现这个数据结构的代码几乎和伪代码一样：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 package queue
 
@@ -14625,7 +6251,7 @@ import (
 
 )
 
-// lock-free的queue
+// lock-free 的 queue
 
 type LKQueue struct {
 
@@ -14669,9 +6295,9 @@ if tail == load(&q.tail) { // 尾还是尾
 
 if next == nil { // 还没有新数据入队
 
-if cas(&tail.next, next, n) { //增加到队尾
+if cas(&tail.next, next, n) { // 增加到队尾
 
- cas(&q.tail, tail, n) //入队成功，移动尾巴指针
+ cas(&q.tail, tail, n) // 入队成功，移动尾巴指针
 
 return
 
@@ -14689,7 +6315,7 @@ return
 
 }
 
-// 出队，没有元素则返回nil
+// 出队，没有元素则返回 nil
 
 func(q *LKQueue)Dequeue()interface{} {
 
@@ -14701,9 +6327,9 @@ for {
 
  next := load(&head.next)
 
-if head == load(&q.head) { // head还是那个head
+if head == load(&q.head) { // head 还是那个 head
 
-if head == tail { // head和tail一样
+if head == tail { // head 和 tail 一样
 
 if next == nil { // 说明是空队列
 
@@ -14737,9 +6363,7 @@ return v // Dequeue is done. return
 
 }
 
-
-
-// 将unsafe.Pointer原子加载转换成node
+// 将 unsafe.Pointer 原子加载转换成 node
 
 funcload(p *unsafe.Pointer)(n *node) {
 
@@ -14747,9 +6371,7 @@ return (*node)(atomic.LoadPointer(p))
 
 }
 
-
-
-// 封装CAS,避免直接将*node转换成unsafe.Pointer
+// 封装 CAS, 避免直接将*node 转换成 unsafe.Pointer
 
 funccas(p *unsafe.Pointer, old, new *node)(ok bool) {
 
@@ -14758,23 +6380,6 @@ return atomic.CompareAndSwapPointer(
  p, unsafe.Pointer(old), unsafe.Pointer(new))
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我来给你介绍下这里的主要逻辑。
 
@@ -14785,7 +6390,6 @@ return atomic.CompareAndSwapPointer(
 出队的时候移除一个节点，并通过 CAS 操作移动 head 指针，同时在必要的时候移动尾指针。
 
 ## 总结
-
 
 好了，我们来小结一下。这节课，我们学习了 atomic 的基本使用方法，以及它提供的几种方法，包括 Add、CAS、Swap、Load、Store、Value 类型。除此之外，我还介绍了一些第三方库，并且带你实现了 Lock-free queue。到这里，相信你已经掌握了 atomic 提供的各种方法，并且能够应用到实践中了。
 
@@ -14807,17 +6411,13 @@ atomic 包提供的方法会提供内存屏障的功能，所以，atomic 不仅
 
 ## 思考题
 
-
 atomic.Value 只有 Load/Store 方法，你是不是感觉意犹未尽？你可以尝试为 Value 类型增加 Swap 和 CompareAndSwap 方法（可以参考一下[这份资料]()）。
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 13 | Channel：另辟蹊径，解决并发问题
-
 
 你好，我是鸟窝。
 
@@ -14825,8 +6425,7 @@ Channel 是 Go 语言内建的 first-class 类型，也是 Go 语言与众不同
 
 所以，这节课，我们就来学习下 Channel。
 
-# Channel 的发展
-
+## Channel 的发展
 
 要想了解 Channel 这种 Go 编程语言中的特有的数据结构，我们要追溯到 CSP 模型，学习一下它的历史，以及它对 Go 创始人设计 Channel 类型的影响。
 
@@ -14840,16 +6439,13 @@ Channel 类型是 Go 语言内置的类型，你无需引入某个包，就能�
 
 Channel 和 Go 的另一个独特的特性 goroutine 一起为并发编程提供了优雅的、便利的、与传统并发控制不同的方案，并演化出很多并发模式。接下来，我们就来看一看 Channel 的应用场景。
 
-# Channel 的应用场景
-
+## Channel 的应用场景
 
 首先，我想先带你看一条 Go 语言中流传很广的谚语：
 
 Don’t communicate by sharing memory, share memory by communicating.
 
-
 Go Proverbs by Rob Pike
-
 
 这是 Rob Pike 在 2015 年的一次 Gopher 会议中提到的一句话，虽然有一点绕，但也指出了使用 Go 语言的哲学，我尝试着来翻译一下：“执行业务处理的 goroutine 不要通过共享内存的方式通信，而是要通过 Channel 通信的方式分享数据。”
 
@@ -14861,120 +6457,35 @@ Go Proverbs by Rob Pike
 
 综合起来，我把 Channel 的应用场景分为五种类型。这里你先有个印象，这样你可以有目的地去学习 Channel 的基本原理。下节课我会借助具体的例子，来带你掌握这几种类型。
 
-
-
 数据交流：当作并发的 buffer 或者 queue，解决生产者 - 消费者问题。多个 goroutine 可以并发当作生产者（Producer）和消费者（Consumer）。
 
+数据传递：一个 goroutine 将数据交给另一个 goroutine，相当于把数据的拥有权 （引用） 托付出去。
 
-
-
-数据传递：一个 goroutine 将数据交给另一个 goroutine，相当于把数据的拥有权 (引用) 托付出去。
-
-
-
-
-信号通知：一个 goroutine 可以将信号 (closing、closed、data ready 等) 传递给另一个或者另一组 goroutine 。
-
-
-
+信号通知：一个 goroutine 可以将信号 (closing、closed、data ready 等） 传递给另一个或者另一组 goroutine 。
 
 任务编排：可以让一组 goroutine 按照一定的顺序并发或者串行的执行，这就是编排的功能。
 
-
-
-
 锁：利用 Channel 也可以实现互斥锁的机制。
-
-
 
 下面，我们来具体学习下 Channel 的基本用法。
 
-# Channel 基本用法
-
+## Channel 基本用法
 
 你可以往 Channel 中发送数据，也可以从 Channel 中接收数据，所以，Channel 类型（为了说起来方便，我们下面都把 Channel 叫做 chan）分为只能接收、只能发送、既可以接收又可以发送三种类型。下面是它的语法定义：
 
-
-
-
-
-
-
-
-
 ChannelType = ( "chan" | "chan""<-" | "<-""chan" ) ElementType .
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 相应地，Channel 的正确语法如下：
 
+chanstring// 可以发送接收 string
 
+chan<- struct{} // 只能发送 struct{}
 
-
-
-
-
-
-
-
-
-
-
-chanstring// 可以发送接收string
-
-chan<- struct{} // 只能发送struct{}
-
-<-chanint// 只能从chan接收int
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<-chanint// 只能从 chan 接收 int
 
 我们把既能接收又能发送的 chan 叫做双向的 chan，把只能发送和只能接收的 chan 叫做单向的 chan。其中，“<-”表示单向的 chan，如果你记不住，我告诉你一个简便的方法：这个箭头总是射向左边的，元素类型总在最右边。如果箭头指向 chan，就表示可以往 chan 中塞数据；如果箭头远离 chan，就表示 chan 会往外吐数据。
 
 chan 中的元素是任意的类型，所以也可能是 chan 类型，我来举个例子，比如下面的 chan 类型也是合法的：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 chan<- chanint
 
@@ -14984,92 +6495,19 @@ chan<- <-chanint
 
 chan (<-chanint)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可是，怎么判定箭头符号属于哪个 chan 呢？其实，“<-”有个规则，总是尽量和左边的 chan 结合（The <- operator associates with the leftmost chan possible:），因此，上面的定义和下面的使用括号的划分是一样的：
 
+chan<- （chanint） // <- 和第一个 chan 结合
 
+chan<- （<-chanint） // 第一个<- 和最左边的 chan 结合，第二个<- 和左边第二个 chan 结合
 
+<-chan （<-chanint） // 第一个<- 和最左边的 chan 结合，第二个<- 和左边第二个 chan 结合
 
-
-
-
-
-
-
-
-
-
-
-
-chan<- （chanint） // <- 和第一个chan结合
-
-chan<- （<-chanint） // 第一个<-和最左边的chan结合，第二个<-和左边第二个chan结合
-
-<-chan （<-chanint） // 第一个<-和最左边的chan结合，第二个<-和左边第二个chan结合 
-
-chan (<-chanint) // 因为括号的原因，<-和括号内第一个chan结合
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+chan (<-chanint) // 因为括号的原因，<- 和括号内第一个 chan 结合
 
 通过 make，我们可以初始化一个 chan，未初始化的 chan 的零值是 nil。你可以设置它的容量，比如下面的 chan 的容量是 9527，我们把这样的 chan 叫做 buffered chan；如果没有设置，它的容量是 0，我们把这样的 chan 叫做 unbuffered chan。
 
-
-
-
-
-
-
-
-
 make(chanint, 9527)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果 chan 中还有数据，那么，从这个 chan 接收数据的时候就不会阻塞，如果 chan 还未满（“满”指达到其容量），给它发送数据也不会阻塞，否则就会阻塞。unbuffered chan 只有读写都准备好之后才不会阻塞，这也是很多使用 unbuffered chan 时的常见 Bug。
 
@@ -15079,34 +6517,9 @@ make(chanint, 9527)
 
 1. 发送数据
 
-往 chan 中发送一个数据使用“ch<-”，发送数据是一条语句:
-
-
-
-
-
-
-
-
+往 chan 中发送一个数据使用“ch<-”，发送数据是一条语句：
 
 ch <- 2000
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这里的 ch 是 chan int 类型或者是 chan <-int。
 
@@ -15114,40 +6527,11 @@ ch <- 2000
 
 从 chan 中接收一条数据使用“<-ch”，接收数据也是一条语句：
 
-
-
-
-
-
-
-
-
-
-
-
-
- x := <-ch // 把接收的一条数据赋值给变量x
+ x := <-ch // 把接收的一条数据赋值给变量 x
 
  foo(<-ch) // 把接收的一个的数据作为参数传给函数
 
  <-ch // 丢弃接收的一条数据
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这里的 ch 类型是 chan T 或者 <-chan T。
 
@@ -15158,32 +6542,6 @@ ch <- 2000
 Go 内建的函数 close、cap、len 都可以操作 chan 类型：close 会把 chan 关闭掉，cap 返回 chan 的容量，len 返回 chan 中缓存的还未被取走的元素数量。
 
 send 和 recv 都可以作为 select 语句的 case clause，如下面的例子：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -15205,36 +6563,7 @@ case v := <-ch:
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 chan 还可以应用于 for-range 语句中，比如：
-
-
-
-
-
-
-
-
-
-
-
-
 
 for v := range ch {
 
@@ -15242,65 +6571,19 @@ for v := range ch {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 或者是忽略读取的值，只是清空 chan：
-
-
-
-
-
-
-
-
-
-
 
 forrange ch {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 好了，到这里，Channel 的基本用法，我们就学完了。下面我从代码实现的角度分析 chan 类型的实现。毕竟，只有掌握了原理，你才能真正地用好它。
 
-# Channel 的实现原理
-
+## Channel 的实现原理
 
 接下来，我会给你介绍 chan 的数据结构、初始化的方法以及三个重要的操作方法，分别是 send、recv 和 close。通过学习 Channel 的底层实现，你会对 Channel 的功能和异常情况有更深的理解。
 
 ## chan 数据结构
-
 
 chan 类型的数据结构如下图所示，它的数据类型是[runtime.hchan]()。
 
@@ -15324,9 +6607,7 @@ recvq：chan 是多生产者多消费者的模式，如果消费者因为没有�
 
 sendq：如果生产者因为 buf 满了而阻塞，会被加入到 sendq 队列中。
 
-
 ## 初始化
-
 
 Go 在编译的时候，会根据容量的大小选择调用 makechan64，还是 makechan。
 
@@ -15338,87 +6619,13 @@ Go 在编译的时候，会根据容量的大小选择调用 makechan64，还是
 
 那么，接下来，就让我们来看一下 makechan 的主要逻辑。主要的逻辑我都加上了注释，它会根据 chan 的容量的大小和元素的类型不同，初始化不同的存储空间：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmakechan(t *chantype, size int) *hchan {
 
  elem := t.elem
 
-
-
 // 略去检查代码
 
  mem, overflow := math.MulUintptr(elem.size, uintptr(size))
-
-
 
 //
 
@@ -15428,7 +6635,7 @@ switch {
 
 case mem == 0:
 
-// chan的size或者元素的size是0，不必创建buf
+// chan 的 size 或者元素的 size 是 0，不必创建 buf
 
  c = (*hchan)(mallocgc(hchanSize, nil, true))
 
@@ -15436,25 +6643,23 @@ case mem == 0:
 
 case elem.ptrdata == 0:
 
-// 元素不是指针，分配一块连续的内存给hchan数据结构和buf
+// 元素不是指针，分配一块连续的内存给 hchan 数据结构和 buf
 
  c = (*hchan)(mallocgc(hchanSize+mem, nil, true))
 
-// hchan数据结构后面紧接着就是buf
+// hchan 数据结构后面紧接着就是 buf
 
  c.buf = add(unsafe.Pointer(c), hchanSize)
 
 default:
 
-// 元素包含指针，那么单独分配buf
+// 元素包含指针，那么单独分配 buf
 
  c = new(hchan)
 
  c.buf = mallocgc(mem, elem, true)
 
  }
-
-
 
 // 元素大小、类型、容量都记录下来
 
@@ -15466,69 +6671,15 @@ default:
 
  lockInit(&c.lock, lockRankHchan)
 
-
-
 return c
 
  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 最终，针对不同的容量和元素类型，这段代码分配了不同的对象来初始化 hchan 对象的字段，返回 hchan 对象。
 
 ## send
 
-
 Go 在编译发送数据给 chan 的时候，会把 send 语句转换成 chansend1 函数，chansend1 函数会调用 chansend，我们分段学习它的逻辑：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcchansend1(c *hchan, elem unsafe.Pointer) {
 
@@ -15558,40 +6709,9 @@ returnfalse
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 最开始，第一部分是进行判断：如果 chan 是 nil 的话，就把调用者 goroutine park（阻塞休眠）， 调用者就永远被阻塞住了，所以，第 11 行是不可能执行到的代码。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第二部分，如果chan没有被close,并且chan满了，直接返回
+// 第二部分，如果 chan 没有被 close, 并且 chan 满了，直接返回
 
 if !block && c.closed == 0 && full(c) {
 
@@ -15599,44 +6719,9 @@ returnfalse
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第二部分的逻辑是当你往一个已经满了的 chan 实例发送数据时，并且想不阻塞当前调用，那么这里的逻辑是直接返回。chansend1 方法在调用 chansend 的时候设置了阻塞参数，所以不会执行到第二部分的分支里。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第三部分，chan已经被close的情景
+// 第三部分，chan 已经被 close 的情景
 
  lock(&c.lock) // 开始加锁
 
@@ -15648,48 +6733,13 @@ panic(plainError("send on closed channel"))
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第三部分显示的是，如果 chan 已经被 close 了，再往里面发送数据的话会 panic。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第四部分，从接收队列中出队一个等待的receiver
+// 第四部分，从接收队列中出队一个等待的 receiver
 
 if sg := c.recvq.dequeue(); sg != nil {
 
-// 
+//
 
  send(c, sg, ep, func() { unlock(&c.lock) }, 3)
 
@@ -15697,64 +6747,9 @@ returntrue
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第四部分，如果等待队列中有等待的 receiver，那么这段代码就把它从队列中弹出，然后直接把数据交给它（通过 memmove(dst, src, t.size)），而不需要放入到 buf 中，速度可以更快一些。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第五部分，buf还没满
+// 第五部分，buf 还没满
 
 if c.qcount < c.dataqsiz {
 
@@ -15786,48 +6781,11 @@ returntrue
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第五部分说明当前没有 receiver，需要把数据放入到 buf 中，放入之后，就成功返回了。
 
+// 第六部分，buf 满。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第六部分，buf满。
-
-// chansend1不会进入if块里，因为chansend1的block=true
+// chansend1 不会进入 if 块里，因为 chansend1 的 block=true
 
 if !block {
 
@@ -15839,69 +6797,11 @@ returnfalse
 
  ......
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第六部分是处理 buf 满的情况。如果 buf 满了，发送者的 goroutine 就会加入到发送者的等待队列中，直到被唤醒。这个时候，数据或者被取走了，或者 chan 被 close 了。
 
 ## recv
 
-
 在处理从 chan 中接收数据时，Go 会把代码转换成 chanrecv1 函数，如果要返回两个返回值，会转换成 chanrecv2，chanrecv1 函数和 chanrecv2 会调用 chanrecv。我们分段学习它的逻辑：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcchanrecv1(c *hchan, elem unsafe.Pointer) {
 
@@ -15917,11 +6817,9 @@ return
 
  }
 
-
-
 funcchanrecv(c *hchan, ep unsafe.Pointer, block bool)(selected, received bool) {
 
-// 第一部分，chan为nil
+// 第一部分，chan 为 nil
 
 if c == nil {
 
@@ -15937,42 +6835,11 @@ return
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 chanrecv1 和 chanrecv2 传入的 block 参数的值是 true，都是阻塞方式，所以我们分析 chanrecv 的实现的时候，不考虑 block=false 的情况。
 
 第一部分是 chan 为 nil 的情况。和 send 一样，从 nil chan 中接收（读取、获取）数据时，调用者会被永远阻塞。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第二部分, block=false且c为空
+// 第二部分，block=false 且 c 为空
 
 if !block && empty(c){
 
@@ -15980,56 +6847,13 @@ if !block && empty(c){
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第二部分你可以直接忽略，因为不是我们这次要分析的场景。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
  // 加锁，返回时释放锁
 
 lock(&c.lock)
 
- // 第三部分，c已经被close,且chan为空empty
+ // 第三部分，c 已经被 close, 且 chan 为空 empty
 
 if c.closed != 0 && c.qcount == 0 {
 
@@ -16045,42 +6869,9 @@ returntrue, false
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第三部分是 chan 已经被 close 的情况。如果 chan 已经被 close 了，并且队列中没有缓存的元素，那么返回 true、false。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第四部分，如果sendq队列中有等待发送的sender
+// 第四部分，如果 sendq 队列中有等待发送的 sender
 
 if sg := c.sendq.dequeue(); sg != nil {
 
@@ -16090,78 +6881,9 @@ returntrue, true
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第四部分是处理 sendq 队列中有等待者的情况。这个时候，如果 buf 中有数据，优先从 buf 中读取数据，否则直接从等待队列中弹出一个 sender，把它的数据复制给这个 receiver。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 第五部分, 没有等待的sender, buf中有数据
+// 第五部分，没有等待的 sender, buf 中有数据
 
 if c.qcount > 0 {
 
@@ -16191,8 +6913,6 @@ returntrue, true
 
  }
 
-
-
 if !block {
 
  unlock(&c.lock)
@@ -16201,28 +6921,9 @@ returnfalse, false
 
  }
 
-
-
-// 第六部分， buf中没有元素，阻塞
+// 第六部分， buf 中没有元素，阻塞
 
  ......
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 第五部分是处理没有等待的 sender 的情况。这个是和 chansend 共用一把大锁，所以不会有并发的问题。如果 buf 有元素，就取出一个元素给 receiver。
 
@@ -16230,112 +6931,23 @@ returnfalse, false
 
 ## close
 
-
 通过 close 函数，可以把 chan 关闭，编译器会替换成 closechan 方法的调用。
 
 下面的代码是 close chan 的主要逻辑。如果 chan 为 nil，close 会 panic；如果 chan 已经 closed，再次 close 也会 panic。否则的话，如果 chan 不为 nil，chan 也没有 closed，就把等待队列中的 sender（writer）和 receiver（reader）从队列中全部移除并唤醒。
 
-下面的代码就是 close chan 的逻辑:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+下面的代码就是 close chan 的逻辑：
 
 funcclosechan(c *hchan) {
 
-if c == nil { // chan为nil, panic
+if c == nil { // chan 为 nil, panic
 
 panic(plainError("close of nil channel"))
 
  }
 
-
-
  lock(&c.lock)
 
-if c.closed != 0 {// chan已经closed, panic
+if c.closed != 0 {// chan 已经 closed, panic
 
  unlock(&c.lock)
 
@@ -16343,17 +6955,11 @@ panic(plainError("close of closed channel"))
 
  }
 
-
-
  c.closed = 1
-
-
 
 var glist gList
 
-
-
-// 释放所有的reader
+// 释放所有的 reader
 
 for {
 
@@ -16369,9 +6975,7 @@ for {
 
  }
 
-
-
-// 释放所有的writer (它们会panic)
+// 释放所有的 writer （它们会 panic)
 
 for {
 
@@ -16389,8 +6993,6 @@ for {
 
  unlock(&c.lock)
 
-
-
 for !glist.empty() {
 
  gp := glist.pop()
@@ -16403,27 +7005,9 @@ for !glist.empty() {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 掌握了 Channel 的基本用法和实现原理，下面我再来给你讲一讲容易犯的错误。你一定要认真看，毕竟，这些可都是帮助你避坑的。
 
-# 使用 Channel 容易犯的错误
-
+## 使用 Channel 容易犯的错误
 
 根据 2019 年第一篇全面分析 Go 并发 Bug 的[论文]()，那些知名的 Go 项目中使用 Channel 所犯的 Bug 反而比传统的并发原语的 Bug 还要多。主要有两个原因：一个是，Channel 的概念还比较新，程序员还不能很好地掌握相应的使用方法和最佳实践；第二个是，Channel 有时候比传统的并发原语更复杂，使用起来很容易顾此失彼。
 
@@ -16431,67 +7015,17 @@ for !glist.empty() {
 
 首先，我们来总结下会 panic 的情况，总共有 3 种：
 
-
-
 close 为 nil 的 chan；
-
-
-
 
 send 已经 close 的 chan；
 
-
-
-
 close 已经 close 的 chan。
 
-
-
 goroutine 泄漏的问题也很常见，下面的代码也是一个实际项目中的例子：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcprocess(timeout time.Duration)bool {
 
  ch := make(chanbool)
-
-
 
 gofunc() {
 
@@ -16519,23 +7053,6 @@ returnfalse
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在这个例子中，process 函数会启动一个 goroutine，去处理需要长时间处理的业务，处理完之后，会发送 true 到 chan 中，目的是通知其它等待的 goroutine，可以继续处理了。
 
 我们来看一下第 10 行到第 15 行，主 goroutine 接收到任务处理完成的通知，或者超时后就返回了。这段代码有问题吗？
@@ -16544,41 +7061,21 @@ returnfalse
 
 解决这个 Bug 的办法很简单，就是将 unbuffered chan 改成容量为 1 的 chan，这样第 7 行就不会被阻塞了。
 
-Go 的开发者极力推荐使用 Channel，不过，这两年，大家意识到，Channel 并不是处理并发问题的“银弹”，有时候使用并发原语更简单，而且不容易出错。所以，我给你提供一套选择的方法:
-
-
+Go 的开发者极力推荐使用 Channel，不过，这两年，大家意识到，Channel 并不是处理并发问题的“银弹”，有时候使用并发原语更简单，而且不容易出错。所以，我给你提供一套选择的方法：
 
 共享资源的并发访问使用传统并发原语；
 
-
-
-
 复杂的任务编排和消息传递使用 Channel；
-
-
-
 
 消息通知机制使用 Channel，除非只想 signal 一个 goroutine，才使用 Cond；
 
-
-
-
 简单等待所有任务的完成用 WaitGroup，也有 Channel 的推崇者用 Channel，都可以；
-
-
-
 
 需要和 Select 语句结合，使用 Channel；
 
-
-
-
 需要和超时配合时，使用 Channel 和 Context。
 
-
-
-# 它们踩过的坑
-
+## 它们踩过的坑
 
 接下来，我带你围观下知名 Go 项目的 Channel 相关的 Bug。
 
@@ -16608,7 +7105,6 @@ Go 的开发者极力推荐使用 Channel，不过，这两年，大家意识到
 
 ## 总结
 
-
 chan 的值和状态有多种情况，而不同的操作（send、recv、close）又可能得到不同的结果，这是使用 chan 类型时经常让人困惑的地方。
 
 为了帮助你快速地了解不同状态下各种操作的结果，我总结了一个表格，你一定要特别关注下那些 panic 的情况，另外还要掌握那些会 block 的场景，它们是导致死锁或者 goroutine 泄露的罪魁祸首。
@@ -16619,26 +7115,15 @@ chan 的值和状态有多种情况，而不同的操作（send、recv、close�
 
 ## 思考题
 
-
-
-
 有一道经典的使用 Channel 进行任务编排的题，你可以尝试做一下：有四个 goroutine，编号为 1、2、3、4。每秒钟会有一个 goroutine 打印出它自己的编号，要求你编写一个程序，让输出的编号总是按照 1、2、3、4、1、2、3、4、……的顺序打印出来。
-
-
-
 
 chan T 是否可以给 <- chan T 和 chan<- T 类型的变量赋值？反过来呢？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
-
 
 下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 14 | Channel：透过代码看典型的应用模式
-
 
 你好，我是鸟窝。
 
@@ -16646,28 +7131,9 @@ chan T 是否可以给 <- chan T 和 chan<- T 类型的变量赋值？反过来�
 
 在开始上课之前，我先补充一个知识点：通过反射的方式执行 select 语句，在处理很多的 case clause，尤其是不定长的 case clause 的时候，非常有用。而且，在后面介绍任务编排的实现时，我也会采用这种方法，所以，我先带你具体学习下 Channel 的反射用法。
 
-# 使用反射操作 Channel
-
+## 使用反射操作 Channel
 
 select 语句可以处理 chan 的 send 和 recv，send 和 recv 都可以作为 case clause。如果我们同时处理两个 chan，就可以写成下面的样子：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 select {
 
@@ -16681,23 +7147,6 @@ case v := <-ch2:
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果需要处理三个 chan，你就可以再添加一个 case clause，用它来处理第三个 chan。可是，如果要处理 100 个 chan 呢？一万个 chan 呢？
 
 或者是，chan 的数量在编译的时候是不定的，在运行的时候需要处理一个 slice of chan，这个时候，也没有办法在编译前写成字面意义的 select。那该怎么办？
@@ -16706,32 +7155,7 @@ case v := <-ch2:
 
 通过 reflect.Select 函数，你可以将一组运行时的 case clause 传入，当作参数执行。Go 的 select 是伪随机的，它可以在执行的 case 中随机选择一个 case，并把选择的这个 case 的索引（chosen）返回，如果没有可用的 case 返回，会返回一个 bool 类型的返回值，这个返回值用来表示是否有 case 成功被选择。如果是 recv case，还会返回接收的元素。Select 的方法签名如下：
 
-
-
-
-
-
-
-
-
 funcSelect(cases []SelectCase)(chosen int, recv Value, recvOK bool)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 下面，我来借助一个例子，来演示一下，动态处理两个 chan 的情形。因为这样的方式可以动态处理 case 数据，所以，你可以传入几百几千几万的 chan，这就解决了不能动态处理 n 个 chan 的问题。
 
@@ -16739,111 +7163,17 @@ funcSelect(cases []SelectCase)(chosen int, recv Value, recvOK bool)
 
 然后，通过一个循环 10 次的 for 循环执行 reflect.Select，这个方法会从 cases 中选择一个 case 执行。第一次肯定是 send case，因为此时 chan 还没有元素，recv 还不可用。等 chan 中有了数据以后，recv case 就可以被选择了。这样，你就可以处理不定数量的 chan 了。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var ch1 = make(chanint, 10)
 
 var ch2 = make(chanint, 10)
 
-
-
-// 创建SelectCase
+// 创建 SelectCase
 
 var cases = createCases(ch1, ch2)
 
-
-
-// 执行10次select
+// 执行 10 次 select
 
 for i := 0; i < 10; i++ {
 
@@ -16863,17 +7193,11 @@ if recv.IsValid() { // recv case
 
 }
 
-
-
 funccreateCases(chs ...chanint) []reflect.SelectCase {
 
 var cases []reflect.SelectCase
 
-
-
-
-
-// 创建recv case
+// 创建 recv case
 
 for _, ch := range chs {
 
@@ -16887,9 +7211,7 @@ for _, ch := range chs {
 
  }
 
-
-
-// 创建send case
+// 创建 send case
 
 for i, ch := range chs {
 
@@ -16907,38 +7229,17 @@ for i, ch := range chs {
 
  }
 
-
-
 return cases
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 典型的应用场景
-
+## 典型的应用场景
 
 了解刚刚的反射用法，我们就解决了今天的基础知识问题，接下来，我就带你具体学习下 Channel 的应用场景。
 
 首先来看消息交流。
 
 ## 消息交流
-
 
 从 chan 的内部实现看，它是以一个循环队列的方式存放数据，所以，它有时候也会被当成线程安全的队列和 buffer 使用。一个 goroutine 可以安全地往 Channel 中塞数据，另外一个 goroutine 可以安全地从 Channel 中读取数据，goroutine 就可以安全地实现信息交流了。
 
@@ -16956,71 +7257,15 @@ dispatcher 会把待处理任务队列中的任务放到一个可用的缓存队
 
 ## 数据传递
 
-
 “击鼓传花”的游戏很多人都玩过，花从一个人手中传给另外一个人，就有点类似流水线的操作。这个花就是数据，花在游戏者之间流转，这就类似编程中的数据传递。
 
 还记得上节课我给你留了一道任务编排的题吗？其实它就可以用数据传递的方式实现。
 
 有 4 个 goroutine，编号为 1、2、3、4。每秒钟会有一个 goroutine 打印出它自己的编号，要求你编写程序，让输出的编号总是按照 1、2、3、4、1、2、3、4……这个顺序打印出来。
 
-
 为了实现顺序的数据传递，我们可以定义一个令牌的变量，谁得到令牌，谁就可以打印一次自己的编号，同时将令牌传递给下一个 goroutine，我们尝试使用 chan 来实现，可以看下下面的代码。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type Token struct{}
-
-
 
 funcnewWorker(id int, ch chan Token, nextCh chan Token) {
 
@@ -17028,7 +7273,7 @@ for {
 
  token := <-ch // 取得令牌
 
- fmt.Println((id + 1)) // id从1开始
+ fmt.Println((id + 1)) // id 从 1 开始
 
  time.Sleep(time.Second)
 
@@ -17042,9 +7287,7 @@ funcmain() {
 
  chs := []chan Token{make(chan Token), make(chan Token), make(chan Token), make(chan Token)}
 
-
-
-// 创建4个worker
+// 创建 4 个 worker
 
 for i := 0; i < 4; i++ {
 
@@ -17052,34 +7295,13 @@ go newWorker(i, chs[i], chs[(i+1)%4])
 
  }
 
-
-
-//首先把令牌交给第一个worker
+// 首先把令牌交给第一个 worker
 
  chs[0] <- struct{}{}
-
-
 
 select {}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我来给你具体解释下这个实现方式。
 
@@ -17093,7 +7315,6 @@ select {}
 
 ## 信号通知
 
-
 chan 类型有这样一个特点：chan 如果为空，那么，receiver 接收数据的时候就会阻塞等待，直到 chan 被关闭或者有新的数据到来。利用这个机制，我们可以实现 wait/notify 的设计模式。
 
 传统的并发原语 Cond 也能实现这个功能，但是，Cond 使用起来比较复杂，容易出错，而使用 chan 实现 wait/notify 模式就方便很多了。
@@ -17101,42 +7322,6 @@ chan 类型有这样一个特点：chan 如果为空，那么，receiver 接收�
 除了正常的业务处理时的 wait/notify，我们经常碰到的一个场景，就是程序关闭的时候，我们需要在退出之前做一些清理（doCleanup 方法）的动作。这个时候，我们经常要使用 chan。
 
 比如，使用 chan 实现程序的 graceful shutdown，在退出之前执行一些连接关闭、文件 close、缓存落盘等一些动作。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
@@ -17146,149 +7331,35 @@ gofunc() {
 
  }()
 
-
-
-// 处理CTRL+C等中断信号
+// 处理 CTRL+C 等中断信号
 
  termChan := make(chan os.Signal)
 
  signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM)
 
- <-termChan 
-
-
+ <-termChan
 
 // 执行退出之前的清理动作
 
  doCleanup()
 
-
-
  fmt.Println("优雅退出")
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 有时候，doCleanup 可能是一个很耗时的操作，比如十几分钟才能完成，如果程序退出需要等待这么长时间，用户是不能接受的，所以，在实践中，我们需要设置一个最长的等待时间。只要超过了这个时间，程序就不再等待，可以直接退出。所以，退出的时候分为两个阶段：
-
-
 
 closing，代表程序退出，但是清理工作还没做；
 
-
-
-
 closed，代表清理工作已经做完。
 
-
-
 所以，上面的例子可以改写如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmain() {
 
 var closing = make(chanstruct{})
 
 var closed = make(chanstruct{})
-
-
 
 gofunc() {
 
@@ -17314,9 +7385,7 @@ default:
 
  }()
 
-
-
-// 处理CTRL+C等中断信号
+// 处理 CTRL+C 等中断信号
 
  termChan := make(chan os.Signal)
 
@@ -17324,15 +7393,11 @@ default:
 
  <-termChan
 
-
-
 close(closing)
 
 // 执行退出之前的清理动作
 
 go doCleanup(closed)
-
-
 
 select {
 
@@ -17348,8 +7413,6 @@ case <-time.After(time.Second):
 
 }
 
-
-
 funcdoCleanup(closed chanstruct{}) {
 
  time.Sleep((time.Minute))
@@ -17358,25 +7421,7 @@ close(closed)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 锁
-
 
 使用 chan 也可以实现互斥锁。
 
@@ -17386,143 +7431,13 @@ close(closed)
 
 这是使用 Channel 实现锁的两种不同实现方式，我重点介绍下第一种。理解了这种实现方式，第二种方式也就很容易掌握了，我就不多说了。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 使用chan实现互斥锁
+// 使用 chan 实现互斥锁
 
 type Mutex struct {
 
  ch chanstruct{}
 
 }
-
-
 
 // 使用锁需要初始化
 
@@ -17536,8 +7451,6 @@ return mu
 
 }
 
-
-
 // 请求锁，直到获取到
 
 func(m *Mutex)Lock() {
@@ -17545,8 +7458,6 @@ func(m *Mutex)Lock() {
  <-m.ch
 
 }
-
-
 
 // 解锁
 
@@ -17563,8 +7474,6 @@ panic("unlock of unlocked mutex")
  }
 
 }
-
-
 
 // 尝试获取锁
 
@@ -17583,8 +7492,6 @@ default:
 returnfalse
 
 }
-
-
 
 // 加入一个超时的设置
 
@@ -17608,8 +7515,6 @@ returnfalse
 
 }
 
-
-
 // 锁是否已被持有
 
 func(m *Mutex)IsLocked()bool {
@@ -17617,10 +7522,6 @@ func(m *Mutex)IsLocked()bool {
 returnlen(m.ch) == 0
 
 }
-
-
-
-
 
 funcmain() {
 
@@ -17636,29 +7537,11 @@ funcmain() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 你可以用 buffer 等于 1 的 chan 实现互斥锁，在初始化这个锁的时候往 Channel 中先塞入一个元素，谁把这个元素取走，谁就获取了这把锁，把元素放回去，就是释放了锁。元素在放回到 chan 之前，不会有 goroutine 能从 chan 中取出元素的，这就保证了互斥性。
 
 在这段代码中，还有一点需要我们注意下：利用 select+chan 的方式，很容易实现 TryLock、Timeout 的功能。具体来说就是，在 select 语句中，我们可以使用 default 实现 TryLock，使用一个 Timer 来实现 Timeout 的功能。
 
 ## 任务编排
-
 
 前面所说的消息交流的场景是一个特殊的任务编排的场景，这个“击鼓传花”的模式也被称为流水线模式。
 
@@ -17668,7 +7551,6 @@ funcmain() {
 
 ### Or-Done 模式
 
-
 首先来看 Or-Done 模式。Or-Done 模式是信号通知模式中更宽泛的一种模式。这里提到了“信号通知模式”，我先来解释一下。
 
 我们会使用“信号通知”实现某个任务执行完成后的通知机制，在实现时，我们为这个任务定义一个类型为 chan struct{}类型的 done 变量，等任务结束后，我们就可以 close 这个变量，然后，其它 receiver 就会收到这个通知。
@@ -17677,75 +7559,9 @@ funcmain() {
 
 比如，你发送同一个请求到多个微服务节点，只要任意一个微服务节点返回结果，就算成功，这个时候，就可以参考下面的实现：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcor(channels ...<-chaninterface{}) <-chaninterface{} {
 
-// 特殊情况，只有零个或者1个chan
+// 特殊情况，只有零个或者 1 个 chan
 
 switchlen(channels) {
 
@@ -17759,19 +7575,15 @@ return channels[0]
 
  }
 
-
-
  orDone := make(chaninterface{})
 
 gofunc() {
 
 deferclose(orDone)
 
-
-
 switchlen(channels) {
 
-case2: // 2个也是一种特殊情况
+case2: // 2 个也是一种特殊情况
 
 select {
 
@@ -17781,7 +7593,7 @@ case <-channels[1]:
 
  }
 
-default: //超过两个，二分法递归处理
+default: // 超过两个，二分法递归处理
 
  m := len(channels) / 2
 
@@ -17797,84 +7609,11 @@ case <-or(channels[m:]...):
 
  }()
 
-
-
 return orDone
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我们可以写一个测试程序测试它：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcsig(after time.Duration) <-chaninterface{} {
 
@@ -17892,15 +7631,9 @@ return c
 
 }
 
-
-
-
-
 funcmain() {
 
  start := time.Now()
-
-
 
  <-or(
 
@@ -17918,98 +7651,17 @@ funcmain() {
 
  )
 
-
-
  fmt.Printf("done after %v", time.Since(start))
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这里的实现使用了一个巧妙的方式，当 chan 的数量大于 2 时，使用递归的方式等待信号。
 
 在 chan 数量比较多的情况下，递归并不是一个很好的解决方式，根据这一讲最开始介绍的反射的方法，我们也可以实现 Or-Done 模式：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcor(channels ...<-chaninterface{}) <-chaninterface{} {
 
-//特殊情况，只有0个或者1个
+// 特殊情况，只有 0 个或者 1 个
 
 switchlen(channels) {
 
@@ -18023,15 +7675,13 @@ return channels[0]
 
  }
 
-
-
  orDone := make(chaninterface{})
 
 gofunc() {
 
 deferclose(orDone)
 
-// 利用反射构建SelectCase
+// 利用反射构建 SelectCase
 
 var cases []reflect.SelectCase
 
@@ -18047,43 +7697,19 @@ for _, c := range channels {
 
  }
 
-
-
-// 随机选择一个可用的case
+// 随机选择一个可用的 case
 
  reflect.Select(cases)
 
  }()
 
-
-
-
-
 return orDone
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这是递归和反射两种方法实现 Or-Done 模式的代码。反射方式避免了深层递归的情况，可以处理有大量 chan 的情况。其实最笨的一种方法就是为每一个 Channel 启动一个 goroutine，不过这会启动非常多的 goroutine，太多的 goroutine 会影响性能，所以不太常用。你只要知道这种用法就行了，不用重点掌握。
 
 ### 扇入模式
-
 
 扇入借鉴了数字电路的概念，它定义了单个逻辑门能够接受的数字信号输入最大量的术语。一个逻辑门可以有多个输入，一个输出。
 
@@ -18097,62 +7723,6 @@ return orDone
 
 反射的代码比较简短，易于理解，主要就是构造出 SelectCase slice，然后传递给 reflect.Select 语句。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcfanInReflect(chans ...<-chaninterface{}) <-chaninterface{} {
 
  out := make(chaninterface{})
@@ -18161,7 +7731,7 @@ gofunc() {
 
 deferclose(out)
 
-// 构造SelectCase slice
+// 构造 SelectCase slice
 
 var cases []reflect.SelectCase
 
@@ -18177,15 +7747,13 @@ for _, c := range chans {
 
  }
 
-
-
-// 循环，从cases中选择一个可用的
+// 循环，从 cases 中选择一个可用的
 
 forlen(cases) > 0 {
 
  i, v, ok := reflect.Select(cases)
 
-if !ok { // 此channel已经close
+if !ok { // 此 channel 已经 close
 
  cases = append(cases[:i], cases[i+1:]...)
 
@@ -18203,64 +7771,7 @@ return out
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 递归模式也是在 Channel 大于 2 时，采用二分法递归 merge。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcfanInRec(chans ...<-chaninterface{}) <-chaninterface{} {
 
@@ -18296,76 +7807,7 @@ return mergeTwo(
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这里有一个 mergeTwo 的方法，是将两个 Channel 合并成一个 Channel，是扇入形式的一种特例（只处理两个 Channel）。 下面我来借助一段代码帮你理解下这个方法。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmergeTwo(a, b <-chaninterface{}) <-chaninterface{} {
 
@@ -18375,13 +7817,13 @@ gofunc() {
 
 deferclose(c)
 
-for a != nil || b != nil { //只要还有可读的chan
+for a != nil || b != nil { // 只要还有可读的 chan
 
 select {
 
 case v, ok := <-a:
 
-if !ok { // a 已关闭，设置为nil
+if !ok { // a 已关闭，设置为 nil
 
  a = nil
 
@@ -18393,7 +7835,7 @@ continue
 
 case v, ok := <-b:
 
-if !ok { // b 已关闭，设置为nil
+if !ok { // b 已关闭，设置为 nil
 
  b = nil
 
@@ -18413,25 +7855,7 @@ return c
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### 扇出模式
-
 
 有扇入模式，就有扇出模式，扇出模式是和扇入模式相反的。
 
@@ -18439,63 +7863,11 @@ return c
 
 下面是一个扇出模式的实现。从源 Channel 取出一个数据后，依次发送给目标 Channel。在发送给目标 Channel 的时候，可以同步发送，也可以异步发送：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcfanOut(ch <-chaninterface{}, out []chaninterface{}, async bool) {
 
 gofunc() {
 
-deferfunc() { //退出时关闭所有的输出chan
+deferfunc() { // 退出时关闭所有的输出 chan
 
 for i := 0; i < len(out); i++ {
 
@@ -18505,9 +7877,7 @@ close(out[i])
 
  }()
 
-
-
-for v := range ch { // 从输入chan中读取数据
+for v := range ch { // 从输入 chan 中读取数据
 
  v := v
 
@@ -18515,17 +7885,17 @@ for i := 0; i < len(out); i++ {
 
  i := i
 
-if async { //异步
+if async { // 异步
 
 gofunc() {
 
- out[i] <- v // 放入到输出chan中,异步方式
+ out[i] <- v // 放入到输出 chan 中，异步方式
 
  }()
 
  } else {
 
- out[i] <- v // 放入到输出chan中，同步方式
+ out[i] <- v // 放入到输出 chan 中，同步方式
 
  }
 
@@ -18537,73 +7907,21 @@ gofunc() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 你也可以尝试使用反射的方式来实现，我就不列相关代码了，希望你课后可以自己思考下。
 
 ### Stream
-
 
 这里我来介绍一种把 Channel 当作流式管道使用的方式，也就是把 Channel 看作流（Stream），提供跳过几个元素，或者是只取其中的几个元素等方法。
 
 首先，我们提供创建流的方法。这个方法把一个数据 slice 转换成流：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcasStream(done <-chanstruct{}, values ...interface{}) <-chaninterface{} {
 
- s := make(chaninterface{}) //创建一个unbuffered的channel
+ s := make(chaninterface{}) // 创建一个 unbuffered 的 channel
 
-gofunc() { // 启动一个goroutine，往s中塞数据
+gofunc() { // 启动一个 goroutine，往 s 中塞数据
 
-deferclose(s) // 退出时关闭chan
+deferclose(s) // 退出时关闭 chan
 
 for _, v := range values { // 遍历数组
 
@@ -18613,7 +7931,7 @@ case <-done:
 
 return
 
-case s <- v: // 将数组元素塞入到chan中
+case s <- v: // 将数组元素塞入到 chan 中
 
  }
 
@@ -18625,91 +7943,21 @@ return s
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 流创建好以后，该咋处理呢？下面我再给你介绍下实现流的方法。
-
-
 
 takeN：只取流中的前 n 个数据；
 
-
-
-
 takeFn：筛选流中的数据，只保留满足条件的数据；
-
-
-
 
 takeWhile：只取前面满足条件的数据，一旦不满足条件，就不再取；
 
-
-
-
 skipN：跳过流中前几个数据；
-
-
-
 
 skipFn：跳过满足条件的数据；
 
-
-
-
 skipWhile：跳过前面满足条件的数据，一旦不满足条件，当前这个元素和以后的元素都会输出给 Channel 的 receiver。
 
-
-
 这些方法的实现很类似，我们以 takeN 为例来具体解释一下。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 functakeN(done <-chanstruct{}, valueStream <-chaninterface{}, num int) <-chaninterface{} {
 
@@ -18719,7 +7967,7 @@ gofunc() {
 
 deferclose(takeStream)
 
-for i := 0; i < num; i++ { // 只读取前num个元素
+for i := 0; i < num; i++ { // 只读取前 num 个元素
 
 select {
 
@@ -18727,7 +7975,7 @@ case <-done:
 
 return
 
-case takeStream <- <-valueStream: //从输入流中读取元素
+case takeStream <- <-valueStream: // 从输入流中读取元素
 
  }
 
@@ -18739,25 +7987,7 @@ return takeStream
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Map-Reduce
-
 
 map-reduce 是一种处理数据的方式，最早是由 Google 公司研究提出的一种面向大规模数据处理的并行计算模型和方法，开源的版本是 hadoop，前几年比较火。
 
@@ -18767,49 +7997,11 @@ map-reduce 分为两个步骤，第一步是映射（map），处理队列中的
 
 就像做汉堡一样，map 就是单独处理每一种食材，reduce 就是从每一份食材中取一部分，做成一个汉堡。
 
-我们先来看下 map 函数的处理逻辑:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+我们先来看下 map 函数的处理逻辑：
 
 funcmapChan(in <-chaninterface{}, fn func(interface{})interface{}) <-chaninterface{} {
 
- out := make(chaninterface{}) //创建一个输出chan
+ out := make(chaninterface{}) // 创建一个输出 chan
 
 if in == nil { // 异常检查
 
@@ -18819,13 +8011,11 @@ return out
 
  }
 
-
-
-gofunc() { // 启动一个goroutine,实现map的主要逻辑
+gofunc() { // 启动一个 goroutine, 实现 map 的主要逻辑
 
 deferclose(out)
 
-for v := range in { // 从输入chan读取数据，执行业务操作，也就是map操作
+for v := range in { // 从输入 chan 读取数据，执行业务操作，也就是 map 操作
 
  out <- fn(v)
 
@@ -18833,60 +8023,11 @@ for v := range in { // 从输入chan读取数据，执行业务操作，也就�
 
  }()
 
-
-
 return out
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 reduce 函数的处理逻辑如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcreduce(in <-chaninterface{}, fn func(r, v interface{})interface{}) interface{} {
 
@@ -18896,112 +8037,19 @@ returnnil
 
  }
 
-
-
  out := <-in // 先读取第一个元素
 
-for v := range in { // 实现reduce的主要逻辑
+for v := range in { // 实现 reduce 的主要逻辑
 
  out = fn(out, v)
 
  }
 
-
-
 return out
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我们可以写一个程序，这个程序使用 map-reduce 模式处理一组整数，map 函数就是为每个整数乘以 10，reduce 函数就是把 map 处理的结果累加起来：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 生成一个数据流
 
@@ -19035,15 +8083,11 @@ return s
 
 }
 
-
-
 funcmain() {
 
  in := asStream(nil)
 
-
-
-// map操作: 乘以10
+// map 操作：乘以 10
 
  mapFn := func(v interface{})interface{} {
 
@@ -19051,9 +8095,7 @@ return v.(int) * 10
 
  }
 
-
-
-// reduce操作: 对map的结果进行累加
+// reduce 操作：对 map 的结果进行累加
 
  reduceFn := func(r, v interface{})interface{} {
 
@@ -19061,33 +8103,13 @@ return r.(int) + v.(int)
 
  }
 
-
-
- sum := reduce(mapChan(in, mapFn), reduceFn) //返回累加结果
+ sum := reduce(mapChan(in, mapFn), reduceFn) // 返回累加结果
 
  fmt.Println(sum)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
-
 
 这节课，我借助代码示例，带你学习了 Channel 的应用场景和应用模式。这几种模式不是我们学习的终点，而是学习的起点。掌握了这几种模式之后，我们可以延伸出更多的模式。
 
@@ -19099,17 +8121,13 @@ return r.(int) + v.(int)
 
 ## 思考题
 
-
 想一想，我们在利用 chan 实现互斥锁的时候，如果 buffer 设置的不是 1，而是一个更大的值，会出现什么状况吗？能解决什么问题吗？
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 欢迎你把今天的内容分享给你的朋友或同事。
 
-
-# 15 | 内存模型：Go如何保证并发读写的顺序？
-
+# 15 | 内存模型：Go 如何保证并发读写的顺序？
 
 你好，我是鸟窝。
 
@@ -19123,13 +8141,11 @@ Go 官方文档里专门介绍了 Go 的[内存模型]()，你不要误解这里
 
 允许编译器和硬件对程序做一些优化。这一点其实主要是为编译器开发者提供的保证，这样可以方便他们对 Go 的编译器做优化。
 
-
 既然内存模型这么重要，今天，我们就来花一节课的时间学习一下。
 
 首先，我们要先弄明白重排和可见性的问题，因为它们影响着程序实际执行的顺序关系。
 
-# 重排和可见性的问题
-
+## 重排和可见性的问题
 
 由于指令重排，代码并不一定会按照你写的顺序执行。
 
@@ -19139,67 +8155,23 @@ Go 官方文档里专门介绍了 Go 的[内存模型]()，你不要误解这里
 
 先看第一个例子，代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var a, b int
-
-
 
 funcf() {
 
- a = 1// w之前的写操作
+ a = 1// w 之前的写操作
 
- b = 2// 写操作w
+ b = 2// 写操作 w
 
 }
 
-
-
 funcg() {
 
-print(b) // 读操作r
+print(b) // 读操作 r
 
 print(a) // ???
 
 }
-
-
 
 funcmain() {
 
@@ -19209,66 +8181,13 @@ go f() //g1
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可以看到，第 9 行是要打印 b 的值。需要注意的是，即使这里打印出的值是 2，但是依然可能在打印 a 的值时，打印出初始值 0，而不是 1。这是因为，程序运行的时候，不能保证 g2 看到的 a 和 b 的赋值有先后关系。
 
 再来看一个类似的例子。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var a string
 
 var done bool
-
-
 
 funcsetup() {
 
@@ -19277,8 +8196,6 @@ funcsetup() {
  done = true
 
 }
-
-
 
 funcmain() {
 
@@ -19292,68 +8209,9 @@ print(a)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在这段代码中，主 goroutine main 即使观察到 done 变成 true 了，最后读取到的 a 的值仍然可能为空。
 
 更糟糕的情况是，main 根本就观察不到另一个 goroutine 对 done 的写操作，这就会导致 main 程序一直被 hang 住。甚至可能还会出现半初始化的情况，比如：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type T struct {
 
@@ -19361,11 +8219,7 @@ type T struct {
 
 }
 
-
-
 var g *T
-
-
 
 funcsetup() {
 
@@ -19376,8 +8230,6 @@ funcsetup() {
  g = t
 
 }
-
-
 
 funcmain() {
 
@@ -19391,61 +8243,19 @@ print(g.msg)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 即使 main goroutine 观察到 g 不为 nil，也可能打印出空的 msg（第 17 行）。
 
 看到这里，你可能要说了，我都运行这个程序几百万次了，怎么也没有观察到这种现象？我可以这么告诉你，能不能观察到和提供保证（guarantee）是两码事儿。由于 CPU 架构和 Go 编译器的不同，即使你运行程序时没有遇到这些现象，也不代表 Go 可以 100% 保证不会出现这些问题。
 
 刚刚说了，程序在运行的时候，两个操作的顺序可能不会得到保证，那该怎么办呢？接下来，我要带你了解一下 Go 内存模型中很重要的一个概念：happens-before，这是用来描述两个时间的顺序关系的。如果某些操作能提供 happens-before 关系，那么，我们就可以 100% 保证它们之间的顺序。
 
-# happens-before
-
+## happens-before
 
 在一个 goroutine 内部，程序的执行顺序和它们的代码指定的顺序是一样的，即使编译器或者 CPU 重排了读写顺序，从行为上来看，也和代码指定的顺序一样。
 
 这是一个非常重要的保证，我们一定要记住。
 
 我们来看一个例子。在下面的代码中，即使编译器或者 CPU 对 a、b、c 的初始化进行了重排，但是打印结果依然能保证是 1、2、3，而不会出现 1、0、0 或 1、0、1 等情况。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcfoo() {
 
@@ -19455,8 +8265,6 @@ var b = 2
 
 var c = 3
 
-
-
 println(a)
 
 println(b)
@@ -19464,23 +8272,6 @@ println(b)
 println(c)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 但是，对于另一个 goroutine 来说，重排却会产生非常大的影响。因为 Go 只保证 goroutine 内部重排对读写的顺序没有影响，比如刚刚我们在讲“可见性”问题时提到的三个例子，那该怎么办呢？这就要用到 happens-before 关系了。
 
@@ -19490,23 +8281,15 @@ Go 内存模型通过 happens-before 定义两个事件（读、写 action）的
 
 如果要保证对“变量 v 的读操作 r”能够观察到一个对“变量 v 的写操作 w”，并且 r 只能观察到 w 对变量 v 的写，没有其它对 v 的写操作，也就是说，我们要保证 r 绝对能观察到 w 操作的结果，那么就需要同时满足两个条件：
 
-
-
 w happens before r；
 
-
-
-
 其它对 v 的写操作（w2、w3、w4, …） 要么 happens before w，要么 happens after r，绝对不会和 w、r 同时发生，或者是在它们之间发生。
-
-
 
 你可能会说，这是很显然的事情啊，但我要和你说的是，这是一个非常严格、严谨的数学定义。
 
 对于单个的 goroutine 来说，它有一个特殊的 happens-before 关系，Go 内存模型中是这么讲的：
 
 Within a single goroutine, the happens-before order is the order expressed by the program.
-
 
 我来解释下这句话。它的意思是，在单个的 goroutine 内部， happens-before 的关系和代码编写的顺序是一致的。
 
@@ -19516,65 +8299,25 @@ Within a single goroutine, the happens-before order is the order expressed by th
 
 说到这儿，我想先给你补充三个 Go 语言中和内存模型有关的小知识，掌握了这些，你就能更好地理解下面的内容。
 
-
-
 在 Go 语言中，对变量进行零值的初始化就是一个写操作。
-
-
-
 
 如果对超过机器 word（64bit、32bit 或者其它）大小的值进行读写，那么，就可以看作是对拆成 word 大小的几个读写无序进行。
 
-
-
-
 Go 并不提供直接的 CPU 屏障（CPU fence）来提示编译器或者 CPU 保证顺序性，而是使用不同架构的内存屏障指令来实现统一的并发原语。
-
-
 
 接下来，我就带你学习下 Go 语言中提供的 happens-before 关系保证。
 
-# Go 语言中保证的 happens-before 关系
-
+## Go 语言中保证的 happens-before 关系
 
 除了单个 goroutine 内部提供的 happens-before 保证，Go 语言中还提供了一些其它的 happens-before 关系的保证，下面我来一个一个介绍下。
 
 ## init 函数
-
 
 应用程序的初始化是在单一的 goroutine 执行的。如果包 p 导入了包 q，那么，q 的 init 函数的执行一定 happens before p 的任何初始化代码。
 
 这里有一个特殊情况需要你记住：main 函数一定在导入的包的 init 函数之后执行。
 
 包级别的变量在同一个文件中是按照声明顺序逐个初始化的，除非初始化它的时候依赖其它的变量。同一个包下的多个文件，会按照文件名的排列顺序进行初始化。这个顺序被定义在[Go 语言规范]()中，而不是 Go 的内存模型规范中。你可以看看下面的例子中各个变量的值：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var (
 
@@ -19588,8 +8331,6 @@ var (
 
 )
 
-
-
 funcf()int {
 
  d++
@@ -19597,23 +8338,6 @@ funcf()int {
 return d
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 具体怎么对这些变量进行初始化呢？Go 采用的是依赖分析技术。不过，依赖分析技术保证的顺序只是针对同一包下的变量，而且，只有引用关系是本包变量、函数和非接口的方法，才能保证它们的顺序性。
 
@@ -19627,20 +8351,6 @@ return d
 
 为了追踪初始化过程，并输出有意义的日志，我定义了一个辅助方法，打印出日志并返回一个用来初始化的整数值：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcTrace(t string, v int)int {
 
  fmt.Println(t, ":", v)
@@ -19649,66 +8359,15 @@ return v
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 包 p3 包含两个文件，分别定义了一个 init 函数。第一个文件中定义了两个变量，这两个变量的值还会在 init 函数中进行修改。
 
 我们来分别看下包 p3 的这两个文件：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // lib1.go in p3
-
-
 
 var V1_p3 = trace.Trace("init v1_p3", 3)
 
 var V2_p3 = trace.Trace("init v2_p3", 3)
-
-
-
-
 
 funcinit() {
 
@@ -19720,42 +8379,7 @@ funcinit() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // lib2.go in p3
-
-
 
 funcinit() {
 
@@ -19763,50 +8387,11 @@ funcinit() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面再来看看包 p2。包 p2 定义了变量和 init 函数。第一个变量初始化为 2，并在 init 函数中更改为 200。第二个变量是复制的 p3.V2_p3。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var V1_p2 = trace.Trace("init v1_p2", 2)
 
 var V2_p2 = trace.Trace("init v2_p2", p3.V2_p3)
-
-
 
 funcinit() {
 
@@ -19816,48 +8401,11 @@ funcinit() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 包 p1 定义了变量和 init 函数。它的两个变量的值是复制的 p2 对应的两个变量值。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var V1_p1 = trace.Trace("init v1_p1", p2.V1_p2)
 
 var V2_p1 = trace.Trace("init v2_p1", p2.V2_p2)
-
-
 
 funcinit() {
 
@@ -19865,58 +8413,13 @@ funcinit() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 main 定义了 init 函数和 main 函数。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcinit() {
 
  fmt.Println("init func in main")
 
 }
-
-
-
-
 
 funcmain() {
 
@@ -19926,152 +8429,55 @@ funcmain() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 运行 main 函数会依次输出 p3、p2、p1、main 的初始化变量时的日志（变量初始化时的日志和 init 函数调用时的日志）：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 包p3的变量初始化
+// 包 p3 的变量初始化
 
 init v1_p3 : 3
 
 init v2_p3 : 3
 
-// p3的init函数
+// p3 的 init 函数
 
 init func in p3
 
-// p3的另一个init函数 
+// p3 的另一个 init 函数
 
 another init func in p3
 
-
-
-// 包p2的变量初始化
+// 包 p2 的变量初始化
 
 init v1_p2 : 2
 
 init v2_p2 : 300
 
-// 包p2的init函数
+// 包 p2 的 init 函数
 
 init func in p2
 
-
-
-// 包p1的变量初始化
+// 包 p1 的变量初始化
 
 init v1_p1 : 200
 
 init v2_p1 : 300
 
-// 包p1的init函数
+// 包 p1 的 init 函数
 
 init func in p1
 
-
-
-// 包main的init函数
+// 包 main 的 init 函数
 
 init func in main
 
-// main函数
+// main 函数
 
 V1_p1: 200
 
 V2_p1: 300
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面，我们再来看看 goroutine 对 happens-before 关系的保证情况。
 
 ## goroutine
-
 
 首先，我们需要明确一个规则：启动 goroutine 的 go 语句的执行，一定 happens before 此 goroutine 内的代码执行。
 
@@ -20079,43 +8485,13 @@ V2_p1: 300
 
 我们来看一个例子。在下面的代码中，第 8 行 a 的赋值和第 9 行的 go 语句是在同一个 goroutine 中执行的，所以，在主 goroutine 看来，第 8 行肯定 happens before 第 9 行，又由于刚才的保证，第 9 行子 goroutine 的启动 happens before 第 4 行的变量输出，那么，我们就可以推断出，第 8 行 happens before 第 4 行。也就是说，在第 4 行打印 a 的值的时候，肯定会打印出“hello world”。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var a string
-
-
 
 funcf() {
 
 print(a)
 
 }
-
-
 
 funchello() {
 
@@ -20125,27 +8501,9 @@ go f()
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 刚刚说的是启动 goroutine 的情况，goroutine 退出的时候，是没有任何 happens-before 保证的。所以，如果你想观察某个 goroutine 的执行效果，你需要使用同步机制建立 happens-before 关系，比如 Mutex 或者 Channel。接下来，我会讲 Channel 的 happens-before 的关系保证。
 
 ## Channel
-
 
 Channel 是 goroutine 同步交流的主要方法。往一个 Channel 中发送一条数据，通常对应着另一个 goroutine 从这个 Channel 中接收一条数据。
 
@@ -20153,43 +8511,9 @@ Channel 是 goroutine 同步交流的主要方法。往一个 Channel 中发送�
 
 第 1 条规则是，往 Channel 中的发送操作，happens before 从该 Channel 接收相应数据的动作完成之前，即第 n 个 send 一定 happens before 第 n 个 receive 的完成。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var ch = make(chanstruct{}, 10) // buffered或者unbuffered
+var ch = make(chanstruct{}, 10) // buffered 或者 unbuffered
 
 var s string
-
-
 
 funcf() {
 
@@ -20198,8 +8522,6 @@ funcf() {
  ch <- struct{}{}
 
 }
-
-
 
 funcmain() {
 
@@ -20210,23 +8532,6 @@ go f()
 print(s)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 在这个例子中，s 的初始化（第 5 行）happens before 往 ch 中发送数据， 往 ch 发送数据 happens before 从 ch 中读取出一条数据（第 11 行），第 12 行打印 s 的值 happens after 第 11 行，所以，打印的结果肯定是初始化后的 s 的值“hello world”。
 
@@ -20238,43 +8543,9 @@ print(s)
 
 所以，在上面的这个例子中呢，如果想保持同样的执行顺序，也可以写成这样：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var ch = make(chanint)
 
 var s string
-
-
 
 funcf() {
 
@@ -20283,8 +8554,6 @@ funcf() {
  <-ch
 
 }
-
-
 
 funcmain() {
 
@@ -20296,23 +8565,6 @@ print(s)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果第 11 行发送语句执行成功（完毕），那么根据这个规则，第 6 行（接收）的调用肯定发生了（执行完成不完成不重要，重要的是这一句“肯定执行了”），那么 s 也肯定初始化了，所以一定会打印出“hello world”。
 
 这一条比较晦涩，但是，因为 Channel 是 unbuffered 的 Channel，所以这个规则也成立。
@@ -20323,69 +8575,23 @@ print(s)
 
 ## Mutex/RWMutex
 
-
 对于互斥锁 Mutex m 或者读写锁 RWMutex m，有 3 条 happens-before 关系的保证。
-
-
 
 第 n 次的 m.Unlock 一定 happens before 第 n+1 m.Lock 方法的返回；
 
-
-
-
 对于读写锁 RWMutex m，如果它的第 n 个 m.Lock 方法的调用已返回，那么它的第 n 个 m.Unlock 的方法调用一定 happens before 任何一个 m.RLock 方法调用的返回，只要这些 m.RLock 方法调用 happens after 第 n 次 m.Lock 的调用的返回。这就可以保证，只有释放了持有的写锁，那些等待的读请求才能请求到读锁。
 
-
-
-
 对于读写锁 RWMutex m，如果它的第 n 个 m.RLock 方法的调用已返回，那么它的第 k （k<=n）个成功的 m.RUnlock 方法的返回一定 happens before 任意的 m.RUnlockLock 方法调用，只要这些 m.Lock 方法调用 happens after 第 n 次 m.RLock。
-
-
 
 读写锁的保证有点绕，我再带你看看官方的描述：
 
 对于读写锁 l 的 l.RLock 方法调用，如果存在一个 n，这次的 l.RLock 调用 happens after 第 n 次的 l.Unlock，那么，和这个 RLock 相对应的 l.RUnlock 一定 happens before 第 n+1 次 l.Lock。意思是，读写锁的 Lock 必须等待既有的读锁释放后才能获取到。
 
-
 我再举个例子。在下面的代码中，第 6 行第一次的 Unlock 一定 happens before 第二次的 Lock（第 12 行），所以这也能保证正确地打印出“hello world”。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var mu sync.Mutex
 
 var s string
-
-
 
 funcfoo() {
 
@@ -20394,8 +8600,6 @@ funcfoo() {
  mu.Unlock()
 
 }
-
-
 
 funcmain() {
 
@@ -20407,25 +8611,7 @@ go foo()
 
 print(s)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## WaitGroup
-
 
 接下来是 WaitGroup 的保证。
 
@@ -20435,52 +8621,19 @@ print(s)
 
 ## Once
 
-
 我们在[第 8 讲]()学过 Once 了，相信你已经很熟悉它的功能了。它提供的保证是：对于 once.Do(f) 调用，f 函数的那个单次调用一定 happens before 任何 once.Do(f) 调用的返回。换句话说，就是函数 f 一定会在 Do 方法返回之前执行。
 
 还是以 hello world 的例子为例，这次我们使用 Once 并发原语实现，可以看下下面的代码：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var s string
 
 var once sync.Once
-
-
 
 funcfoo() {
 
  s = "hello, world"
 
 }
-
-
 
 functwoprint() {
 
@@ -20490,29 +8643,11 @@ print(s)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第 5 行的执行一定 happens before 第 9 行的返回，所以执行到第 10 行的时候，sd 已经初始化了，所以会正确地打印“hello world”。
 
 最后，我再来说说 atomic 的保证。
 
 ## atomic
-
 
 其实，Go 内存模型的官方文档并没有明确给出 atomic 的保证，有一个相关的 issue [go# 5045]()记录了相关的讨论。光看 issue 号，就知道这个讨论由来已久了。Russ Cox 想让 atomic 有一个弱保证，这样可以为以后留下充足的可扩展空间，所以，Go 内存模型规范上并没有严格的定义。
 
@@ -20522,43 +8657,9 @@ print(s)
 
 依照 Ian Lance Taylor 的说法，Go 核心开发组的成员几乎没有关注这个方向上的研究，因为这个问题太复杂，有很多问题需要去研究，所以，现阶段还是不要使用 atomic 来保证顺序性。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcmain() {
 
 var a, b int32 = 0, 0
-
-
 
 gofunc() {
 
@@ -20567,8 +8668,6 @@ gofunc() {
  atomic.StoreInt32(&b, 1)
 
  }()
-
-
 
 for atomic.LoadInt32(&b) == 0{
 
@@ -20580,33 +8679,13 @@ for atomic.LoadInt32(&b) == 0{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
-
 
 Go 的内存模型规范中，一开始有这么一段话：
 
 If you must read the rest of this document to understand the behavior of your program, you are being too clever.
 
-
 Don’t be clever.
-
 
 我来说说我对这句话的理解：你通过学习这节课来理解你的程序的行为是聪明的，但是，不要自作聪明。
 
@@ -20620,17 +8699,13 @@ Don’t be clever.
 
 ## 思考题
 
-
 我们知道，Channel 可以实现互斥锁，那么，我想请你思考一下，它是如何利用 happens-before 关系保证锁的请求和释放的呢？
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 �。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 16 | Semaphore：一篇文章搞懂信号量
-
 
 你好，我是鸟窝。
 
@@ -20638,8 +8713,7 @@ Don’t be clever.
 
 所以，在接下来的几节课里，我会给你分享 Go 官方或者其他人提供的第三方库，这节课我们先来学习信号量，信号量（Semaphore）是用来控制多个 goroutine 同时访问多个资源的并发原语。
 
-# 信号量是什么？都有什么操作？
-
+## 信号量是什么？都有什么操作？
 
 信号量的概念是荷兰计算机科学家 Edsger Dijkstra 在 1963 年左右提出来的，广泛应用在不同的操作系统中。在系统中，会给每一个进程一个信号量，代表每个进程目前的状态。未得到控制权的进程，会在特定的地方被迫停下来，等待可以继续进行的信号到来。
 
@@ -20655,38 +8729,13 @@ Don’t be clever.
 
 ## P/V 操作
 
-
 Dijkstra 在他的论文中为信号量定义了两个操作 P 和 V。P 操作（descrease、wait、acquire）是减少信号量的计数值，而 V 操作（increase、signal、release）是增加信号量的计数值。
 
 使用伪代码表示如下（中括号代表原子操作）：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 functionV(semaphore S, integer I):
 
  [S ← S + I]
-
-
 
 functionP(semaphore S, integer I):
 
@@ -20698,23 +8747,6 @@ S ← S − I
 
 break]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可以看到，初始化信号量 S 有一个指定数量（n）的资源，它就像是一个有 n 个资源的池子。P 操作相当于请求资源，如果资源可用，就立即返回；如果没有资源或者不够，那么，它可以不断尝试或者阻塞等待。V 操作会释放自己持有的资源，把资源返还给信号量。信号量的值除了初始化的操作以外，只能由 P/V 操作改变。
 
 现在，我们来总结下信号量的实现。
@@ -20724,7 +8756,6 @@ break]
 P 操作：将信号量的计数值减去 1，如果新值已经为负，那么调用者会被阻塞并加入到等待队列中。否则，调用者会继续执行，并且获得一个资源。
 
 V 操作：将信号量的计数值加 1，如果先前的计数值为负，就说明有等待的 P 操作的调用者。它会从等待队列中取出一个等待的调用者，唤醒它，让它继续执行。
-
 
 讲到这里，我想再稍微说一个题外话，我们在[第 2 讲]()提到过饥饿，就是说在高并发的极端场景下，会有些 goroutine 始终抢不到锁。为了处理饥饿的问题，你可以在等待队列中做一些“文章”。比如实现一个优先级的队列，或者先入先出的队列，等等，保持公平性，并且照顾到优先级。
 
@@ -20740,24 +8771,9 @@ V 操作：将信号量的计数值加 1，如果先前的计数值为负，就�
 
 好了，言归正传，刚刚我们掌握了信号量的含义和具体操作方式，下面，我们就来具体了解下官方扩展库的实现。
 
-# Go 官方扩展库的实现
-
+## Go 官方扩展库的实现
 
 在运行时，Go 内部使用信号量来控制 goroutine 的阻塞和唤醒。我们在学习基本并发原语的实现时也看到了，比如互斥锁的第二个字段：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Mutex struct {
 
@@ -20767,59 +8783,13 @@ type Mutex struct {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 信号量的 P/V 操作是通过函数实现的：
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcruntime_Semacquire(s *uint32)
 
 funcruntime_SemacquireMutex(s *uint32, lifo bool, skipframes int)
 
 funcruntime_Semrelease(s *uint32, handoff bool, skipframes int)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 遗憾的是，它是 Go 运行时内部使用的，并没有封装暴露成一个对外的信号量并发原语，原则上我们没有办法使用。不过没关系，Go 在它的扩展包中提供了信号量[semaphore]()，不过这个信号量的类型名并不叫 Semaphore，而是叫 Weighted。
 
@@ -20829,21 +8799,11 @@ funcruntime_Semrelease(s *uint32, handoff bool, skipframes int)
 
 我们来分析下这个信号量的几个实现方法。
 
-
-
 Acquire 方法：相当于 P 操作，你可以一次获取多个资源，如果没有足够多的资源，调用者就会被阻塞。它的第一个参数是 Context，这就意味着，你可以通过 Context 增加超时或者 cancel 的机制。如果是正常获取了资源，就返回 nil；否则，就返回 ctx.Err()，信号量不改变。
-
-
-
 
 Release 方法：相当于 V 操作，可以将 n 个资源释放，返还给信号量。
 
-
-
-
 TryAcquire 方法：尝试获取 n 个资源，但是它不会阻塞，要么成功获取 n 个资源，返回 true，要么一个也不获取，返回 false。
-
-
 
 知道了信号量的实现方法，在实际的场景中，我们应该怎么用呢？我来举个 Worker Pool 的例子，来帮助你理解。
 
@@ -20851,93 +8811,23 @@ TryAcquire 方法：尝试获取 n 个资源，但是它不会阻塞，要么成
 
 当然，这个问题的解决方案有很多种，这一次我们使用信号量，代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var (
 
- maxWorkers = runtime.GOMAXPROCS(0) // worker数量
+ maxWorkers = runtime.GOMAXPROCS(0) // worker 数量
 
- sema = semaphore.NewWeighted(int64(maxWorkers)) //信号量
+ sema = semaphore.NewWeighted(int64(maxWorkers)) // 信号量
 
- task = make([]int, maxWorkers*4) // 任务数，是worker的四倍
+ task = make([]int, maxWorkers*4) // 任务数，是 worker 的四倍
 
 )
-
-
 
 funcmain() {
 
  ctx := context.Background()
 
-
-
 for i := range task {
 
-// 如果没有worker可用，会阻塞在这里，直到某个worker被释放
+// 如果没有 worker 可用，会阻塞在这里，直到某个 worker 被释放
 
 if err := sema.Acquire(ctx, 1); err != nil {
 
@@ -20945,9 +8835,7 @@ break
 
  }
 
-
-
-// 启动worker goroutine
+// 启动 worker goroutine
 
 gofunc(i int) {
 
@@ -20961,38 +8849,17 @@ defer sema.Release(1)
 
  }
 
-
-
-// 请求所有的worker,这样能确保前面的worker都执行完
+// 请求所有的 worker, 这样能确保前面的 worker 都执行完
 
 if err := sema.Acquire(ctx, int64(maxWorkers)); err != nil {
 
- log.Printf("获取所有的worker失败: %v", err)
+ log.Printf("获取所有的 worker 失败：%v", err)
 
  }
-
-
 
  fmt.Println(task)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 在这段代码中，main goroutine 相当于一个 dispacher，负责任务的分发。它先请求信号量，如果获取成功，就会启动一个 goroutine 去处理计算，然后，这个 goroutine 会释放这个信号量（有意思的是，信号量的获取是在 main goroutine，信号量的释放是在 worker goroutine 中），如果获取不成功，就等到有信号量可以使用的时候，再去获取。
 
@@ -21001,24 +8868,6 @@ if err := sema.Acquire(ctx, int64(maxWorkers)); err != nil {
 Go 扩展库中的信号量是使用互斥锁 +List 实现的。互斥锁实现其它字段的保护，而 List 实现了一个等待队列，等待者的通知是通过 Channel 的通知机制实现的。
 
 我们来看一下信号量 Weighted 的数据结构：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Weighted struct {
 
@@ -21032,130 +8881,13 @@ type Weighted struct {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在信号量的几个实现方法里，Acquire 是代码最复杂的一个方法，它不仅仅要监控资源是否可用，而且还要检测 Context 的 Done 是否已关闭。我们来看下它的实现代码。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(s *Weighted)Acquire(ctx context.Context, n int64)error {
 
  s.mu.Lock()
 
-// fast path, 如果有足够的资源，都不考虑ctx.Done的状态，将cur加上n就返回
+// fast path, 如果有足够的资源，都不考虑 ctx.Done 的状态，将 cur 加上 n 就返回
 
 if s.size-s.cur >= n && s.waiters.Len() == 0 {
 
@@ -21167,15 +8899,13 @@ returnnil
 
  }
 
-
-
 // 如果是不可能完成的任务，请求的资源数大于能提供的最大的资源数
 
 if n > s.size {
 
  s.mu.Unlock()
 
-// 依赖ctx的状态返回，否则一直等待
+// 依赖 ctx 的状态返回，否则一直等待
 
  <-ctx.Done()
 
@@ -21183,11 +8913,9 @@ return ctx.Err()
 
  }
 
-
-
 // 否则就需要把调用者加入到等待队列中
 
-// 创建了一个ready chan,以便被通知唤醒
+// 创建了一个 ready chan, 以便被通知唤醒
 
  ready := make(chanstruct{})
 
@@ -21197,15 +8925,11 @@ return ctx.Err()
 
  s.mu.Unlock()
 
-
-
-
-
 // 等待
 
 select {
 
-case <-ctx.Done(): // context的Done被关闭
+case <-ctx.Done(): // context 的 Done 被关闭
 
  err := ctx.Err()
 
@@ -21213,17 +8937,17 @@ case <-ctx.Done(): // context的Done被关闭
 
 select {
 
-case <-ready: // 如果被唤醒了，忽略ctx的状态
+case <-ready: // 如果被唤醒了，忽略 ctx 的状态
 
  err = nil
 
-default: 通知waiter
+default: 通知 waiter
 
  isFront := s.waiters.Front() == elem
 
  s.waiters.Remove(elem)
 
-// 通知其它的waiters,检查是否有足够的资源
+// 通知其它的 waiters, 检查是否有足够的资源
 
 if isFront && s.size > s.cur {
 
@@ -21245,52 +8969,9 @@ returnnil
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 其实，为了提高性能，这个方法中的 fast path 之外的代码，可以抽取成 acquireSlow 方法，以便其它 Acquire 被内联。
 
 Release 方法将当前计数值减去释放的资源数 n，并唤醒等待队列中的调用者，看是否有足够的资源被获取。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(s *Weighted)Release(n int64) {
 
@@ -21312,68 +8993,7 @@ panic("semaphore: released more than held")
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 notifyWaiters 方法就是逐个检查等待的调用者，如果资源不够，或者是没有等待者了，就返回：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(s *Weighted)notifyWaiters() {
 
@@ -21387,21 +9007,15 @@ break// No more waiters blocked.
 
  }
 
-
-
-
-
  w := next.Value.(waiter)
 
 if s.size-s.cur < w.n {
 
-//避免饥饿，这里还是按照先入先出的方式处理
+// 避免饥饿，这里还是按照先入先出的方式处理
 
 break
 
  }
-
-
 
  s.cur += w.n
 
@@ -21413,29 +9027,11 @@ close(w.ready)
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 notifyWaiters 方法是按照先入先出的方式唤醒调用者。当释放 100 个资源的时候，如果第一个等待者需要 101 个资源，那么，队列中的所有等待者都会继续等待，即使有的等待者只需要 1 个资源。这样做的目的是避免饥饿，否则的话，资源可能总是被那些请求资源数小的调用者获取，这样一来，请求资源数巨大的调用者，就没有机会获得资源了。
 
 好了，到这里，你就知道了官方扩展库的信号量实现方法，接下来你就可以使用信号量了。不过，在此之前呢，我想给你讲几个使用时的常见错误。这部分内容可是帮助你避坑的，我建议你好好学习。
 
-# 使用信号量的常见错误
-
+## 使用信号量的常见错误
 
 保证信号量不出错的前提是正确地使用它，否则，公平性和安全性就会受到损害，导致程序 panic。
 
@@ -21449,15 +9045,13 @@ notifyWaiters 方法是按照先入先出的方式唤醒调用者。当释放 10
 
 不持有一个资源，却直接使用它。
 
-
 不过，即使你规避了这些坑，在同时使用多种资源，不同的信号量控制不同的资源的时候，也可能会出现死锁现象，比如[哲学家就餐问题]()。
 
 就 Go 扩展库实现的信号量来说，在调用 Release 方法的时候，你可以传递任意的整数。但是，如果你传递一个比请求到的数量大的错误的数值，程序就会 panic。如果传递一个负数，会导致资源永久被持有。如果你请求的资源数比最大的资源数还大，那么，调用者可能永远被阻塞。
 
 所以，使用信号量遵循的原则就是请求多少资源，就释放多少资源。你一定要注意，必须使用正确的方法传递整数，不要“耍小聪明”，而且，请求的资源数一定不要超过最大资源数。
 
-# 其它信号量的实现
-
+## 其它信号量的实现
 
 除了官方扩展库的实现，实际上，我们还有很多方法实现信号量，比较典型的就是使用 Channel 来实现。
 
@@ -21465,59 +9059,7 @@ notifyWaiters 方法是按照先入先出的方式唤醒调用者。当释放 10
 
 在初始化这个信号量的时候，我们设置它的初始容量，代表有多少个资源可以使用。它使用 Lock 和 Unlock 方法实现请求资源和释放资源，正好实现了 Locker 接口。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Semaphore 数据结构，并且还实现了Locker接口
+// Semaphore 数据结构，并且还实现了 Locker 接口
 
 type semaphore struct {
 
@@ -21527,23 +9069,19 @@ type semaphore struct {
 
  }
 
-
-
 // 创建一个新的信号量
 
 funcNewSemaphore(capacity int)sync.Locker {
 
 if capacity <= 0 {
 
- capacity = 1// 容量为1就变成了一个互斥锁
+ capacity = 1// 容量为 1 就变成了一个互斥锁
 
  }
 
 return &semaphore{ch: make(chanstruct{}, capacity)}
 
  }
-
-
 
 // 请求一个资源
 
@@ -21553,8 +9091,6 @@ func(s *semaphore)Lock() {
 
  }
 
-
-
 // 释放资源
 
 func(s *semaphore)Unlock() {
@@ -21563,23 +9099,6 @@ func(s *semaphore)Unlock() {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 当然，你还可以自己扩展一些方法，比如在请求资源的时候使用 Context 参数（Acquire(ctx)）、实现 TryLock 等功能。
 
 看到这里，你可能会问，这个信号量的实现看起来非常简单，而且也能应对大部分的信号量的场景，为什么官方扩展库的信号量的实现不采用这种方法呢？其实，具体是什么原因，我也不知道，但是我必须要强调的是，官方的实现方式有这样一个功能：它可以一次请求多个资源，这是通过 Channel 实现的信号量所不具备的。
@@ -21587,7 +9106,6 @@ func(s *semaphore)Unlock() {
 除了 Channel，[marusama/semaphore]()也实现了一个可以动态更改资源容量的信号量，也是一个非常有特色的实现。如果你的资源数量并不是固定的，而是动态变化的，我建议你考虑一下这个信号量库。
 
 ## 总结
-
 
 这是一个很奇怪的现象：标准库中实现基本并发原语（比如 Mutex）的时候，强烈依赖信号量实现等待队列和通知唤醒，但是，标准库中却没有把这个实现直接暴露出来放到标准库，而是通过第三库提供。
 
@@ -21599,26 +9117,15 @@ func(s *semaphore)Unlock() {
 
 ## 思考题
 
-
-
-
 你能用 Channel 实现信号量并发原语吗？你能想到几种实现方式？
-
-
-
 
 为什么信号量的资源数设计成 int64 而不是 uint64 呢？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
-
 
 �考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 17 | SingleFlight 和 CyclicBarrier：请求合并和循环栅栏该怎么用？
-
 
 你好，我是鸟窝。
 
@@ -21626,8 +9133,7 @@ func(s *semaphore)Unlock() {
 
 其实，它们两个并没有直接的关系，只是内容相对来说比较少，所以我打算用最短的时间带你掌握它们。一节课就能掌握两个“武器”，是不是很高效？
 
-# 请求合并 SingleFlight
-
+## 请求合并 SingleFlight
 
 SingleFlight 是 Go 开发组提供的一个扩展并发原语。它的作用是，在处理多个 goroutine 同时调用同一个函数的时候，只让一个 goroutine 去调用这个函数，等到这个 goroutine 返回结果的时候，再把结果返回给这几个同时调用的 goroutine，这样可以减少并发调用的数量。
 
@@ -21638,7 +9144,6 @@ SingleFlight 是 Go 开发组提供的一个扩展并发原语。它的作用是
 如果你学会了 SingleFlight，在面对秒杀等大并发请求的场景，而且这些请求都是读请求时，你就可以把这些请求合并为一个请求，这样，你就可以将后端服务的压力从 n 降到 1。尤其是在面对后端是数据库这样的服务的时候，采用 SingleFlight 可以极大地提高性能。那么，话不多说，就让我们开始学习 SingleFlight 吧。
 
 ## 实现原理
-
 
 SingleFlight 使用互斥锁 Mutex 和 Map 来实现。Mutex 提供并发时的读写保护，Map 用来保存同一个 key 的正在处理（in flight）的请求。
 
@@ -21652,58 +9157,9 @@ DoChan：类似 Do 方法，只不过是返回一个 chan，等 fn 函数执行�
 
 Forget：告诉 Group 忘记这个 key。这样一来，之后这个 key 请求会执行 f，而不是等待前一个未完成的 fn 函数的结果。
 
-
 下面，我们来看具体的实现方法。
 
 首先，SingleFlight 定义一个辅助对象 call，这个 call 就代表正在执行 fn 函数的请求或者是已经执行完的请求。Group 代表 SingleFlight。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
  // 代表一个正在处理的请求，或者已经处理完的请求
 
@@ -21711,21 +9167,15 @@ Forget：告诉 Group 忘记这个 key。这样一来，之后这个 key 请求�
 
  wg sync.WaitGroup
 
+ // 这个字段代表处理完的值，在 waitgroup 完成之前只会写一次
 
-
-
-
- // 这个字段代表处理完的值，在waitgroup完成之前只会写一次
-
- // waitgroup完成之后就读取这个值
+ // waitgroup 完成之后就读取这个值
 
  val interface{}
 
  err error
 
-
-
- // 指示当call在处理时是否要忘掉这个key
+ // 指示当 call 在处理时是否要忘掉这个 key
 
  forgotten bool
 
@@ -21735,9 +9185,7 @@ Forget：告诉 Group 忘记这个 key。这样一来，之后这个 key 请求�
 
  }
 
-
-
- // group代表一个singleflight对象
+ // group 代表一个 singleflight 对象
 
 typeGroupstruct {
 
@@ -21747,70 +9195,7 @@ typeGroupstruct {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我们只需要查看一个 Do 方法，DoChan 的处理方法是类似的。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(g *Group)Do(key string, fn func()(interface{}, error)) (v interface{}, err error, shared bool) {
 
@@ -21822,29 +9207,25 @@ if g.m == nil {
 
  }
 
-if c, ok := g.m[key]; ok {//如果已经存在相同的key
+if c, ok := g.m[key]; ok {// 如果已经存在相同的 key
 
  c.dups++
 
  g.mu.Unlock()
 
- c.wg.Wait() //等待这个key的第一个请求完成
+ c.wg.Wait() // 等待这个 key 的第一个请求完成
 
-return c.val, c.err, true//使用第一个key的请求结果
+return c.val, c.err, true// 使用第一个 key 的请求结果
 
  }
 
- c := new(call) // 第一个请求，创建一个call
+ c := new(call) // 第一个请求，创建一个 call
 
  c.wg.Add(1)
 
- g.m[key] = c //加入到key map中
+ g.m[key] = c // 加入到 key map 中
 
  g.mu.Unlock()
-
-
-
-
 
  g.doCall(c, key, fn) // 调用方法
 
@@ -21852,58 +9233,7 @@ return c.val, c.err, c.dups > 0
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 doCall 方法会实际调用函数 fn：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(g *Group)doCall(c *call, key string, fn func()(interface{}, error)) {
 
@@ -21911,13 +9241,9 @@ func(g *Group)doCall(c *call, key string, fn func()(interface{}, error)) {
 
  c.wg.Done()
 
-
-
-
-
  g.mu.Lock()
 
-if !c.forgotten { // 已调用完，删除这个key
+if !c.forgotten { // 已调用完，删除这个 key
 
 delete(g.m, key)
 
@@ -21933,49 +9259,17 @@ for _, ch := range c.chans {
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在这段代码中，你要注意下第 7 行。在默认情况下，forgotten==false，所以第 8 行默认会被调用，也就是说，第一个请求完成后，后续的同一个 key 的请求又重新开始新一次的 fn 函数的调用。
 
 Go 标准库的代码中就有一个 SingleFlight 的[实现]()，而扩展库中的 SingleFlight 就是在标准库的代码基础上改的，逻辑几乎一模一样，我就不多说了。
 
 ## 应用场景
 
-
 了解了 SingleFlight 的实现原理，下面我们来看看它都应用于什么场景中。
 
 Go 代码库中有两个地方用到了 SingleFlight。
 
 第一个是在[net/lookup.go]()中，如果同时有查询同一个 host 的请求，lookupGroup 会把这些请求 merge 到一起，只需要一个请求就可以了：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // lookupGroup merges LookupIPAddr calls together for lookups for the same
 
@@ -21985,66 +9279,7 @@ Go 代码库中有两个地方用到了 SingleFlight。
 
 lookupGroup singleflight.Group
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 第二个是 Go 在查询仓库版本信息时，将并发的请求合并成 1 个请求：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcmetaImportsForPrefix(importPrefix string, mod ModuleMode, security web.SecurityMode)(*urlpkg.URL, []metaImport, error) {
 
@@ -22060,9 +9295,7 @@ defer fetchCacheMu.Unlock()
 
 return res, nil
 
-
-
-// 使用 SingleFlight请求
+// 使用 SingleFlight 请求
 
  resi, _, _ := fetchGroup.Do(importPrefix, func()(resi interface{}, err error) {
 
@@ -22082,23 +9315,6 @@ return res, nil
 
  ......
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 需要注意的是，这里涉及到了缓存的问题。上面的代码会把结果放在缓存中，这也是常用的一种解决缓存击穿的例子。
 
 设计缓存问题时，我们常常需要解决缓存穿透、缓存雪崩和缓存击穿问题。缓存击穿问题是指，在平常高并发的系统中，大量的请求同时查询一个 key 时，如果这个 key 正好过期失效了，就会导致大量的请求都打到数据库上。这就是缓存击穿。
@@ -22109,82 +9325,13 @@ return res, nil
 
 groupcache 中的 SingleFlight 只有一个方法：
 
-
-
-
-
-
-
-
-
 func(g *Group)Do(key string, fn func()(interface{}, error)) (interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 SingleFlight 的作用是，在加载一个缓存项的时候，合并对同一个 key 的 load 的并发请求：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 type Group struct {
 
- 。。。。。。
+ 。
 
 // loadGroup ensures that each key is only fetched once
 
@@ -22198,13 +9345,11 @@ type Group struct {
 
  }
 
-
-
 func(g *Group)load(ctx context.Context, key string, dest Sink)(value ByteView, destPopulated bool, err error) {
 
  viewi, err := g.loadGroup.Do(key, func()(interface{}, error) {
 
-// 从cache, peer, local尝试查询cache
+// 从 cache, peer, local 尝试查询 cache
 
 return value, nil
 
@@ -22220,29 +9365,11 @@ return
 
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 其它的知名项目如 Cockroachdb（小强数据库）、CoreDNS（DNS 服务器）等都有 SingleFlight 应用，你可以查看这些项目的代码，加深对 SingleFlight 的理解。
 
 总结来说，使用 SingleFlight 时，可以通过合并请求的方式降低对下游服务的并发压力，从而提高系统的性能，常常用于缓存系统中。最后，我想给你留一个思考题，你觉得，SingleFlight 能不能合并并发的写操作呢？
 
-# 循环栅栏 CyclicBarrier
-
+## 循环栅栏 CyclicBarrier
 
 接下来，我再给你介绍另外一个并发原语：循环栅栏（CyclicBarrier），它常常应用于重复进行一组 goroutine 同时执行的场景中。
 
@@ -22264,118 +9391,37 @@ WaitGroup 更适合用在“一个 goroutine 等待一组 goroutine 到达同一
 
 ## 实现原理
 
-
 CyclicBarrier 有两个初始化方法：
-
-
 
 第一个是 New 方法，它只需要一个参数，来指定循环栅栏参与者的数量；
 
-
-
-
 第二个方法是 NewWithAction，它额外提供一个函数，可以在每一次到达执行点的时候执行一次。具体的时间点是在最后一个参与者到达之后，但是其它的参与者还未被放行之前。我们可以利用它，做放行之前的一些共享状态的更新等操作。
 
-
-
 这两个方法的签名如下：
-
-
-
-
-
-
-
-
-
-
 
 funcNew(parties int)CyclicBarrier
 
 funcNewWithAction(parties int, barrierAction func()error) CyclicBarrier
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CyclicBarrier 是一个接口，定义的方法如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type CyclicBarrier interface {
 
-// 等待所有的参与者到达，如果被ctx.Done()中断，会返回ErrBrokenBarrier
+// 等待所有的参与者到达，如果被 ctx.Done() 中断，会返回 ErrBrokenBarrier
 
  Await(ctx context.Context) error
 
-
-
-// 重置循环栅栏到初始化状态。如果当前有等待者，那么它们会返回ErrBrokenBarrier
+// 重置循环栅栏到初始化状态。如果当前有等待者，那么它们会返回 ErrBrokenBarrier
 
  Reset()
-
-
 
 // 返回当前等待者的数量
 
  GetNumberWaiting() int
 
-
-
 // 参与者的数量
 
  GetParties() int
-
-
 
 // 循环栅栏是否处于中断状态
 
@@ -22383,109 +9429,33 @@ type CyclicBarrier interface {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 循环栅栏的使用也很简单。循环栅栏的参与者只需调用 Await 等待，等所有的参与者都到达后，再执行下一步。当执行下一步的时候，循环栅栏的状态又恢复到初始的状态了，可以迎接下一轮同样多的参与者。
 
 有一道非常经典的并发编程的题目，非常适合使用循环栅栏，下面我们来看一下。
 
 ## 并发趣题：一氧化二氢制造工厂
 
-
 题目是这样的：
 
 有一个名叫大自然的搬运工的工厂，生产一种叫做一氧化二氢的神秘液体。这种液体的分子是由一个氧原子和两个氢原子组成的，也就是水。
 
-
 这个工厂有多条生产线，每条生产线负责生产氧原子或者是氢原子，每条生产线由一个 goroutine 负责。
-
 
 这些生产线会通过一个栅栏，只有一个氧原子生产线和两个氢原子生产线都准备好，才能生成出一个水分子，否则所有的生产线都会处于等待状态。也就是说，一个水分子必须由三个不同的生产线提供原子，而且水分子是一个一个按照顺序产生的，每生产一个水分子，就会打印出 HHO、HOH、OHH 三种形式的其中一种。HHH、OOH、OHO、HOO、OOO 都是不允许的。
 
-
 生产线中氢原子的生产线为 2N 条，氧原子的生产线为 N 条。
-
 
 你可以先想一下，我们怎么来实现呢？
 
 首先，我们来定义一个 H2O 辅助数据类型，它包含两个信号量的字段和一个循环栅栏。
 
-
-
 semaH 信号量：控制氢原子。一个水分子需要两个氢原子，所以，氢原子的空槽数资源数设置为 2。
-
-
-
 
 semaO 信号量：控制氧原子。一个水分子需要一个氧原子，所以资源数的空槽数设置为 1。
 
-
-
-
 循环栅栏：等待两个氢原子和一个氧原子填补空槽，直到任务完成。
 
-
-
 我们来看下具体的代码：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 package water
 
@@ -22515,7 +9485,7 @@ funcNew() *H2O {
 
 return &H2O{
 
- semaH: semaphore.NewWeighted(2), //氢原子需要两个
+ semaH: semaphore.NewWeighted(2), // 氢原子需要两个
 
  semaO: semaphore.NewWeighted(1), // 氧原子需要一个
 
@@ -22525,292 +9495,41 @@ return &H2O{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 接下来，我们看看各条流水线的处理情况。
 
 流水线分为氢原子处理流水线和氧原子处理流水线，首先，我们先看一下氢原子的流水线：如果有可用的空槽，氢原子的流水线的处理方法是 hydrogen，hydrogen 方法就会占用一个空槽（h2o.semaH.Acquire），输出一个 H 字符，然后等待栅栏放行。等其它的 goroutine 填补了氢原子的另一个空槽和氧原子的空槽之后，程序才可以继续进行。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(h2o *H2O)hydrogen(releaseHydrogen func()) {
 
  h2o.semaH.Acquire(context.Background(), 1)
 
+ releaseHydrogen() // 输出 H
 
-
- releaseHydrogen() // 输出H
-
- h2o.b.Await(context.Background()) //等待栅栏放行
+ h2o.b.Await(context.Background()) // 等待栅栏放行
 
  h2o.semaH.Release(1) // 释放氢原子空槽
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 然后是氧原子的流水线。氧原子的流水线处理方法是 oxygen， oxygen 方法是等待氧原子的空槽，然后输出一个 O，就等待栅栏放行。放行后，释放氧原子空槽位。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(h2o *H2O)oxygen(releaseOxygen func()) {
 
  h2o.semaO.Acquire(context.Background(), 1)
 
+ releaseOxygen() // 输出 O
 
-
- releaseOxygen() // 输出O
-
- h2o.b.Await(context.Background()) //等待栅栏放行
+ h2o.b.Await(context.Background()) // 等待栅栏放行
 
  h2o.semaO.Release(1) // 释放氢原子空槽
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 在栅栏放行之前，只有两个氢原子的空槽位和一个氧原子的空槽位。只有等栅栏放行之后，这些空槽位才会被释放。栅栏放行，就意味着一个水分子组成成功。
 
 这个算法是不是正确呢？我们来编写一个单元测试检测一下。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package water
-
-
-
-
 
 import (
 
@@ -22826,13 +9545,9 @@ import (
 
 )
 
-
-
-
-
 funcTestWaterFactory(t *testing.T) {
 
-//用来存放水分子结果的channel
+// 用来存放水分子结果的 channel
 
 var ch chanstring
 
@@ -22848,31 +9563,21 @@ var ch chanstring
 
  }
 
-
-
-// 300个原子，300个goroutine,每个goroutine并发的产生一个原子
+// 300 个原子，300 个 goroutine, 每个 goroutine 并发的产生一个原子
 
 var N = 100
 
  ch = make(chanstring, N*3)
 
-
-
-
-
  h2o := New()
 
-
-
-// 用来等待所有的goroutine完成
+// 用来等待所有的 goroutine 完成
 
 var wg sync.WaitGroup
 
  wg.Add(N * 3)
 
-
-
-// 200个氢原子goroutine
+// 200 个氢原子 goroutine
 
 for i := 0; i < 2*N; i++ {
 
@@ -22888,7 +9593,7 @@ gofunc() {
 
  }
 
-// 100个氧原子goroutine
+// 100 个氧原子 goroutine
 
 for i := 0; i < N; i++ {
 
@@ -22904,23 +9609,17 @@ gofunc() {
 
  }
 
-
-
-//等待所有的goroutine执行完
+// 等待所有的 goroutine 执行完
 
  wg.Wait()
 
-
-
-// 结果中肯定是300个原子
+// 结果中肯定是 300 个原子
 
 iflen(ch) != N*3 {
 
  t.Fatalf("expect %d atom but got %d", N*3, len(ch))
 
  }
-
-
 
 // 每三个原子一组，分别进行检查。要求这一组原子中必须包含两个氢原子和一个氧原子，这样才能正确组成一个水分子。
 
@@ -22936,10 +9635,6 @@ for i := 0; i < N; i++ {
 
  sort.Strings(s)
 
-
-
-
-
  water := s[0] + s[1] + s[2]
 
 if water != "HHO" {
@@ -22952,117 +9647,11 @@ if water != "HHO" {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
-
 
 每一个并发原语都有它存在的道理，也都有它应用的场景。
 
 如果你没有学习 CyclicBarrier，你可能只会想到，用 WaitGroup 来实现这个水分子制造工厂的例子。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type H2O struct {
 
@@ -23070,19 +9659,15 @@ type H2O struct {
 
  semaO *semaphore.Weighted
 
- wg sync.WaitGroup //将循环栅栏替换成WaitGroup
+ wg sync.WaitGroup // 将循环栅栏替换成 WaitGroup
 
 }
-
-
 
 funcNew() *H2O {
 
 var wg sync.WaitGroup
 
  wg.Add(3)
-
-
 
 return &H2O{
 
@@ -23096,31 +9681,21 @@ return &H2O{
 
 }
 
-
-
-
-
 func(h2o *H2O)hydrogen(releaseHydrogen func()) {
 
  h2o.semaH.Acquire(context.Background(), 1)
 
  releaseHydrogen()
 
-
-
-// 标记自己已达到，等待其它goroutine到达
+// 标记自己已达到，等待其它 goroutine 到达
 
  h2o.wg.Done()
 
  h2o.wg.Wait()
 
-
-
  h2o.semaH.Release(1)
 
 }
-
-
 
 func(h2o *H2O)oxygen(releaseOxygen func()) {
 
@@ -23128,40 +9703,19 @@ func(h2o *H2O)oxygen(releaseOxygen func()) {
 
  releaseOxygen()
 
-
-
-// 标记自己已达到，等待其它goroutine到达
+// 标记自己已达到，等待其它 goroutine 到达
 
  h2o.wg.Done()
 
  h2o.wg.Wait()
 
-//都到达后重置wg 
+// 都到达后重置 wg
 
  h2o.wg.Add(3)
-
-
 
  h2o.semaO.Release(1)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 你一看代码就知道了，使用 WaitGroup 非常复杂，而且，重用和 Done 方法的调用有并发的问题，程序可能 panic，远远没有使用循环栅栏更加简单直接。
 
@@ -23171,17 +9725,13 @@ func(h2o *H2O)oxygen(releaseOxygen func()) {
 
 ## 思考题
 
-
 如果大自然的搬运工工厂生产的液体是双氧水（双氧水分子是两个氢原子和两个氧原子），你又该怎么实现呢？
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 �也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 # 18 | 分组操作：处理一组子任务，该用什么并发原语？
-
 
 你好，我是鸟窝。
 
@@ -23189,8 +9739,7 @@ func(h2o *H2O)oxygen(releaseOxygen func()) {
 
 我们先来学习一类非常常用的并发原语，那就是 ErrGroup。
 
-# ErrGroup
-
+## ErrGroup
 
 [ErrGroup]()是 Go 官方提供的一个同步扩展库。我们经常会碰到需要将一个通用的父任务拆成几个小任务并发执行的场景，其实，将一个大的任务拆成几个小任务并发执行，可以有效地提高程序的并发度。就像你在厨房做饭一样，你可以在蒸米饭的同时炒几个小菜，米饭蒸好了，菜同时也做好了，很快就能吃到可口的饭菜。
 
@@ -23200,11 +9749,9 @@ ErrGroup 就是用来应对这种场景的。它和 WaitGroup 有些类似，但
 
 error 向上传播，可以把子任务的错误传递给 Wait 的调用者。
 
-
 接下来，我来给你介绍一下 ErrGroup 的基本用法和几种应用场景。
 
 ## 基本用法
-
 
 golang.org/x/sync/errgroup 包下定义了一个 Group struct，它就是我们要介绍的 ErrGroup 并发原语，底层也是基于 WaitGroup 实现的。
 
@@ -23214,32 +9761,7 @@ golang.org/x/sync/errgroup 包下定义了一个 Group struct，它就是我们�
 
 在创建一个 Group 对象时，需要使用 WithContext 方法：
 
-
-
-
-
-
-
-
-
 funcWithContext(ctx context.Context)(*Group, context.Context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这个方法返回一个 Group 实例，同时还会返回一个使用 context.WithCancel(ctx) 生成的新 Context。一旦有一个子任务返回错误，或者是 Wait 调用返回，这个新 Context 就会被 cancel。
 
@@ -23251,32 +9773,7 @@ Group 的零值也是合法的，只不过，你就没有一个可以监控是�
 
 我们再来学习下执行子任务的 Go 方法：
 
-
-
-
-
-
-
-
-
 func(g *Group)Go(f func()error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 传入的子任务函数 f 是类型为 func() error 的函数，如果任务执行成功，就返回 nil，否则就返回 error，并且会 cancel 那个新的 Context。
 
@@ -23286,136 +9783,17 @@ func(g *Group)Go(f func()error)
 
 类似 WaitGroup，Group 也有 Wait 方法，等所有的子任务都完成后，它才会返回，否则只会阻塞等待。如果有多个子任务返回错误，它只会返回第一个出现的错误，如果所有的子任务都执行成功，就返回 nil：
 
-
-
-
-
-
-
-
-
 func(g *Group)Wait()error
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## ErrGroup 使用例子
-
 
 好了，知道了基本用法，下面我来给你介绍几个例子，帮助你全面地掌握 ErrGroup 的使用方法和应用场景。
 
 ### 简单例子：返回第一个错误
 
-
 先来看一个简单的例子。在这个例子中，启动了三个子任务，其中，子任务 2 会返回执行失败，其它两个执行成功。在三个子任务都执行后，group.Wait 才会返回第 2 个子任务的错误。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -23425,23 +9803,15 @@ import (
 
 "time"
 
-
-
 "golang.org/x/sync/errgroup"
 
 )
 
-
-
-funcmain() {
+func main() {
 
 var g errgroup.Group
 
-
-
-
-
-// 启动第一个子任务,它执行成功
+// 启动第一个子任务，它执行成功
 
  g.Go(func()error {
 
@@ -23464,8 +9834,6 @@ returnnil
 return errors.New("failed to exec #2")
 
  })
-
-
 
 // 启动第三个子任务，它执行成功
 
@@ -23493,135 +9861,17 @@ if err := g.Wait(); err == nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 如果执行下面的这个程序，会显示三个任务都执行了，而 Wait 返回了子任务 2 的错误：
 
 ![](https://static001.geekbang.org/resource/image/92/11/92d746f7a1ab943e73b83796fb436a11.png)
 
 ### 更进一步，返回所有子任务的错误
 
-
 Group 只能返回子任务的第一个错误，后续的错误都会被丢弃。但是，有时候我们需要知道每个任务的执行情况。怎么办呢？这个时候，我们就可以用稍微有点曲折的方式去实现。我们使用一个 result slice 保存子任务的执行结果，这样，通过查询 result，就可以知道每一个子任务的结果了。
 
 下面的这个例子，就是使用 result 记录每个子任务成功或失败的结果。其实，你不仅可以使用 result 记录 error 信息，还可以用它记录计算结果。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -23631,13 +9881,9 @@ import (
 
 "time"
 
-
-
 "golang.org/x/sync/errgroup"
 
 )
-
-
 
 funcmain() {
 
@@ -23645,9 +9891,7 @@ var g errgroup.Group
 
 var result = make([]error, 3)
 
-
-
-// 启动第一个子任务,它执行成功
+// 启动第一个子任务，它执行成功
 
  g.Go(func()error {
 
@@ -23661,10 +9905,6 @@ returnnil
 
  })
 
-
-
-
-
 // 启动第二个子任务，它执行失败
 
  g.Go(func()error {
@@ -23673,15 +9913,11 @@ returnnil
 
  fmt.Println("exec #2")
 
-
-
  result[1] = errors.New("failed to exec #2") // 保存成功或者失败的结果
 
 return result[1]
 
  })
-
-
 
 // 启动第三个子任务，它执行成功
 
@@ -23697,8 +9933,6 @@ returnnil
 
  })
 
-
-
 if err := g.Wait(); err == nil {
 
  fmt.Printf("Successfully exec all. result: %v\n", result)
@@ -23711,169 +9945,13 @@ if err := g.Wait(); err == nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### 任务执行流水线 Pipeline
-
 
 Go 官方文档中还提供了一个 pipeline 的例子。这个例子是说，由一个子任务遍历文件夹下的文件，然后把遍历出的文件交给 20 个 goroutine，让这些 goroutine 并行计算文件的 md5。
 
 这个例子中的计算逻辑你不需要重点掌握，我来把这个例子简化一下（如果你想看原始的代码，可以看[这里]()）：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -23883,9 +9961,7 @@ import (
 
 )
 
-
-
-// 一个多阶段的pipeline.使用有限的goroutine计算每个文件的md5值.
+// 一个多阶段的 pipeline. 使用有限的 goroutine 计算每个文件的 md5 值。
 
 funcmain() {
 
@@ -23897,8 +9973,6 @@ if err != nil {
 
  }
 
-
-
 for k, sum := range m {
 
  fmt.Printf("%s:\t%x\n", k, sum)
@@ -23906,8 +9980,6 @@ for k, sum := range m {
  }
 
 }
-
-
 
 type result struct {
 
@@ -23917,25 +9989,21 @@ type result struct {
 
 }
 
+// 遍历根目录下所有的文件和子文件夹，计算它们的 md5 的值。
 
-
-// 遍历根目录下所有的文件和子文件夹,计算它们的md5的值.
-
-funcMD5All(ctx context.Context, root string)(map[string][md5.Size]byte, error) {
+funcMD5All(ctx context.Context, root string)(map[string](md5.Size)byte, error) {
 
  g, ctx := errgroup.WithContext(ctx)
 
- paths := make(chanstring) // 文件路径channel
-
-
+ paths := make(chanstring) // 文件路径 channel
 
  g.Go(func()error {
 
-deferclose(paths) // 遍历完关闭paths chan
+deferclose(paths) // 遍历完关闭 paths chan
 
 return filepath.Walk(root, func(path string, info os.FileInfo, err error)error {
 
- ...... //将文件路径放入到paths
+ ...... // 将文件路径放入到 paths
 
 returnnil
 
@@ -23943,9 +10011,7 @@ returnnil
 
  })
 
-
-
-// 启动20个goroutine执行计算md5的任务，计算的文件由上一阶段的文件遍历子任务生成.
+// 启动 20 个 goroutine 执行计算 md5 的任务，计算的文件由上一阶段的文件遍历子任务生成。
 
  c := make(chan result)
 
@@ -23955,9 +10021,9 @@ for i := 0; i < numDigesters; i++ {
 
  g.Go(func()error {
 
-for path := range paths { // 遍历直到paths chan被关闭
+for path := range paths { // 遍历直到 paths chan 被关闭
 
- ...... // 计算path的md5值，放入到c中
+ ...... // 计算 path 的 md5 值，放入到 c 中
 
  }
 
@@ -23969,27 +10035,21 @@ returnnil
 
 gofunc() {
 
- g.Wait() // 20个goroutine以及遍历文件的goroutine都执行完
+ g.Wait() // 20 个 goroutine 以及遍历文件的 goroutine 都执行完
 
-close(c) // 关闭收集结果的chan
+close(c) // 关闭收集结果的 chan
 
  }()
 
+ m := make(map[string](md5.Size)byte)
 
-
-
-
- m := make(map[string][md5.Size]byte)
-
-for r := range c { // 将md5结果从chan中读取到map中,直到c被关闭才退出
+for r := range c { // 将 md5 结果从 chan 中读取到 map 中，直到 c 被关闭才退出
 
  m[r.path] = r.sum
 
  }
 
-
-
-// 再次调用Wait，依然可以得到group的error信息
+// 再次调用 Wait，依然可以得到 group 的 error 信息
 
 if err := g.Wait(); err != nil {
 
@@ -24001,32 +10061,13 @@ return m, nil
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 通过这个例子，你可以学习到多阶段 pipeline 的实现（这个例子是遍历文件夹和计算 md5 两个阶段），还可以学习到如何控制执行子任务的 goroutine 数量。
 
 很多公司都在使用 ErrGroup 处理并发子任务，比如 Facebook、bilibili 等公司的一些项目，但是，这些公司在使用的时候，发现了一些不方便的地方，或者说，官方的 ErrGroup 的功能还不够丰富。所以，他们都对 ErrGroup 进行了扩展。接下来呢，我就带你看看几个扩展库。
 
 ## 扩展库
 
-
 ### [bilibili/errgroup]()
-
 
 如果我们无限制地直接调用 ErrGroup 的 Go 方法，就可能会创建出非常多的 goroutine，太多的 goroutine 会带来调度和 GC 的压力，而且也会占用更多的内存资源。就像[go#34457]()指出的那样，当前 Go 运行时创建的 g 对象只会增长和重用，不会回收，所以在高并发的情况下，也要尽可能减少 goroutine 的使用。
 
@@ -24038,16 +10079,9 @@ bilibili 实现了一个扩展的 ErrGroup，可以使用一个固定数量的 g
 
 除了可以控制并发 goroutine 的数量，它还提供了 2 个功能：
 
-
-
 cancel，失败的子任务可以 cancel 所有正在执行任务；
 
-
-
-
 recover，而且会把 panic 的堆栈信息放到 error 中，避免子任务 panic 导致的程序崩溃。
-
-
 
 但是，有一点不太好的地方就是，一旦你设置了并发数，超过并发数的子任务需要等到调用者调用 Wait 之后才会执行，而不是只要 goroutine 空闲下来，就去执行。如果不注意这一点的话，可能会出现子任务不能及时处理的情况，这是这个库可以优化的一点。
 
@@ -24057,99 +10091,7 @@ recover，而且会把 panic 的堆栈信息放到 error 中，避免子任务 p
 
 我们可以写一个简单的程序来测试这个问题：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -24161,39 +10103,29 @@ import (
 
 "time"
 
-
-
 "github.com/bilibili/kratos/pkg/sync/errgroup"
 
 )
-
-
 
 funcmain() {
 
 var g errgroup.Group
 
- g.GOMAXPROCS(1) // 只使用一个goroutine处理子任务
-
-
+ g.GOMAXPROCS(1) // 只使用一个 goroutine 处理子任务
 
 var count int64
 
  g.Go(func(ctx context.Context)error {
 
- time.Sleep(time.Second) //睡眠5秒，把这个goroutine占住
+ time.Sleep(time.Second) // 睡眠 5 秒，把这个 goroutine 占住
 
 returnnil
 
  })
 
-
-
  total := 10000
 
-
-
-for i := 0; i < total; i++ { // 并发一万个goroutine执行子任务，理论上这些子任务都会加入到Group的待处理列表中
+for i := 0; i < total; i++ { // 并发一万个 goroutine 执行子任务，理论上这些子任务都会加入到 Group 的待处理列表中
 
 gofunc() {
 
@@ -24209,17 +10141,13 @@ returnnil
 
  }
 
-
-
-// 等待所有的子任务完成。理论上10001个子任务都会被完成
+// 等待所有的子任务完成。理论上 10001 个子任务都会被完成
 
 if err := g.Wait(); err != nil {
 
 panic(err)
 
  }
-
-
 
  got := atomic.LoadInt64(&count)
 
@@ -24231,45 +10159,11 @@ panic(fmt.Sprintf("expect %d but got %d", total, got))
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 运行这个程序的话，你就会发现死锁问题，因为我们的测试程序是一个简单的命令行工具，程序退出的时候，Go runtime 能检测到死锁问题。如果是一直运行的服务器程序，死锁问题有可能是检测不出来的，程序一直会 hang 在 Wait 的调用上。
 
 ### [neilotoole/errgroup]()
 
-
 neilotoole/errgroup 是今年年中新出现的一个 ErrGroup 扩展库，它可以直接替换官方的 ErrGroup，方法都一样，原有功能也一样，只不过增加了可以控制并发 goroutine 的功能。它的方法集如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Group
 
@@ -24281,51 +10175,17 @@ func(g *Group)Go(f func()error)
 
 func(g *Group)Wait()error
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 新增加的方法 WithContextN，可以设置并发的 goroutine 数，以及等待处理的子任务队列的大小。当队列满的时候，如果调用 Go 方法，就会被阻塞，直到子任务可以放入到队列中才返回。如果你传给这两个参数的值不是正整数，它就会使用 runtime.NumCPU 代替你传入的参数。
 
 当然，你也可以把 bilibili 的 recover 功能扩展到这个库中，以避免子任务的 panic 导致程序崩溃。
 
 ### [facebookgo/errgroup]()
 
-
 Facebook 提供的这个 ErrGroup，其实并不是对 Go 扩展库 ErrGroup 的扩展，而是对标准库 WaitGroup 的扩展。不过，因为它们的名字一样，处理的场景也类似，所以我把它也列在了这里。
 
 标准库的 WaitGroup 只提供了 Add、Done、Wait 方法，而且 Wait 方法也没有返回子 goroutine 的 error。而 Facebook 提供的 ErrGroup 提供的 Wait 方法可以返回 error，而且可以包含多个 error。子任务在调用 Done 之前，可以把自己的 error 信息设置给 ErrGroup。接着，Wait 在返回的时候，就会把这些 error 信息返回给调用者。
 
 我们来看下 Group 的方法：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Group
 
@@ -24337,124 +10197,13 @@ func(g *Group)Error(e error)
 
 func(g *Group)Wait()error
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 关于 Wait 方法，我刚刚已经介绍了它和标准库 WaitGroup 的不同，我就不多说了。这里还有一个不同的方法，就是 Error 方法，
 
 我举个例子演示一下 Error 的使用方法。
 
 在下面的这个例子中，第 26 行的子 goroutine 设置了 error 信息，第 39 行会把这个 error 信息输出出来。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -24464,13 +10213,9 @@ import (
 
 "time"
 
-
-
 "github.com/facebookgo/errgroup"
 
 )
-
-
 
 funcmain() {
 
@@ -24478,9 +10223,7 @@ var g errgroup.Group
 
  g.Add(3)
 
-
-
-// 启动第一个子任务,它执行成功
+// 启动第一个子任务，它执行成功
 
 gofunc() {
 
@@ -24491,8 +10234,6 @@ gofunc() {
  g.Done()
 
  }()
-
-
 
 // 启动第二个子任务，它执行失败
 
@@ -24508,8 +10249,6 @@ gofunc() {
 
  }()
 
-
-
 // 启动第三个子任务，它执行成功
 
 gofunc() {
@@ -24522,9 +10261,7 @@ gofunc() {
 
  }()
 
-
-
-// 等待所有的goroutine完成，并检查error
+// 等待所有的 goroutine 完成，并检查 error
 
 if err := g.Wait(); err == nil {
 
@@ -24538,30 +10275,11 @@ if err := g.Wait(); err == nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 关于 ErrGroup，你掌握这些就足够了，接下来，我再介绍几种有趣而实用的 Group 并发原语。这些并发原语都是控制一组子 goroutine 执行的面向特定场景的并发原语，当你遇见这些特定场景时，就可以参考这些库。
 
 ## 其它实用的 Group 并发原语
 
-
 ### SizedGroup/ErrSizedGroup
-
 
 [go-pkgz/syncs]()提供了两个 Group 并发原语，分别是 SizedGroup 和 ErrSizedGroup。
 
@@ -24575,75 +10293,7 @@ SizedGroup 内部是使用信号量和 WaitGroup 实现的，它通过信号量�
 
 我们来看一个使用 SizedGroup 的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -24655,17 +10305,13 @@ import (
 
 "time"
 
-
-
 "github.com/go-pkgz/syncs"
 
 )
 
-
-
 funcmain() {
 
-// 设置goroutine数是10
+// 设置 goroutine 数是 10
 
  swg := syncs.NewSizedGroup(10)
 
@@ -24673,9 +10319,7 @@ funcmain() {
 
 var c uint32
 
-
-
-// 执行1000个子任务，只会有10个goroutine去执行
+// 执行 1000 个子任务，只会有 10 个 goroutine 去执行
 
 for i := 0; i < 1000; i++ {
 
@@ -24689,8 +10333,6 @@ for i := 0; i < 1000; i++ {
 
  }
 
-
-
 // 等待任务完成
 
  swg.Wait()
@@ -24700,23 +10342,6 @@ for i := 0; i < 1000; i++ {
  fmt.Println(c)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ErrSizedGroup 为 SizedGroup 提供了 error 处理的功能，它的功能和 Go 官方扩展库的功能一样，就是等待子任务完成并返回第一个出现的 error。不过，它还提供了额外的功能，我来介绍一下。
 
@@ -24730,8 +10355,7 @@ ErrSizedGroup 为 SizedGroup 提供了 error 处理的功能，它的功能和 G
 
 好了，关于 ErrGroup，你掌握这些就足够了，下面我再来给你介绍一些非 ErrGroup 的并发原语，它们用来编排子任务。
 
-# gollback
-
+## gollback
 
 [gollback]()也是用来处理一组子任务的执行的，不过它解决了 ErrGroup 收集子任务返回结果的痛点。使用 ErrGroup 时，如果你要收到子任务的结果和错误，你需要定义额外的变量收集执行结果和错误，但是这个库可以提供更便利的方式。
 
@@ -24743,133 +10367,19 @@ All 方法
 
 All 方法的签名如下：
 
-
-
-
-
-
-
-
-
 funcAll(ctx context.Context, fns ...AsyncFunc)([]interface{}, []error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 它会等待所有的异步函数（AsyncFunc）都执行完才返回，而且返回结果的顺序和传入的函数的顺序保持一致。第一个返回参数是子任务的执行结果，第二个参数是子任务执行时的错误信息。
 
 其中，异步函数的定义如下：
 
-
-
-
-
-
-
-
-
 type AsyncFunc func(ctx context.Context)(interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 可以看到，ctx 会被传递给子任务。如果你 cancel 这个 ctx，可以取消子任务。
 
 我们来看一个使用 All 方法的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -24885,19 +10395,17 @@ import (
 
 )
 
-
-
 funcmain() {
 
- rs, errs := gollback.All( // 调用All方法
+ rs, errs := gollback.All( // 调用 All 方法
 
  context.Background(),
 
-func(ctx context.Context)(interface{}, error) { 
+func(ctx context.Context)(interface{}, error) {
 
  time.Sleep(3 * time.Second)
 
-return1, nil// 第一个任务没有错误，返回1
+return1, nil// 第一个任务没有错误，返回 1
 
  },
 
@@ -24909,13 +10417,11 @@ returnnil, errors.New("failed") // 第二个任务返回一个错误
 
 func(ctx context.Context)(interface{}, error) {
 
-return3, nil// 第三个任务没有错误，返回3
+return3, nil// 第三个任务没有错误，返回 3
 
  },
 
  )
-
-
 
  fmt.Println(rs) // 输出子任务的结果
 
@@ -24923,55 +10429,13 @@ return3, nil// 第三个任务没有错误，返回3
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Race 方法
 
 Race 方法跟 All 方法类似，只不过，在使用 Race 方法的时候，只要一个异步函数执行没有错误，就立马返回，而不会返回所有的子任务信息。如果所有的子任务都没有成功，就会返回最后一个 error 信息。
 
 Race 方法签名如下：
 
-
-
-
-
-
-
-
-
 funcRace(ctx context.Context, fns ...AsyncFunc)(interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 如果有一个正常的子任务的结果返回，Race 会把传入到其它子任务的 Context cancel 掉，这样子任务就可以中断自己的执行。
 
@@ -24981,88 +10445,11 @@ Retry 方法
 
 Retry 不是执行一组子任务，而是执行一个子任务。如果子任务执行失败，它会尝试一定的次数，如果一直不成功 ，就会返回失败错误 ，如果执行成功，它会立即返回。如果 retires 等于 0，它会永远尝试，直到成功。
 
-
-
-
-
-
-
-
-
 funcRetry(ctx context.Context, retires int, fn AsyncFunc)(interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 再来看一个使用 Retry 的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -25078,17 +10465,13 @@ import (
 
 )
 
-
-
 funcmain() {
 
  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 defer cancel()
 
-
-
-// 尝试5次，或者超时返回
+// 尝试 5 次，或者超时返回
 
  res, err := gollback.Retry(ctx, 5, func(ctx context.Context)(interface{}, error) {
 
@@ -25096,95 +10479,25 @@ returnnil, errors.New("failed")
 
  })
 
-
-
  fmt.Println(res) // 输出结果
 
  fmt.Println(err) // 输出错误信息
 
-} 
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Hunch
-
+## Hunch
 
 [Hunch]()提供的功能和 gollback 类似，不过它提供的方法更多，而且它提供的和 gollback 相应的方法，也有一些不同。我来一一介绍下。
 
 它定义了执行子任务的函数，这和 gollback 的 AyncFunc 是一样的，它的定义如下：
 
-
-
-
-
-
-
-
-
 type Executable func(context.Context)(interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 All 方法
 
 All 方法的签名如下：
 
-
-
-
-
-
-
-
-
 funcAll(parentCtx context.Context, execs ...Executable)([]interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 它会传入一组可执行的函数（子任务），返回子任务的执行结果。和 gollback 的 All 方法不一样的是，一旦一个子任务出现错误，它就会返回错误信息，执行结果（第一个返回参数）为 nil。
 
@@ -25192,32 +10505,7 @@ Take 方法
 
 Take 方法的签名如下：
 
-
-
-
-
-
-
-
-
 funcTake(parentCtx context.Context, num int, execs ...Executable)([]interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 你可以指定 num 参数，只要有 num 个子任务正常执行完没有错误，这个方法就会返回这几个子任务的结果。一旦一个子任务出现错误，它就会返回错误信息，执行结果（第一个返回参数）为 nil。
 
@@ -25225,32 +10513,7 @@ Last 方法
 
 Last 方法的签名如下：
 
-
-
-
-
-
-
-
-
 funcLast(parentCtx context.Context, num int, execs ...Executable)([]interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 它只返回最后 num 个正常执行的、没有错误的子任务的结果。一旦一个子任务出现错误，它就会返回错误信息，执行结果（第一个返回参数）为 nil。
 
@@ -25260,32 +10523,7 @@ Retry 方法
 
 Retry 方法的签名如下：
 
-
-
-
-
-
-
-
-
 funcRetry(parentCtx context.Context, retries int, fn Executable)(interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 它的功能和 gollback 的 Retry 方法的功能一样，如果子任务执行出错，就会不断尝试，直到成功或者是达到重试上限。如果达到重试上限，就会返回错误。如果 retries 等于 0，它会不断尝试。
 
@@ -25293,61 +10531,19 @@ Waterfall 方法
 
 Waterfall 方法签名如下：
 
-
-
-
-
-
-
-
-
 funcWaterfall(parentCtx context.Context, execs ...ExecutableInSequence)(interface{}, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 它其实是一个 pipeline 的处理方式，所有的子任务都是串行执行的，前一个子任务的执行结果会被当作参数传给下一个子任务，直到所有的任务都完成，返回最后的执行结果。一旦一个子任务出现错误，它就会返回错误信息，执行结果（第一个返回参数）为 nil。
 
 gollback 和 Hunch 是属于同一类的并发原语，对一组子任务的执行结果，可以选择一个结果或者多个结果，这也是现在热门的微服务常用的服务治理的方法。
 
-# schedgroup
-
+## schedgroup
 
 接下来，我再介绍一个和时间相关的处理一组 goroutine 的并发原语 schedgroup。
 
 [schedgroup]()是 Matt Layher 开发的 worker pool，可以指定任务在某个时间或者某个时间之后执行。Matt Layher 也是一个知名的 Gopher，经常在一些会议上分享一些他的 Go 开发经验，他在 GopherCon Europe 2020 大会上专门介绍了这个并发原语：[schedgroup: a timer-based goroutine concurrency primitive]() ，课下你可以点开这个链接看一下，下面我来给你介绍一些重点。
 
 这个并发原语包含的方法如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type Group
 
@@ -25358,23 +10554,6 @@ func(g *Group)Delay(delay time.Duration, fn func())
 func(g *Group)Schedule(when time.Time, fn func())
 
 func(g *Group)Wait()error
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我来介绍下这些方法。
 
@@ -25396,45 +10575,9 @@ func(g *Group)Wait()error
 
 我们来看一个使用 schedgroup 的例子，下面代码会依次输出 1、2、3：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 sg := schedgroup.New(context.Background())
 
-
-
-// 设置子任务分别在100、200、300之后执行
+// 设置子任务分别在 100、200、300 之后执行
 
 for i := 0; i < 3; i++ {
 
@@ -25442,13 +10585,11 @@ for i := 0; i < 3; i++ {
 
  sg.Delay(time.Duration(n)*100*time.Millisecond, func() {
 
- log.Println(n) //输出任务编号
+ log.Println(n) // 输出任务编号
 
  })
 
 }
-
-
 
 // 等待所有的子任务都完成
 
@@ -25458,25 +10599,7 @@ if err := sg.Wait(); err != nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
-
 
 这节课，我给你介绍了几种常见的处理一组子任务的并发原语，包括 ErrGroup、gollback、Hunch、schedgroup，等等。这些常见的业务场景共性处理方式的总结，你可以把它们加入到你的知识库中，等以后遇到相同的业务场景时，你就可以考虑使用这些并发原语。
 
@@ -25486,17 +10609,13 @@ if err := sg.Wait(); err != nil {
 
 ## 思考题
 
-
 这节课，我讲的官方扩展库 ErrGroup 没有实现可以取消子任务的功能，请你课下可以自己去实现一个子任务可取消的 ErrGroup。
 
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
 
-
 ��的内容分享给你的朋友或同事。
 
-
-# 19 | 在分布式环境中，Leader选举、互斥锁和读写锁该如何实现？
-
+# 19 | 在分布式环境中，Leader 选举、互斥锁和读写锁该如何实现？
 
 你好，我是鸟窝。
 
@@ -25510,8 +10629,7 @@ if err := sg.Wait(); err != nil {
 
 这节课我要介绍的就是 Leader 选举、互斥锁和读写锁。
 
-# Leader 选举
-
+## Leader 选举
 
 Leader 选举常常用在主从架构的系统中。主从架构中的服务节点分为主（Leader、Master）和从（Follower、Slave）两种角色，实际节点包括 1 主 n 从，一共是 n+1 个节点。
 
@@ -25535,149 +10653,7 @@ Leader 选举常常用在主从架构的系统中。主从架构中的服务节�
 
 这个测试程序如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 // 导入所需的库
 
@@ -25699,17 +10675,13 @@ import (
 
 "strings"
 
-
-
 "github.com/coreos/etcd/clientv3"
 
 "github.com/coreos/etcd/clientv3/concurrency"
 
 )
 
-
-
-// 可以设置一些参数，比如节点ID
+// 可以设置一些参数，比如节点 ID
 
 var (
 
@@ -25721,21 +10693,15 @@ var (
 
 )
 
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
-// 将etcd的地址解析成slice of string
+// 将 etcd 的地址解析成 slice of string
 
  endpoints := strings.Split(*addr, ",")
 
-
-
-// 生成一个etcd的clien
+// 生成一个 etcd 的 clien
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -25747,23 +10713,17 @@ if err != nil {
 
 defer cli.Close()
 
-
-
-// 创建session,如果程序宕机导致session断掉，etcd能检测到
+// 创建 session, 如果程序宕机导致 session 断掉，etcd 能检测到
 
  session, err := concurrency.NewSession(cli)
 
 defer session.Close()
 
-
-
 // 生成一个选举对象。下面主要使用它进行选举和查询等操作
 
-// 另一个方法ResumeElection可以使用既有的leader初始化Election
+// 另一个方法 ResumeElection 可以使用既有的 leader 初始化 Election
 
  e1 := concurrency.NewElection(session, *electName)
-
-
 
 // 从命令行读取命令
 
@@ -25779,19 +10739,19 @@ case"elect": // 选举命令
 
 go elect(e1, *electName)
 
-case"proclaim": // 只更新leader的value
+case"proclaim": // 只更新 leader 的 value
 
  proclaim(e1, *electName)
 
-case"resign": // 辞去leader,重新选举
+case"resign": // 辞去 leader, 重新选举
 
  resign(e1, *electName)
 
-case"watch": // 监控leader的变动
+case"watch": // 监控 leader 的变动
 
 go watch(e1, *electName)
 
-case"query": // 查询当前的leader
+case"query": // 查询当前的 leader
 
  query(e1, *electName)
 
@@ -25809,27 +10769,9 @@ default:
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 部署完以后，我们就可以开始选举了。
 
 ## 选举
-
 
 如果你的业务集群还没有主节点，或者主节点宕机了，你就需要发起新一轮的选主操作，主要会用到 Campaign 和 Proclaim。如果你需要主节点放弃主的角色，让其它从节点有机会成为主节点，就可以调用 Resign 方法。
 
@@ -25837,176 +10779,25 @@ default:
 
 第一个方法是 Campaign。它的作用是，把一个节点选举为主节点，并且会设置一个值。它的签名如下所示：
 
-
-
-
-
-
-
-
-
 func(e *Election)Campaign(ctx context.Context, val string)error
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 需要注意的是，这是一个阻塞方法，在调用它的时候会被阻塞，直到满足下面的三个条件之一，才会取消阻塞。
 
-
-
 成功当选为主；
-
-
-
 
 此方法返回错误；
 
-
-
-
 ctx 被取消。
-
-
 
 第二个方法是 Proclaim。它的作用是，重新设置 Leader 的值，但是不会重新选主，这个方法会返回新值设置成功或者失败的信息。方法签名如下所示：
 
-
-
-
-
-
-
-
-
 func(e *Election)Proclaim(ctx context.Context, val string)error
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 第三个方法是 Resign：开始新一次选举。这个方法会返回新的选举成功或者失败的信息。它的签名如下所示：
 
-
-
-
-
-
-
-
-
 func(e *Election)Resign(ctx context.Context)(err error)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这三个方法的测试代码如下。你可以使用测试程序进行测试，具体做法是，启动两个节点，执行和这三个方法相关的命令。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var count int
 
@@ -26016,7 +10807,7 @@ funcelect(e1 *concurrency.Election, electName string) {
 
  log.Println("acampaigning for ID:", *nodeID)
 
-// 调用Campaign方法选主,主的值为value-<主节点ID>-<count>
+// 调用 Campaign 方法选主，主的值为 value-《主节点 ID>-<count>
 
 if err := e1.Campaign(context.Background(), fmt.Sprintf("value-%d-%d", *nodeID, count)); err != nil {
 
@@ -26036,7 +10827,7 @@ funcproclaim(e1 *concurrency.Election, electName string) {
 
  log.Println("proclaiming for ID:", *nodeID)
 
-// 调用Proclaim方法设置新值,新值为value-<主节点ID>-<count>
+// 调用 Proclaim 方法设置新值，新值为 value-《主节点 ID>-<count>
 
 if err := e1.Proclaim(context.Background(), fmt.Sprintf("value-%d-%d", *nodeID, count)); err != nil {
 
@@ -26056,7 +10847,7 @@ funcresign(e1 *concurrency.Election, electName string) {
 
  log.Println("resigning for ID:", *nodeID)
 
-// 调用Resign重新选主
+// 调用 Resign 重新选主
 
 if err := e1.Resign(context.TODO()); err != nil {
 
@@ -26068,127 +10859,25 @@ if err := e1.Resign(context.TODO()); err != nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 查询
-
 
 除了选举 Leader，程序在启动的过程中，或者在运行的时候，还有可能需要查询当前的主节点是哪一个节点？主节点的值是什么？版本是多少？不光是主从节点需要查询和知道哪一个节点，在分布式系统中，还有其它一些节点也需要知道集群中的哪一个节点是主节点，哪一个节点是从节点，这样它们才能把读写请求分别发往相应的主从节点上。
 
 etcd 提供了查询当前 Leader 的方法 Leader，如果当前还没有 Leader，就返回一个错误，你可以使用这个方法来查询主节点信息。这个方法的签名如下：
 
-
-
-
-
-
-
-
-
 func(e *Election)Leader(ctx context.Context)(*v3.GetResponse, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 每次主节点的变动都会生成一个新的版本号，你还可以查询版本号信息（Rev 方法），了解主节点变动情况：
 
-
-
-
-
-
-
-
-
 func(e *Election)Rev()int64
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 你可以在测试完选主命令后，测试查询命令（query、rev），代码如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 查询主的信息
 
 funcquery(e1 *concurrency.Election, electName string) {
 
-// 调用Leader返回主的信息，包括key和value等信息
+// 调用 Leader 返回主的信息，包括 key 和 value 等信息
 
  resp, err := e1.Leader(context.Background())
 
@@ -26202,7 +10891,7 @@ if err != nil {
 
 }
 
-// 可以直接查询主的rev信息
+// 可以直接查询主的 rev 信息
 
 funcrev(e1 *concurrency.Election, electName string) {
 
@@ -26212,94 +10901,21 @@ funcrev(e1 *concurrency.Election, electName string) {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 监控
-
 
 有了选举和查询方法，我们还需要一个监控方法。毕竟，如果主节点变化了，我们需要得到最新的主节点信息。
 
 我们可以通过 Observe 来监控主的变化，它的签名如下：
 
-
-
-
-
-
-
-
-
 func(e *Election)Observe(ctx context.Context) <-chanv3.GetResponse
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 它会返回一个 chan，显示主节点的变动信息。需要注意的是，它不会返回主节点的全部历史变动信息，而是只返回最近的一条变动信息以及之后的变动信息。
 
 它的测试代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 funcwatch(e1 *concurrency.Election, electName string) {
 
  ch := e1.Observe(context.TODO())
-
-
-
-
 
  log.Println("start to watch for ID:", *nodeID)
 
@@ -26313,29 +10929,11 @@ for i := 0; i < 10; i++ {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 etcd 提供了选主的逻辑，而你要做的就是利用这些方法，让它们为你的业务服务。在使用的过程中，你还需要做一些额外的设置，比如查询当前的主节点、启动一个 goroutine 阻塞调用 Campaign 方法，等等。虽然你需要做一些额外的工作，但是跟自己实现一个分布式的选主逻辑相比，大大地减少了工作量。
 
 接下来，我们继续看 etcd 提供的分布式并发原语：互斥锁。
 
-# 互斥锁
-
+## 互斥锁
 
 互斥锁是非常常用的一种并发原语，我专门花了 4 讲的时间，重点介绍了互斥锁的功能、原理和易错场景。
 
@@ -26347,155 +10945,13 @@ etcd 提供了选主的逻辑，而你要做的就是利用这些方法，让它
 
 ## Locker
 
-
 etcd 提供了一个简单的 Locker 原语，它类似于 Go 标准库中的 sync.Locker 接口，也提供了 Lock/UnLock 的机制：
-
-
-
-
-
-
-
-
 
 funcNewLocker(s *Session, pfx string)sync.Locker
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可以看到，它的返回值是一个 sync.Locker，因为你对标准库的 Locker 已经非常了解了，而且它只有 Lock/Unlock 两个方法，所以，接下来使用这个锁就非常容易了。下面的代码是一个使用 Locker 并发原语的例子：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
 
 import (
 
@@ -26509,15 +10965,11 @@ import (
 
 "time"
 
-
-
 "github.com/coreos/etcd/clientv3"
 
 "github.com/coreos/etcd/clientv3/concurrency"
 
 )
-
-
 
 var (
 
@@ -26527,21 +10979,17 @@ var (
 
 )
 
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
  rand.Seed(time.Now().UnixNano())
 
-// etcd地址
+// etcd 地址
 
  endpoints := strings.Split(*addr, ",")
 
-// 生成一个etcd client
+// 生成一个 etcd client
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -26557,11 +11005,9 @@ defer cli.Close()
 
 }
 
-
-
 funcuseLock(cli *clientv3.Client) {
 
-// 为锁生成session
+// 为锁生成 session
 
  s1, err := concurrency.NewSession(cli)
 
@@ -26573,11 +11019,9 @@ if err != nil {
 
 defer s1.Close()
 
-//得到一个分布式锁
+// 得到一个分布式锁
 
  locker := concurrency.NewLocker(s1, *lockName)
-
-
 
 // 请求锁
 
@@ -26587,107 +11031,25 @@ defer s1.Close()
 
  log.Println("acquired lock")
 
-
-
 // 等待一段时间
 
  time.Sleep(time.Duration(rand.Intn(30)) * time.Second)
 
  locker.Unlock() // 释放锁
 
-
-
  log.Println("released lock")
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 你可以同时在两个终端中运行这个测试程序。可以看到，它们获得锁是有先后顺序的，一个节点释放了锁之后，另外一个节点才能获取到这个分布式锁。
 
 ## Mutex
 
-
 事实上，刚刚说的 Locker 是基于 Mutex 实现的，只不过，Mutex 提供了查询 Mutex 的 key 的信息的功能。测试代码也类似：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcuseMutex(cli *clientv3.Client) {
 
-// 为锁生成session
+// 为锁生成 session
 
  s1, err := concurrency.NewSession(cli)
 
@@ -26701,9 +11063,7 @@ defer s1.Close()
 
  m1 := concurrency.NewMutex(s1, *lockName)
 
-
-
-//在请求锁之前查询key
+// 在请求锁之前查询 key
 
  log.Printf("before acquiring. key: %s", m1.Key())
 
@@ -26719,13 +11079,9 @@ if err := m1.Lock(context.TODO()); err != nil {
 
  log.Printf("acquired lock. key: %s", m1.Key())
 
-
-
-//等待一段时间
+// 等待一段时间
 
  time.Sleep(time.Duration(rand.Intn(30)) * time.Second)
-
-
 
 // 释放锁
 
@@ -26739,235 +11095,15 @@ if err := m1.Unlock(context.TODO()); err != nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 可以看到，Mutex 并没有实现 sync.Locker 接口，它的 Lock/Unlock 方法需要提供一个 context.Context 实例做参数，这也就意味着，在请求锁的时候，你可以设置超时时间，或者主动取消请求。
 
-# 读写锁
-
+## 读写锁
 
 学完了分布式 Locker 和互斥锁 Mutex，你肯定会联想到读写锁 RWMutex。是的，etcd 也提供了分布式的读写锁。不过，互斥锁 Mutex 是在 github.com/coreos/etcd/clientv3/concurrency 包中提供的，读写锁 RWMutex 却是在 github.com/coreos/etcd/contrib/recipes 包中提供的。
 
 etcd 提供的分布式读写锁的功能和标准库的读写锁的功能是一样的。只不过，etcd 提供的读写锁，可以在分布式环境中的不同的节点使用。它提供的方法也和标准库中的读写锁的方法一致，分别提供了 RLock/RUnlock、Lock/Unlock 方法。下面的代码是使用读写锁的例子，它从命令行中读取命令，执行读写锁的操作：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -26987,8 +11123,6 @@ import (
 
 "time"
 
-
-
 "github.com/coreos/etcd/clientv3"
 
 "github.com/coreos/etcd/clientv3/concurrency"
@@ -26996,8 +11130,6 @@ import (
  recipe "github.com/coreos/etcd/contrib/recipes"
 
 )
-
-
 
 var (
 
@@ -27009,25 +11141,17 @@ var (
 
 )
 
-
-
-
-
 funcmain() {
 
  flag.Parse()
 
  rand.Seed(time.Now().UnixNano())
 
-
-
-// 解析etcd地址
+// 解析 etcd 地址
 
  endpoints := strings.Split(*addr, ",")
 
-
-
-// 创建etcd的client
+// 创建 etcd 的 client
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -27039,7 +11163,7 @@ if err != nil {
 
 defer cli.Close()
 
-// 创建session
+// 创建 session
 
  s1, err := concurrency.NewSession(cli)
 
@@ -27052,8 +11176,6 @@ if err != nil {
 defer s1.Close()
 
  m1 := recipe.NewRWMutex(s1, *lockName)
-
-
 
 // 从命令行读取命令
 
@@ -27083,8 +11205,6 @@ default:
 
 }
 
-
-
 functestWriteLocker(m1 *recipe.RWMutex) {
 
 // 请求写锁
@@ -27099,13 +11219,9 @@ if err := m1.Lock(); err != nil {
 
  log.Println("acquired write lock")
 
-
-
 // 等待一段时间
 
  time.Sleep(time.Duration(rand.Intn(10)) * time.Second)
-
-
 
 // 释放写锁
 
@@ -27118,8 +11234,6 @@ if err := m1.Unlock(); err != nil {
  log.Println("released write lock")
 
 }
-
-
 
 functestReadLocker(m1 *recipe.RWMutex) {
 
@@ -27135,13 +11249,9 @@ if err := m1.RLock(); err != nil {
 
  log.Println("acquired read lock")
 
-
-
 // 等待一段时间
 
  time.Sleep(time.Duration(rand.Intn(10)) * time.Second)
-
-
 
 // 释放写锁
 
@@ -27155,25 +11265,7 @@ if err := m1.RUnlock(); err != nil {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 总结
-
 
 自己实现分布式环境的并发原语，是相当困难的一件事，因为你需要考虑网络的延迟和异常、节点的可用性、数据的一致性等多种情况。
 
@@ -27185,26 +11277,15 @@ if err := m1.RUnlock(); err != nil {
 
 ## 思考题
 
-
-
-
 如果持有互斥锁或者读写锁的节点意外宕机了，它持有的锁会不会被释放？
-
-
-
 
 etcd 提供的读写锁中的读和写有没有优先级？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
-
 
 ��的内容分享给你的朋友或同事。
 
-
-# 20 | 在分布式环境中，队列、栅栏和STM该如何实现？
-
+# 20 | 在分布式环境中，队列、栅栏和 STM 该如何实现？
 
 你好，我是鸟窝。
 
@@ -27214,8 +11295,7 @@ etcd 提供的读写锁中的读和写有没有优先级？
 
 除此之外，我还会讲用分布式栅栏编排一组分布式节点同时执行的方法，以及简化多个 key 的操作并且提供事务功能的 STM（Software Transactional Memory，软件事务内存）。
 
-# 分布式队列和优先级队列
-
+## 分布式队列和优先级队列
 
 前一讲我也讲到，我们并不是从零开始实现一个分布式队列，而是站在 etcd 的肩膀上，利用 etcd 提供的功能实现分布式队列。
 
@@ -27225,73 +11305,17 @@ etcd 集群的可用性由 etcd 集群的维护者来保证，我们不用担心
 
 创建分布式队列的方法非常简单，只有一个，即 NewQueue，你只需要传入 etcd 的 client 和这个队列的名字，就可以了。代码如下：
 
-
-
-
-
-
-
-
-
 funcNewQueue(client *v3.Client, keyPrefix string) *Queue
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 这个队列只有两个方法，分别是出队和入队，队列中的元素是字符串类型。这两个方法的签名如下所示：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 入队
 
 func(q *Queue)Enqueue(val string)error
 
-//出队
+// 出队
 
 func(q *Queue)Dequeue()(string, error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 需要注意的是，如果这个分布式队列当前为空，调用 Dequeue 方法的话，会被阻塞，直到有元素可以出队才返回。
 
@@ -27301,155 +11325,9 @@ func(q *Queue)Dequeue()(string, error)
 
 下面我们来借助代码，看一下如何实现分布式队列。
 
-首先，我们启动一个程序，它会从命令行读取你的命令，然后执行。你可以输入push <value>，将一个元素入队，输入pop，将一个元素弹出。另外，你还可以使用这个程序启动多个实例，用来模拟分布式的环境：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+首先，我们启动一个程序，它会从命令行读取你的命令，然后执行。你可以输入 push <value>，将一个元素入队，输入 pop，将一个元素弹出。另外，你还可以使用这个程序启动多个实例，用来模拟分布式的环境：
+```go
 package main
-
-
-
-
 
 import (
 
@@ -27465,19 +11343,11 @@ import (
 
 "strings"
 
-
-
-
-
 "github.com/coreos/etcd/clientv3"
 
  recipe "github.com/coreos/etcd/contrib/recipes"
 
 )
-
-
-
-
 
 var (
 
@@ -27487,27 +11357,15 @@ var (
 
 )
 
-
-
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
-
-
-// 解析etcd地址
+// 解析 etcd 地址
 
  endpoints := strings.Split(*addr, ",")
 
-
-
-
-
-// 创建etcd的client
+// 创建 etcd 的 client
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -27519,17 +11377,9 @@ if err != nil {
 
 defer cli.Close()
 
-
-
-
-
-// 创建/获取队列
+// 创建 / 获取队列
 
  q := recipe.NewQueue(cli, *queueName)
-
-
-
-
 
 // 从命令行读取命令
 
@@ -27567,7 +11417,7 @@ if err != nil {
 
  fmt.Println(v) // 输出出队的元素
 
-case"quit", "exit": //退出
+case"quit", "exit": // 退出
 
 return
 
@@ -27580,24 +11430,7 @@ default:
  }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 我们可以打开两个终端，分别执行这个程序。在第一个终端中执行入队操作，在第二个终端中执行出队操作，并且观察一下出队、入队是否正常。
 
 除了刚刚说的分布式队列，etcd 还提供了优先级队列（PriorityQueue）。
@@ -27606,165 +11439,7 @@ default:
 
 优先级队列的测试程序如下，你可以在一个节点输入一些不同优先级的元素，在另外一个节点读取出来，看看它们是不是按照优先级顺序弹出的：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -27782,19 +11457,11 @@ import (
 
 "strings"
 
-
-
-
-
 "github.com/coreos/etcd/clientv3"
 
  recipe "github.com/coreos/etcd/contrib/recipes"
 
 )
-
-
-
-
 
 var (
 
@@ -27804,27 +11471,15 @@ var (
 
 )
 
-
-
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
-
-
-// 解析etcd地址
+// 解析 etcd 地址
 
  endpoints := strings.Split(*addr, ",")
 
-
-
-
-
-// 创建etcd的client
+// 创建 etcd 的 client
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -27836,17 +11491,9 @@ if err != nil {
 
 defer cli.Close()
 
-
-
-
-
-// 创建/获取队列
+// 创建 / 获取队列
 
  q := recipe.NewPriorityQueue(cli, *queueName)
-
-
-
-
 
 // 从命令行读取命令
 
@@ -27894,7 +11541,7 @@ if err != nil {
 
  fmt.Println(v) // 输出出队的元素
 
-case"quit", "exit": //退出
+case"quit", "exit": // 退出
 
 return
 
@@ -27908,29 +11555,11 @@ default:
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 你看，利用 etcd 实现分布式队列和分布式优先队列，就是这么简单。所以，在实际项目中，如果有这类需求的话，你就可以选择用 etcd 实现。
 
 不过，在使用分布式并发原语时，除了需要考虑可用性和数据一致性，还需要考虑分布式设计带来的性能损耗问题。所以，在使用之前，你一定要做好性能的评估。
 
-# 分布式栅栏
-
+## 分布式栅栏
 
 在[第 17 讲]()中，我们学习了循环栅栏 CyclicBarrier，它和[第 6 讲]()的标准库中的 WaitGroup，本质上是同一类并发原语，都是等待同一组 goroutine 同时执行，或者是等待同一组 goroutine 都完成。
 
@@ -27942,54 +11571,15 @@ Barrier：分布式栅栏。如果持有 Barrier 的节点释放了它，所有�
 
 DoubleBarrier：计数型栅栏。在初始化计数型栅栏的时候，我们就必须提供参与节点的数量，当这些数量的节点都 Enter 或者 Leave 的时候，这个栅栏就会放开。所以，我们把它称为计数型栅栏。
 
-
 ## Barrier：分布式栅栏
-
 
 我们先来学习下分布式 Barrier。
 
 分布式 Barrier 的创建很简单，你只需要提供 etcd 的 Client 和 Barrier 的名字就可以了，如下所示：
 
-
-
-
-
-
-
-
-
 funcNewBarrier(client *v3.Client, key string) *Barrier
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Barrier 提供了三个方法，分别是 Hold、Release 和 Wait，代码如下：
-
-
-
-
-
-
-
-
-
-
-
-
 
 func(b *Barrier)Hold()error
 
@@ -27997,175 +11587,17 @@ func(b *Barrier)Release()error
 
 func(b *Barrier)Wait()error
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Hold 方法是创建一个 Barrier。如果 Barrier 已经创建好了，有节点调用它的 Wait 方法，就会被阻塞。
 
 Release 方法是释放这个 Barrier，也就是打开栅栏。如果使用了这个方法，所有被阻塞的节点都会被放行，继续执行。
 
 Wait 方法会阻塞当前的调用者，直到这个 Barrier 被 release。如果这个栅栏不存在，调用者不会被阻塞，而是会继续执行。
 
-
 学习并发原语最好的方式就是使用它。下面我们就来借助一个例子，来看看 Barrier 该怎么用。
 
 你可以在一个终端中运行这个程序，执行"hold""release"命令，模拟栅栏的持有和释放。在另外一个终端中运行这个程序，不断调用"wait"方法，看看是否能正常地跳出阻塞继续执行：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -28181,19 +11613,11 @@ import (
 
 "strings"
 
-
-
-
-
 "github.com/coreos/etcd/clientv3"
 
  recipe "github.com/coreos/etcd/contrib/recipes"
 
 )
-
-
-
-
 
 var (
 
@@ -28203,27 +11627,15 @@ var (
 
 )
 
-
-
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
-
-
-// 解析etcd地址
+// 解析 etcd 地址
 
  endpoints := strings.Split(*addr, ",")
 
-
-
-
-
-// 创建etcd的client
+// 创建 etcd 的 client
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -28235,17 +11647,9 @@ if err != nil {
 
 defer cli.Close()
 
-
-
-
-
-// 创建/获取栅栏
+// 创建 / 获取栅栏
 
  b := recipe.NewBarrier(cli, *barrierName)
-
-
-
-
 
 // 从命令行读取命令
 
@@ -28259,25 +11663,25 @@ for consolescanner.Scan() {
 
 switch items[0] {
 
-case"hold": // 持有这个barrier
+case"hold": // 持有这个 barrier
 
  b.Hold()
 
  fmt.Println("hold")
 
-case"release": // 释放这个barrier
+case"release": // 释放这个 barrier
 
  b.Release()
 
  fmt.Println("released")
 
-case"wait": // 等待barrier被释放
+case"wait": // 等待 barrier 被释放
 
  b.Wait()
 
  fmt.Println("after wait")
 
-case"quit", "exit": //退出
+case"quit", "exit": // 退出
 
 return
 
@@ -28291,87 +11695,17 @@ default:
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## DoubleBarrier：计数型栅栏
-
 
 etcd 还提供了另外一种栅栏，叫做 DoubleBarrier，这也是一种非常有用的栅栏。这个栅栏初始化的时候需要提供一个计数 count，如下所示：
 
-
-
-
-
-
-
-
-
 funcNewDoubleBarrier(s *concurrency.Session, key string, count int) *DoubleBarrier
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 同时，它还提供了两个方法，分别是 Enter 和 Leave，代码如下：
-
-
-
-
-
-
-
-
-
-
 
 func(b *DoubleBarrier)Enter()error
 
 func(b *DoubleBarrier)Leave()error
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 我来解释下这两个方法的作用。
 
@@ -28381,157 +11715,7 @@ func(b *DoubleBarrier)Leave()error
 
 我们再来看一下 DoubleBarrier 的使用例子。你可以起两个节点，同时执行 Enter 方法，看看这两个节点是不是先阻塞，之后才继续执行。然后，你再执行 Leave 方法，也观察一下，是不是先阻塞又继续执行的。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -28547,10 +11731,6 @@ import (
 
 "strings"
 
-
-
-
-
 "github.com/coreos/etcd/clientv3"
 
 "github.com/coreos/etcd/clientv3/concurrency"
@@ -28558,10 +11738,6 @@ import (
  recipe "github.com/coreos/etcd/contrib/recipes"
 
 )
-
-
-
-
 
 var (
 
@@ -28573,27 +11749,15 @@ var (
 
 )
 
-
-
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
-
-
-// 解析etcd地址
+// 解析 etcd 地址
 
  endpoints := strings.Split(*addr, ",")
 
-
-
-
-
-// 创建etcd的client
+// 创建 etcd 的 client
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -28605,7 +11769,7 @@ if err != nil {
 
 defer cli.Close()
 
-// 创建session
+// 创建 session
 
  s1, err := concurrency.NewSession(cli)
 
@@ -28617,17 +11781,9 @@ if err != nil {
 
 defer s1.Close()
 
-
-
-
-
-// 创建/获取栅栏
+// 创建 / 获取栅栏
 
  b := recipe.NewDoubleBarrier(s1, *barrierName, *count)
-
-
-
-
 
 // 从命令行读取命令
 
@@ -28641,19 +11797,19 @@ for consolescanner.Scan() {
 
 switch items[0] {
 
-case"enter": // 持有这个barrier
+case"enter": // 持有这个 barrier
 
  b.Enter()
 
  fmt.Println("enter")
 
-case"leave": // 释放这个barrier
+case"leave": // 释放这个 barrier
 
  b.Leave()
 
  fmt.Println("leave")
 
-case"quit", "exit": //退出
+case"quit", "exit": // 退出
 
 return
 
@@ -28667,27 +11823,9 @@ default:
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 好了，我们先来简单总结一下。我们在第 17 讲学习的循环栅栏，控制的是同一个进程中的不同 goroutine 的执行，而分布式栅栏和计数型栅栏控制的是不同节点、不同进程的执行。当你需要协调一组分布式节点在某个时间点同时运行的时候，可以考虑 etcd 提供的这组并发原语。
 
-# STM
-
+## STM
 
 提到事务，你肯定不陌生。在开发基于数据库的应用程序的时候，我们经常用到事务。事务就是要保证一组操作要么全部成功，要么全部失败。
 
@@ -28697,100 +11835,9 @@ etcd 提供了在一个事务中对多个 key 的更新功能，这一组 key �
 
 etcd 的事务操作如下，分为条件块、成功块和失败块，条件块用来检测事务是否成功，如果成功，就执行 Then(...)，如果失败，就执行 Else(...)：
 
-
-
-
-
-
-
-
-
 Txn().If(cond1, cond2, ...).Then(op1, op2, ...,).Else(op1’, op2’, …)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 我们来看一个利用 etcd 的事务实现转账的小例子。我们从账户 from 向账户 to 转账 amount，代码如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 funcdoTxnXfer(etcd *v3.Client, from, to string, amount uint)(bool, error) {
 
@@ -28836,7 +11883,7 @@ returnfalse, fmt.Errorf(“insufficient value”)
 
  OpPut(to, fromUint64(toV + amount))
 
-//提交事务 
+// 提交事务
 
  putresp, err := txn.Commit()
 
@@ -28852,23 +11899,6 @@ return putresp.Succeeded, nil
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 从刚刚的这段代码中，我们可以看到，虽然可以利用 etcd 实现事务操作，但是逻辑还是比较复杂的。
 
 因为事务使用起来非常麻烦，所以 etcd 又在这些基础 API 上进行了封装，新增了一种叫做 STM 的操作，提供了更加便利的方法。
@@ -28877,54 +11907,11 @@ return putresp.Succeeded, nil
 
 要使用 STM，你需要先编写一个 apply 函数，这个函数的执行是在一个事务之中的：
 
-
-
-
-
-
-
-
-
 apply func(STM)error
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 这个方法包含一个 STM 类型的参数，它提供了对 key 值的读写操作。
 
 STM 提供了 4 个方法，分别是 Get、Put、Receive 和 Delete，代码如下：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 type STM interface {
 
@@ -28938,23 +11925,6 @@ type STM interface {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 使用 etcd STM 的时候，我们只需要定义一个 apply 方法，比如说转账方法 exchange，然后通过 concurrency.NewSTM(cli, exchange)，就可以完成转账事务的执行了。
 
 STM 咋用呢？我们还是借助一个例子来学习下。
@@ -28963,233 +11933,7 @@ STM 咋用呢？我们还是借助一个例子来学习下。
 
 为了确认事务是否出错了，我们最后要校验每个账号的钱数和总钱数。总钱数不变，就代表执行成功了。这个例子的代码如下：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package main
-
-
-
-
 
 import (
 
@@ -29207,19 +11951,11 @@ import (
 
 "sync"
 
-
-
-
-
 "github.com/coreos/etcd/clientv3"
 
 "github.com/coreos/etcd/clientv3/concurrency"
 
 )
-
-
-
-
 
 var (
 
@@ -29227,25 +11963,13 @@ var (
 
 )
 
-
-
-
-
 funcmain() {
 
  flag.Parse()
 
-
-
-
-
-// 解析etcd地址
+// 解析 etcd 地址
 
  endpoints := strings.Split(*addr, ",")
-
-
-
-
 
  cli, err := clientv3.New(clientv3.Config{Endpoints: endpoints})
 
@@ -29257,11 +11981,7 @@ if err != nil {
 
 defer cli.Close()
 
-
-
-
-
-// 设置5个账户，每个账号都有100元，总共500元
+// 设置 5 个账户，每个账号都有 100 元，总共 500 元
 
  totalAccounts := 5
 
@@ -29277,11 +11997,7 @@ if _, err = cli.Put(context.TODO(), k, "100"); err != nil {
 
  }
 
-
-
-
-
-// STM的应用函数，主要的事务逻辑
+// STM 的应用函数，主要的事务逻辑
 
  exchange := func(stm concurrency.STM)error {
 
@@ -29309,19 +12025,11 @@ returnnil
 
  fmt.Sscanf(toV, "%d", &toInt)
 
-
-
-
-
 // 把源账号一半的钱转账给目标账号
 
  xfer := fromInt / 2
 
  fromInt, toInt = fromInt-xfer, toInt+xfer
-
-
-
-
 
 // 把转账后的值写回
 
@@ -29333,11 +12041,7 @@ returnnil
 
  }
 
-
-
-
-
-// 启动10个goroutine进行转账操作
+// 启动 10 个 goroutine 进行转账操作
 
 var wg sync.WaitGroup
 
@@ -29365,10 +12069,6 @@ if _, serr := concurrency.NewSTM(cli, exchange); serr != nil {
 
  wg.Wait()
 
-
-
-
-
 // 检查账号最后的数目
 
  sum := 0
@@ -29393,35 +12093,13 @@ for _, kv := range accts.Kvs { // 遍历账号的值
 
  }
 
-
-
-
-
  log.Println("account sum is", sum) // 总数
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 总结一下，当你利用 etcd 做存储时，是可以利用 STM 实现事务操作的，一个事务可以包含多个账号的数据更改操作，事务能够保证这些更改要么全成功，要么全失败。
 
 ## 总结
-
 
 如果我们把眼光放得更宽广一些，其实并不只是 etcd 提供了这些并发原语，比如我上节课一开始就提到了，Zookeeper 很早也提供了类似的并发原语，只不过只提供了 Java 的库，并没有提供合适的 Go 库。另外，根据 Consul 官方的反馈，他们并没有开发这些并发原语的计划，所以，从目前来看，etcd 是个不错的选择。
 
@@ -29435,26 +12113,15 @@ for _, kv := range accts.Kvs { // 遍历账号的值
 
 ## 思考题
 
-
-
-
 部署一个 3 节点的 etcd 集群，测试一下分布式队列的性能。
-
-
-
 
 etcd 提供的 STM 是分布式事务吗？
 
-
-
 欢迎在留言区写下你的思考和答案，我们一起交流讨论。如果你觉得有所收获，也欢迎你把今天的内容分享给你的朋友或同事。
-
 
 �也欢迎你把今天的内容分享给你的朋友或同事。
 
-
-# 结束语 | 再聊Go并发编程的价值和精进之路
-
+# 结束语 | 再聊 Go 并发编程的价值和精进之路
 
 你好，我是鸟窝。很高兴和你一起度过了一个多月的时间，到了和你说再见的时候了。
 
@@ -29490,21 +12157,11 @@ etcd 提供的 STM 是分布式事务吗？
 
 那么，该怎么在编写 Go 程序时，避免并发编程的 Bug 呢？在[开篇词]()里，我讲到了“两大主线”，现在学完了所有内容之后，你会发现，其实可以抽象成“三部曲”：
 
-
-
 全面地掌握 Go 并发编程的知识，不遗漏任何的知识点；
-
-
-
 
 熟悉每一个并发原语的功能和实现，在面对并发场景时，能够高效地选出最适合的并发原语；
 
-
-
-
 多看看别人踩的坑，避免自己再掉进相同的坑里。
-
-
 
 在前面的课程中，我讲的所有内容，都是为了帮助你轻松地完成这三个目标。在课程的最后，我还想再给你多交代几句。
 
@@ -29543,5 +12200,3 @@ etcd 提供的 STM 是分布式事务吗？
 虽然很舍不得，但还是要跟你说再见了。在课程的最后，我给你准备一份结课问卷，希望你花 1 分钟时间，点击下面的图片填写一下。如果你的建议被采纳，我将会给你赠送一个护腕垫或者价值 99 元的课程阅码。期待你的畅所欲言。
 
 [![](https://static001.geekbang.org/resource/image/2e/9b/2eab2acf71e5183e59ea9a10e08eee9b.jpg)](https://jinshuju.net/f/UQheYe)
-
-
