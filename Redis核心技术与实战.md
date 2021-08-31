@@ -1,4 +1,4 @@
-# 开篇词 | 这样学 Redis，才能技高一筹
+# 00 开篇词 | 这样学 Redis，才能技高一筹
 
 你好，我是蒋德钧，欢迎和我一起学习 Redis。
 我博士毕业后，就一直在中科院计算所工作，现在的职位是副研究员。在过去的 14 年时间里，我一直从事互联网底层基础设施方面的研究工作，主要的研究方向为新型存储介质、键值数据库、存储系统和操作系统。
@@ -1140,16 +1140,16 @@ Redis 基于压缩列表实现了 List、Hash 和 Sorted Set 这样的集合类�
 按照这种设计方法，我在 Redis 中插入了一组图片 ID 及其存储对象 ID 的记录，并且用 info 命令查看了内存开销，我发现，增加一条记录后，内存占用只增加了 16 字节，如下所示：
 
 127.0.0.1:6379> info memory
-
-# Memory
+```sh
+## Memory
 
 used_memory:1039120
 127.0.0.1:6379> hset 11010000603302000080
 (integer) 1
 127.0.0.1:6379> info memory
 
-# Memory
-
+## Memory
+```
 used_memory:1039136
 
 在使用 String 类型时，每个记录需要消耗 64 字节，这种方式却只用了 16 字节，所使用的内存空间是原来的 1/4，满足了我们节省内存空间的需求。
@@ -1471,6 +1471,7 @@ structNewTypeNode *next;
 第二步：在 RedisObject 的 type 属性中，增加这个新类型的定义
 这个定义是在 Redis 的 server.h 文件中。比如，我们增加一个叫作 OBJ_NEWTYPE 的宏定义，用来在代码中指代 NewTypeObject 这个新类型。
 
+```sh
 # define OBJ_STRING 0 /* String object. */
 
 # define OBJ_LIST 1 /* List object. */
@@ -1479,10 +1480,8 @@ structNewTypeNode *next;
 
 # define OBJ_ZSET 3 /* Sorted set object. */
 
-…
-
 # define OBJ_NEWTYPE 7
-
+```
 第三步：开发新类型的创建和释放函数
 Redis 把数据类型的创建和释放函数都定义在了 object.c 文件中。所以，我们可以在这个文件中增加 NewTypeObject 的创建函数 createNewTypeObject，如下所示：
 
@@ -2507,10 +2506,10 @@ Redis 通常作为共用的缓存系统或键值数据库对外提供服务，�
 ## 如何判断是否有内存碎片？
 
 Redis 是内存数据库，内存利用率的高低直接关系到 Redis 运行效率的高低。为了让用户能监控到实时的内存使用情况，Redis 自身提供了 INFO 命令，可以用来查询内存使用的详细信息，命令如下：
-
+```sh
 INFO memory
 
-# Memory
+## Memory
 
 used_memory:1073741736
 used_memory_human:1024.00M
@@ -2518,7 +2517,7 @@ used_memory_rss:1997159792
 used_memory_rss_human:1.86G
 …
 mem_fragmentation_ratio:1.86
-
+```
 这里有一个 mem_fragmentation_ratio 的指标，它表示的就是 Redis 当前的内存碎片率。那么，这个碎片率是怎么计算的呢？其实，就是上面的命令中的两个指标 used_memory_rss 和 used_memory 相除的结果。
 
 mem_fragmentation_ratio = used_memory_rss/ used_memory
@@ -3819,28 +3818,28 @@ DO THINGS
 第二步，客户端把事务中本身要执行的具体操作（例如增删改数据）发送给服务器端。这些操作就是 Redis 本身提供的数据读写命令，例如 GET、SET 等。不过，这些命令虽然被客户端发送到了服务器端，但 Redis 实例只是把这些命令暂存到一个命令队列中，并不会立即执行。
 第三步，客户端向服务器端发送提交事务的命令，让数据库实际执行第二步中发送的具体操作。Redis 提供的 EXEC 命令就是执行事务提交的。当服务器端收到 EXEC 命令后，才会实际执行命令队列中的所有命令。
 下面的代码就显示了使用 MULTI 和 EXEC 执行一个事务的过程，你可以看下。
-
+```sh
 # 开启事务
 
 127.0.0.1:6379> MULTI
 OK
 
-# 将 a:stock 减 1，
+### 将 a:stock 减 1，
 
 127.0.0.1:6379> DECR a:stock
 QUEUED
 
-# 将 b:stock 减 1
+### 将 b:stock 减 1
 
 127.0.0.1:6379> DECR b:stock
 QUEUED
 
-# 实际执行事务
+### 实际执行事务
 
 127.0.0.1:6379> EXEC
 1) (integer) 4
 2) (integer) 9
-
+```
 我们假设 a:stock、b:stock 两个键的初始值是 5 和 10。在 MULTI 命令后执行的两个 DECR 命令，是把 a:stock、b:stock 两个键的值分别减 1，它们执行后的返回结果都是 QUEUED，这就表示，这些操作都被暂存到了命令队列，还没有实际执行。等到执行了 EXEC 命令后，可以看到返回了 4、9，这就表明，两个 DECR 命令已经成功地执行了。
 好了，通过使用 MULTI 和 EXEC 命令，我们可以实现多个操作的共同执行，但是这符合事务要求的 ACID 属性吗？接下来，我们就来具体分析下。
 
@@ -3854,7 +3853,7 @@ QUEUED
 第一种情况是，在执行 EXEC 命令前，客户端发送的操作命令本身就有错误（比如语法错误，使用了不存在的命令），在命令入队时就被 Redis 实例判断出来了。
 对于这种情况，在命令入队时，Redis 就会报错并且记录下这个错误。此时，我们还能继续提交命令操作。等到执行了 EXEC 命令之后，Redis 就会拒绝执行所有提交的命令操作，返回事务失败的结果。这样一来，事务中的所有命令都不会再被执行了，保证了原子性。
 我们来看一个因为事务操作入队时发生错误，而导致事务失败的小例子。
-
+```sh
 # 开启事务
 
 127.0.0.1:6379> MULTI
@@ -3874,7 +3873,7 @@ QUEUED
 
 127.0.0.1:6379> EXEC
 (error) EXECABORT Transaction discarded because of previous errors.
-
+```
 在这个例子中，事务里包含了一个 Redis 本身就不支持的 PUT 命令，所以，在 PUT 命令入队时，Redis 就报错了。虽然，事务里还有一个正确的 DECR 命令，但是，在最后执行 EXEC 命令后，整个事务被放弃执行了。
 我们再来看第二种情况。
 和第一种情况不同的是，事务操作入队时，命令和操作的数据类型不匹配，但 Redis 实例没有检查出错误。但是，在执行完 EXEC 命令以后，Redis 实际执行这些事务操作时，就会报错。不过，需要注意的是，虽然 Redis 会对错误命令报错，但还是会把正确的命令执行完。在这种情况下，事务的原子性就无法得到保证了。
