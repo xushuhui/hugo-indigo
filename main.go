@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattn/godown"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -22,8 +25,8 @@ func makefile(fileName string,f *os.File)  {
 	h1 = `<h1>`+h1+`</h1>`
 	//   _29HP61GA_0
 	body,_ := doc.Find("._2c4hPkl9").Html()
-	//_2QuafIpq_0
-	file, err := os.OpenFile("./md/go/"+mdf+".md", os.O_RDWR|os.O_CREATE, 0766) // For read access.
+	//_2QuafIpq_0 _2c4hPkl9
+	file, err := os.OpenFile("./md/xu/"+mdf+".md", os.O_RDWR|os.O_CREATE, 0766) // For read access.
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +36,7 @@ func makefile(fileName string,f *os.File)  {
 	f.Close()
 }
 func main() {
-	dir :="./go"
+	dir :="./html"
 	files, _ := ioutil.ReadDir(dir)
 	for _, file := range files {
 
@@ -41,14 +44,41 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		makefile(file.Name(),f)
 
+		makefile(file.Name(),f)
+		f.Close()
+
+		//rename(file.Name())
 	}
 
 
 }
-func rename()  {
-	//newName := strings.ReplaceAll(file.Name(), "html", "")
-	//newName := file.Name()+".html"
-	//os.Rename(filepath.Join(dir, file.Name()), filepath.Join(dir, newName))
+func rename(fileName string)  {
+	mdf := strings.TrimSuffix(fileName, ".html")
+	file, err := os.OpenFile("./md/kubernetes/"+mdf+".md", os.O_RDWR|os.O_CREATE, 0766) // For read access.
+	if err != nil {
+		log.Fatal(err)
+	}
+	reader := bufio.NewReader(file)
+	pos := int64(0)
+
+	for { //读取每一行内容
+		line, err := reader.ReadString('\n')
+		if err != nil { //读到末尾
+			if err == io.EOF {
+				fmt.Println("File read ok!")
+				break
+			} else {
+				fmt.Println("Read file error!", err)
+				return
+			}
+		}
+
+		if strings.Contains(line, "image/jpeg") {
+			fmt.Println(line)
+			//bytes := []byte("address " + ip + "\n")
+			//file.WriteAt(bytes, pos)
+		} //每一行读取完后记录位置
+		pos += int64(len(line))
+	}
 }
