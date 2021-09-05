@@ -2,22 +2,100 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/mattn/godown"
 	"io"
+	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/PuerkitoBio/goquery"
-	"github.com/mattn/godown"
 )
 
-func main() {
-	getList()
+func getHeaders() (header map[string]string) {
+	header = map[string]string{
+		"Content-Type": "application/json",
+		"Cookie":       "_s_tentry=cn.bing.com; UOR=cn.bing.com,open.weibo.com,cn.bing.com; Apache=4992712349818.786.1630676593662; SINAGLOBAL=4992712349818.786.1630676593662; ULV=1630676593675:1:1:1:4992712349818.786.1630676593662:; login_sid_t=18995bbc55ec6c9277c8de66b563c071; cross_origin_proto=SSL; ALF=1662215082; SSOLoginState=1630679083; SUB=_2A25MNkB7DeRhGeRJ41QU8CnNzD6IHXVvQjazrDV8PUNbmtAKLUjfkW9NUneWxXuekD3KzoSL3Eg4y0QvYuB0xwMW; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWOg3rc-lellg-YikzmUDqZ5JpX5KzhUgL.FozN1hqfehMpS0z2dJLoIpjLxK-LB.-L1K5LxKqL1-zL1K.LxKnLB.-L1h.t; XSRF-TOKEN=SJO5Tak7wPdjVFasH4zVeSEQ; WBPSESS=GjA8I2NHhaKAyZg5agD9BG8KVHidYGC8nIa48kcJ-usTlfe1m9e4GGEPkdty4K1KjIecQ_qBe8LGtKvgiOKy_2K4Y5p1cG2xAIeFgJYBhb6DITtemACEpTBRFAKulVPt",
+		"User-Agent":   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+	}
+	return
+}
+func createReqBody(filePath string) (string, io.Reader, error) {
+	var err error
 
+	buf := new(bytes.Buffer)
+	bw := multipart.NewWriter(buf) // body writer
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		return "", nil, err
+	}
+	defer f.Close()
+
+	// file part1
+	_, fileName := filepath.Split(filePath)
+	fw1, _ := bw.CreateFormFile("pic1", fileName)
+	io.Copy(fw1, f)
+
+	bw.Close() //write the tail boundry
+	return base64.StdEncoding.EncodeToString(buf.Bytes()), buf, nil
+}
+func Post(url string, jsonStr []byte) (res *http.Response, err error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		log.Println("err", err)
+	}
+	header := getHeaders()
+
+	for k, v := range header {
+		req.Header.Add(k, v)
+	}
+
+	res, err = client.Do(req)
+	if err != nil {
+		log.Println("err", err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		log.Fatal("http err ", res.Status)
+		return
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	fmt.Println(string(body))
+
+	return
+}
+func uploadSinaImg() {
+
+	//now := utils.Int642String(time.Now().Unix())
+	urlStr := `https://picupload.weibo.com/interface/pic_upload.php?ori=1&mime=image%2Fjpeg&data=base64&url=0&markpos=1&logo=&nick=0&marks=1&app=miniblog`
+	//urlStr := `http://picupload.service.weibo.com/interface/pic_upload.php?mime=image%2Fjpeg&data=base64&url=0&markpos=1
+	//&logo=&nick=0&marks=1&app=miniblog`
+	//urlStr = url.QueryEscape(urlStr)
+	base64, _, err := createReqBody("./2.png")
+	if err != nil {
+		log.Println("err", err)
+	}
+	jsons, _ := json.Marshal(map[string]string{
+		"b64_data": base64,
+	})
+	Post(urlStr, jsons)
+
+}
+func main() {
+	//getList()
+	uploadSinaImg()
 }
 func getContent(link string, title string) {
 	fileName := "imooc/" + title
