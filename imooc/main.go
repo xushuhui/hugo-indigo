@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattn/godown"
@@ -22,9 +21,14 @@ import (
 
 func getHeaders() (header map[string]string) {
 	header = map[string]string{
-		"Content-Type": "application/json",
-		"Cookie":       "_s_tentry=cn.bing.com; UOR=cn.bing.com,open.weibo.com,cn.bing.com; Apache=4992712349818.786.1630676593662; SINAGLOBAL=4992712349818.786.1630676593662; ULV=1630676593675:1:1:1:4992712349818.786.1630676593662:; login_sid_t=18995bbc55ec6c9277c8de66b563c071; cross_origin_proto=SSL; ALF=1662215082; SSOLoginState=1630679083; SUB=_2A25MNkB7DeRhGeRJ41QU8CnNzD6IHXVvQjazrDV8PUNbmtAKLUjfkW9NUneWxXuekD3KzoSL3Eg4y0QvYuB0xwMW; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWOg3rc-lellg-YikzmUDqZ5JpX5KzhUgL.FozN1hqfehMpS0z2dJLoIpjLxK-LB.-L1K5LxKqL1-zL1K.LxKnLB.-L1h.t; XSRF-TOKEN=SJO5Tak7wPdjVFasH4zVeSEQ; WBPSESS=GjA8I2NHhaKAyZg5agD9BG8KVHidYGC8nIa48kcJ-usTlfe1m9e4GGEPkdty4K1KjIecQ_qBe8LGtKvgiOKy_2K4Y5p1cG2xAIeFgJYBhb6DITtemACEpTBRFAKulVPt",
-		"User-Agent":   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+		//"Content-Type": "application/x-www-form-urlencoded",
+		"Cookie":          `login_sid_t=e3498f7cca72a692d34ae777ebc63039; cross_origin_proto=SSL; _s_tentry=-; Apache=8988982910612.766.1609150868347; SINAGLOBAL=8988982910612.766.1609150868347; ULV=1609150868353:1:1:1:8988982910612.766.1609150868347:; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWOg3rc-lellg-YikzmUDqZ5JpX5KMhUgL.FozN1hqfehMpS0z2dJLoIpjLxK-LB.-L1K5LxKqL1-zL1K.LxKnLB.-L1h.t; ALF=1662433647; SSOLoginState=1630897648; SCF=Al6SMtYhRRaWwDB15z5E5DhyjbPLGqwZ52MHaYUy0NiGY_RM0_MGhaQ3kWQ-UxbUK5jiZh8nfglHPLPZcGFFahg.; SUB=_2A25MMfWhDeRhGeRJ41QU8CnNzD6IHXVvR2BprDV8PUNbmtB-LWfEkW9NUneWxXSugxFDViEsC9aVsc7ukE55QHgD; UOR=,,www.google.com`,
+		"User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+		"Referer":         "http://weibo.com/minipublish",
+		"Accept":          "*/*",
+		"Content-Length":  "79664",
+		"Accept-Encoding": "gzip, deflate, br",
+		"Host":            "picupload.weibo.com",
 	}
 	return
 }
@@ -36,22 +40,28 @@ func createReqBody(filePath string) (string, io.Reader, error) {
 
 	f, err := os.Open(filePath)
 	if err != nil {
-		return "", nil, err
+		log.Println("err", err)
 	}
 	defer f.Close()
 
 	// file part1
 	_, fileName := filepath.Split(filePath)
-	fw1, _ := bw.CreateFormFile("pic1", fileName)
-	io.Copy(fw1, f)
-
+	fw1, err := bw.CreateFormFile("pic1", fileName)
+	if err != nil {
+		log.Println("err", err)
+	}
+	_, err = io.Copy(fw1, f)
+	if err != nil {
+		log.Println("err", err)
+	}
 	bw.Close() //write the tail boundry
 	return base64.StdEncoding.EncodeToString(buf.Bytes()), buf, nil
 }
-func Post(url string, jsonStr []byte) (res *http.Response, err error) {
+
+func Post(url string, jsonStr io.Reader) (res *http.Response, err error) {
 	client := &http.Client{}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", url, jsonStr)
 	if err != nil {
 		log.Println("err", err)
 	}
@@ -78,19 +88,19 @@ func Post(url string, jsonStr []byte) (res *http.Response, err error) {
 }
 func uploadSinaImg() {
 
+	//_, body, err := createReqBody("./1.jpg")
+
 	//now := utils.Int642String(time.Now().Unix())
-	urlStr := `https://picupload.weibo.com/interface/pic_upload.php?ori=1&mime=image%2Fjpeg&data=base64&url=0&markpos=1&logo=&nick=0&marks=1&app=miniblog`
-	//urlStr := `http://picupload.service.weibo.com/interface/pic_upload.php?mime=image%2Fjpeg&data=base64&url=0&markpos=1
+	//https://photo.weibo.com/upload/photo
+	urlStr := "https://picupload.weibo.com/interface/pic_upload.php?s=xml&ori=1&data=1&rotate=0&wm=&app=miniblog&mime=image%2Fjpeg"
+
 	//&logo=&nick=0&marks=1&app=miniblog`
 	//urlStr = url.QueryEscape(urlStr)
-	base64, _, err := createReqBody("./2.png")
+	body, err := os.OpenFile("./1.jpg", os.O_RDWR|os.O_CREATE, 0766)
 	if err != nil {
 		log.Println("err", err)
 	}
-	jsons, _ := json.Marshal(map[string]string{
-		"b64_data": base64,
-	})
-	Post(urlStr, jsons)
+	Post(urlStr, body)
 
 }
 func main() {
@@ -203,7 +213,8 @@ func replace(r io.Reader, w io.Writer) error {
 	return sc.Err()
 }
 func getList() {
-	res, err := http.Get("http://www.imooc.com/wiki/javalesson/operators.html")
+
+	res, err := http.Get("http://www.imooc.com/wiki/lambda/lambdaintro.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -220,6 +231,7 @@ func getList() {
 	// Find the review items
 	doc.Find(".jie").Each(func(i int, s *goquery.Selection) {
 		// For each item found, get the title
+		i = i + 50
 		title := strings.TrimSpace(s.Text())
 		title = "Java从零开始（" + strconv.Itoa(i) + "）" + title + ".md"
 		link, _ := s.Attr("href")
