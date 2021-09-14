@@ -1,8 +1,6 @@
 ## 00 开篇词 溯本求源，吃透 Docker！
 
-
 你好，我是你的 Docker 老师——郭少。
-
 
 我是从 2015 年开始使用和推广容器技术的，算是国内首批容器践行者。当时，我还在从事 Java 业务开发，业务内部的微服务需要做容器化改造，公司首席架构师牵头成立了云平台组，很荣幸我被选入该小组，从此我认识了 Docker。
 
@@ -14,15 +12,11 @@
 
 * 学习 Docker 会顾及较多，比如，我不会 Golang 怎么办？Linux 懂一点行吗？
 
-
 * 对 Docker 的知识掌握零零碎碎，不系统，说自己懂吧，但好像也懂得不多，还是经常会查资料。
-
 
 * 自己对 Docker 底层原理理解欠缺，核心功能掌握不全，遇到问题时无法定位，耽误时间。
 
-
 * 不知道如何使用 Docker 提升从开发到部署的效率？
-
 
 * 不同场景下，如何选用最适合的容器编排和调度框架？
 这些境遇恰是我曾走过的路，对此我也有很多感悟和思考，因此也一直希望有机会分享出来，这个课程正好是一个契机，相信我在这个行业实践的一些方法和思路能给你带来很多启发和帮助。
@@ -88,13 +82,11 @@ $ spec: 1.0.0-rc2-dev
 
 如果说，我们已经错过了互联网技术大爆发的时代，也没有在以虚拟机为代表的云计算时代分得一杯羹。那么，这次以 “容器” 为代表的历史变革正呼之欲出，你又有什么理由错过呢？
 
-好了，我说了这么多，最后我也希望听你来说一说，告诉我：你在学习 Docker 的路上踩到过哪些坑？你在Docker的使用中又有哪些成功的经验，可以分享给大家？写在留言区，我们一起交流。
+好了，我说了这么多，最后我也希望听你来说一说，告诉我：你在学习 Docker 的路上踩到过哪些坑？你在 Docker 的使用中又有哪些成功的经验，可以分享给大家？写在留言区，我们一起交流。
 
 ## 01 Docker 安装：入门案例带你了解容器技术原理
 
-
 咱们第一课时就先聊聊 Docker 的基础内容：Docker 能做什么，怎么安装 Docker，以及容器技术的原理。
-
 
 ### Docker 能做什么？
 
@@ -207,7 +199,7 @@ $ mkdir rootfs
 这里为了方便演示，我使用现成的 busybox 镜像来创建一个系统，镜像的概念和组成后面我会详细讲解，如果你没有 Docker 基础可以把下面的操作命令理解成在 rootfs 下创建了一些目录和放置了一些二进制文件。
 
 ```
-$ cd rootfs 
+$ cd rootfs
 $ docker export $(docker create busybox) -o busybox.tar
 $ tar -xf busybox.tar
 ```
@@ -234,7 +226,6 @@ bin  busybox.tar  dev  etc  home  proc  root  sys  tmp  usr  var
 
 这里可以看到当前进程的根目录已经变成了主机上的 /home/centos/rootfs 目录。这样就实现了当前进程与主机的隔离。到此为止，一个目录隔离的容器就完成了。
 
-
 但是，此时还不能称之为一个容器，为什么呢？你可以在上一步（使用 chroot 启动命令行窗口）执行以下命令，查看如下路由信息：
 
 ```
@@ -258,17 +249,14 @@ Docker 主要用到以下五种命名空间。
 
 * pid namespace：用于隔离进程 ID。
 
-
 * net namespace：隔离网络接口，在虚拟的 net namespace 内用户可以拥有自己独立的 IP、路由、端口等。
-
 
 * mnt namespace：文件系统挂载点隔离。
 
-
-* ipc namespace：信号量,消息队列和共享内存的隔离。
-
+* ipc namespace：信号量，消息队列和共享内存的隔离。
 
 * uts namespace：主机名和域名的隔离。
+
 #### Cgroups
 
 Cgroups 是一种 Linux 内核功能，可以限制和隔离进程的资源使用情况（CPU、内存、磁盘 I/O、网络等）。在容器的实现中，Cgroups 通常用来限制容器的 CPU 和内存等资源的使用。
@@ -282,13 +270,13 @@ Cgroups 是一种 Linux 内核功能，可以限制和隔离进程的资源使�
 容器技术从 1979 年 chroot 的首次问世便已崭露头角，但是到了 2013 年，Dokcer 的横空出世才使得容器技术迅速发展，可见 Docker 对于容器技术的推动力和影响力。
 
 > 另外， Docker 还提供了工具和平台来管理容器的生命周期：
-> 
+>
 > 1. 使用容器开发应用程序及其支持组件。
-> 
-> 
+>
+>
 > 2. 容器成为分发和测试你的应用程序的单元。
-> 
-> 
+>
+>
 > 3. 可以将应用程序作为容器或协调服务部署到生产环境中。无论您的生产环境是本地数据中心，云提供商还是两者的混合，其工作原理都相同。
 
 到此，相信你已经了解了实现容器的基本技术原理，并且对 Docker 的作用有了一定认知。那么你知道为什么容器技术在 Docker 出现之前一直没有爆发的根本原因吗？思考后，可以把你的想法写在留言区。
@@ -297,9 +285,7 @@ Cgroups 是一种 Linux 内核功能，可以限制和隔离进程的资源使�
 
 ## 02 核心概念：镜像、容器、仓库，彻底掌握 Docker 架构核心设计理念
 
-
 Docker 的操作围绕镜像、容器、仓库三大核心概念。在学架构设计之前，我们需要先了解 Docker 的三个核心概念。
-
 
 ### Docker 核心概念
 
@@ -311,8 +297,8 @@ Docker 的操作围绕镜像、容器、仓库三大核心概念。在学架构�
 
 1. 自己创建镜像。通常情况下，一个镜像是基于一个基础镜像构建的，你可以在基础镜像上添加一些用户自定义的内容。例如你可以基于`centos`镜像制作你自己的业务镜像，首先安装`nginx`服务，然后部署你的应用程序，最后做一些自定义配置，这样一个业务镜像就做好了。
 
-
 2. 从功能镜像仓库拉取别人制作好的镜像。一些常用的软件或者系统都会有官方已经制作好的镜像，例如`nginx`、`ubuntu`、`centos`、`mysql`等，你可以到 [Docker Hub](https://hub.docker.com/) 搜索并下载它们。
+
 #### 容器
 
 容器是什么呢？容器是 Docker 的另一个核心概念。通俗地讲，容器是镜像的运行实体。镜像是静态的只读文件，而容器带有运行时需要的可写文件层，并且容器中的进程属于运行状态。即**容器运行着真正的应用进程。容器有初建、运行、停止、暂停和删除五种状态。**
@@ -349,8 +335,7 @@ Docker 的镜像仓库类似于代码仓库，用来存储和分发 Docker 镜�
 
 ![Drawing 2.png](https://s0.lgstatic.com/i/image/M00/49/93/Ciqc1F9PYtCAC1GSAADIK4E6wrc368.png)
 
-图2 Docker 架构图
-
+图 2 Docker 架构图
 
 我们可以看到，Docker 整体架构采用 C/S（客户端 / 服务器）模式，主要由客户端和服务端两大部分组成。客户端负责发送操作指令，服务端负责接收和处理指令。客户端和服务端通信有多种方式，既可以在同一台机器上通过`UNIX`套接字通信，也可以通过网络连接远程通信。
 
@@ -385,22 +370,19 @@ Docker 从诞生到现在，服务端经历了多次架构重构。起初，服�
 
 可以看到，Docker 目前已经有了非常多的组件和工具。这里我不对它们逐一介绍，因为在第 11 课时，我会带你深入剖析每一个组件和工具。
 
-
 这里我先介绍一下 Docker 的两个至关重要的组件：`runC`和`containerd`。
 
 * `runC`是 Docker 官方按照 OCI 容器运行时标准的一个实现。通俗地讲，runC 是一个用来运行容器的轻量级工具，是真正用来运行容器的。
 
-
 * `containerd`是 Docker 服务端的一个核心组件，它是从`dockerd`中剥离出来的 ，它的诞生完全遵循 OCI 标准，是容器标准化后的产物。`containerd`通过 containerd-shim 启动并管理 runC，可以说`containerd`真正管理了容器的生命周期。
 ![Drawing 3.png](https://s0.lgstatic.com/i/image/M00/49/93/Ciqc1F9PYuuAQINxAAA236heaL0459.png)
 
-图3 Docker 服务端组件调用关系图
-
+图 3 Docker 服务端组件调用关系图
 
 通过上图，可以看到，`dockerd`通过 gRPC 与`containerd`通信，由于`dockerd`与真正的容器运行时，`runC`中间有了`containerd`这一 OCI 标准层，使得`dockerd`可以确保接口向下兼容。
 
 > [gRPC](https://grpc.io) 是一种远程服务调用。想了解更多信息可以参考[https://grpc.io](https://grpc.io/)
-> 
+>
 > containerd-shim 的意思是垫片，类似于拧螺丝时夹在螺丝和螺母之间的垫片。containerd-shim 的主要作用是将 containerd 和真正的容器进程解耦，使用 containerd-shim 作为容器进程的父进程，从而实现重启 dockerd 不影响已经启动的容器进程。
 
 了解了 dockerd、containerd 和 runC 之间的关系，下面可以通过启动一个 Docker 容器，来验证它们进程之间的关系。
@@ -440,9 +422,7 @@ dockerd
 
 ## 03 镜像使用：Docker 环境下如何配置你的镜像？
 
-
 今天我将围绕 Docker 核心概念镜像展开，首先重点讲解一下镜像的基本操作，然后介绍一下镜像的实现原理。首先说明，咱们本课时的镜像均指 Docker 镜像。
-
 
 你是否还记得镜像是什么？我们先回顾一下。
 
@@ -456,20 +436,15 @@ dockerd
 
 图 1 镜像操作
 
-
 从图中可知，镜像的操作可分为：
 
 * 拉取镜像，使用`docker pull`命令拉取远程仓库的镜像到本地 ；
 
-
 * 重命名镜像，使用`docker tag`命令“重命名”镜像 ；
-
 
 * 查看镜像，使用`docker image ls`或`docker images`命令查看本地已经存在的镜像 ；
 
-
 * 删除镜像，使用`docker rmi`命令删除无用镜像 ；
-
 
 * 构建镜像，构建镜像有两种方式。第一种方式是使用`docker build`命令基于 Dockerfile 构建镜像，也是我比较推荐的镜像构建方式；第二种方式是使用`docker commit`命令基于已经运行的容器提交为镜像。
 下面，我们逐一详细介绍。
@@ -480,12 +455,9 @@ Docker 镜像的拉取使用`docker pull`命令， 命令格式一般为 docker 
 
 * Registry 为注册服务器，Docker 默认会从 docker.io 拉取镜像，如果你有自己的镜像仓库，可以把 Registry 替换为自己的注册服务器。
 
-
 * Repository 为镜像仓库，通常把一组相关联的镜像归为一个镜像仓库，`library`为 Docker 默认的镜像仓库。
 
-
 * Image 为镜像名称。
-
 
 * Tag 为镜像的标签，如果你不指定拉取镜像的标签，默认为`latest`。
 例如，我们需要获取一个 busybox 镜像，可以执行以下命令：
@@ -537,7 +509,7 @@ busybox             latest              018c9d7b792b        3 weeks ago         
 
 #### “重命名”镜像
 
-如果你想要自定义镜像名称或者推送镜像到其他镜像仓库，你可以使用`docker tag`命令将镜像重命名。`docker tag`的命令格式为 docker tag [SOURCE_IMAGE][:TAG] [TARGET_IMAGE][:TAG]。
+如果你想要自定义镜像名称或者推送镜像到其他镜像仓库，你可以使用`docker tag`命令将镜像重命名。`docker tag`的命令格式为 docker tag [SOURCE_IMAGE](:TAG) [TARGET_IMAGE](:TAG)。
 
 下面我们通过实例演示一下：
 
@@ -555,7 +527,6 @@ mybusybox           latest              018c9d7b792b        3 weeks ago         
 ```
 
 可以看到，镜像列表中多了一个`mybusybox`的镜像。但细心的同学可能已经发现，`busybox`和`mybusybox`这两个镜像的 IMAGE ID 是完全一样的。为什么呢？实际上它们指向了同一个镜像文件，只是别名不同而已。
-
 
 如果我不需要`mybusybox`镜像了，想删除它，应该怎么操作呢？
 
@@ -580,7 +551,6 @@ busybox             latest              018c9d7b792b        3 weeks ago         
 
 通过上面的输出，我们可以看到，`mybusybox`镜像已经被删除。
 
-
 如果你想构建属于自己的镜像，应该怎么做呢？
 
 #### 构建镜像
@@ -588,7 +558,6 @@ busybox             latest              018c9d7b792b        3 weeks ago         
 构建镜像主要有两种方式：
 
 1. 使用`docker commit`命令从运行中的容器提交为镜像；
-
 
 2. 使用`docker build`命令从 Dockerfile 构建镜像。
 首先介绍下如何从运行中的容器提交为镜像。我依旧使用 busybox 镜像举例，使用以下命令创建一个名为 busybox 的容器并进入 busybox 容器。
@@ -629,9 +598,7 @@ busybox             latest              018c9d7b792b        4 
 
 * Dockerfile 的每一行命令都会生成一个独立的镜像层，并且拥有唯一的 ID；
 
-
 * Dockerfile 的命令是完全透明的，通过查看 Dockerfile 的内容，就可以知道镜像是如何一步步构建的；
-
 
 * Dockerfile 是纯文本的，方便跟随代码一起存放在代码仓库并做版本管理。
 看到使用 Dockerfile 的方式构建镜像有这么多好的特性，你是不是已经迫不及待想知道如何使用了。别着急，我们先学习下 Dockerfile 常用的指令。
@@ -648,7 +615,7 @@ busybox             latest              018c9d7b792b        4 
 |ENV       |指定容器运行时的环境变量，格式为 key=value                                                            |
 |ARG       |定义外部变量，构建镜像时可以使用 build-arg = 的格式传递参数用于构建                                   |
 |EXPOSE    |指定容器监听的端口，格式为 [port]/tcp 或者 [port]/udp                                                 |
-|WORKDIR   |为 Dockerfile 中跟在其后的所有 RUN、、ENTRYPOINT、COPY 和 ADD 命令设置工作目录。                   |
+|WORKDIR   |为 Dockerfile 中跟在其后的所有 RUN、ENTRYPOINT、COPY 和 ADD 命令设置工作目录。                   |
 
 看了这么多指令，感觉有点懵？别担心，我通过一个实例让你来熟悉它们。这是一个 Dockerfile：
 
@@ -665,18 +632,13 @@ ENV HOST=mynginx
 
 * 第一行表示我要基于 centos:7 这个镜像来构建自定义镜像。这里需要注意，每个 Dockerfile 的第一行除了注释都必须以 FROM 开头。
 
-
 * 第二行表示拷贝本地文件 nginx.repo 文件到容器内的 /etc/yum.repos.d 目录下。这里拷贝 nginx.repo 文件是为了添加 nginx 的安装源。
-
 
 * 第三行表示在容器内运行`yum install -y nginx`命令，安装 nginx 服务到容器内，执行完第三行命令，容器内的 nginx 已经安装完成。
 
-
 * 第四行声明容器内业务（nginx）使用 80 端口对外提供服务。
 
-
 * 第五行定义容器启动时的环境变量 HOST=mynginx，容器启动后可以获取到环境变量 HOST 的值为 mynginx。
-
 
 * 第六行定义容器的启动命令，命令格式为 json 数组。这里设置了容器的启动命令为 nginx ，并且添加了 nginx 的启动参数 -g 'daemon off;' ，使得 nginx 以前台的方式启动。
 上面这个 Dockerfile 的例子基本涵盖了常用的镜像构建指令，代码我已经放在 [GitHub](https://github.com/wilhelmguo/docker-demo/tree/master/dockerfiles)上，如果你感兴趣可以到 [GitHub 下载源码](https://github.com/wilhelmguo/docker-demo/tree/master/dockerfiles)并尝试构建这个镜像。
@@ -715,7 +677,7 @@ $ tree .
 |-- 3e89b959f921227acab94f5ab4524252ae0a829ff8a3687178e3aca56d605679
 |   |-- diff  # 这一层为基础层，对应上述 Dockerfile 第一行，包含 busybox 镜像所有文件内容，例如 /etc,/bin,/var 等目录
 ... 此次省略部分原始镜像文件内容
-|   `-- link 
+|   `-- link
 |-- 6591d4e47eb2488e6297a0a07a2439f550cdb22845b6d2ddb1be2466ae7a9391
 |   |-- diff   # 这一层对应上述 Dockerfile 第二行，拷贝 test 文件到 /tmp 文件夹下，因此 diff 文件夹下有了 /tmp/test 文件
 |   |   `-- tmp
@@ -740,7 +702,6 @@ $ tree .
 
 图 2 镜像文件系统
 
-
 分层的结构使得 Docker 镜像非常轻量，每一层根据镜像的内容都有一个唯一的 ID 值，当不同的镜像之间有相同的镜像层时，便可以实现不同的镜像之间共享镜像层的效果。
 
 总结一下， Docker 镜像是静态的分层管理的文件组合，镜像底层的实现依赖于联合文件系统（UnionFS）。充分掌握镜像的原理，可以帮助我们在生产实践中构建出最优的镜像，同时也可以帮助我们更好地理解容器和镜像的关系。
@@ -752,35 +713,32 @@ $ tree .
 本课时内容精华，我帮你总结如下：
 
 > 镜像操作命令：
-> 
+>
 > 1. 拉取镜像，使用 docker pull 命令拉取远程仓库的镜像到本地 ；
-> 
-> 
+>
+>
 > 2. 重命名镜像，使用 docker tag 命令“重命名”镜像 ；
-> 
-> 
+>
+>
 > 3. 查看镜像，使用 docker image ls 或 docker images 命令查看本地已经存在的镜像；
-> 
-> 
+>
+>
 > 4. 删除镜像，使用 docker rmi 命令删除无用镜像 ；
-> 
-> 
+>
+>
 > 5. 构建镜像，构建镜像有两种方式。第一种方式是使用 docker build 命令基于 Dockerfile 构建镜像，也是我比较推荐的镜像构建方式；第二种方式是使用 docker commit 命令基于已经运行的容器提交为镜像。
 > 镜像的实现原理：
-> 
-> 
+>
+>
 > 镜像是由一系列的镜像层（layer ）组成，每一层代表了镜像构建过程中的一次提交，当我们需要修改镜像内的某个文件时，只需要在当前镜像层的基础上新建一个镜像层，并且只存放修改过的文件内容。分层结构使得镜像间共享镜像层变得非常简单和方便。
 
 最后试想下，如果有一天我们机器存储空间不足，那你知道使用什么命令可以清理本地无用的镜像和容器文件吗？思考后，可以把你的想法写在留言区。
 
 [点击即可查看本课时相关源码](https://github.com/wilhelmguo/docker-demo/tree/master/dockerfiles)
 
-
 ## 04 容器操作：得心应手掌握 Docker 容器基本操作
 
-
 前几天在咱们的社群里看到有同学在讨论，说面试的时候被问到容器和镜像的区别，有同学回答说没什么区别，也许是在开玩笑，不过这两者的区别很大。今天，我们就来看看容器的相关知识，比如什么是容器？容器的生命周期，以及容器常用的操作命令。学完之后你可以对比下与镜像的区别。
-
 
 ### 容器（Container）是什么？
 
@@ -788,8 +746,7 @@ $ tree .
 
 ![image.png](https://s0.lgstatic.com/i/image/M00/4C/D1/CgqCHl9YmlSAGgF0AABXUH--rM4624.png)
 
-图1 容器组成
-
+图 1 容器组成
 
 了解完容器是什么，接下来我们聊一聊容器的生命周期。
 
@@ -799,23 +756,18 @@ $ tree .
 
 1. created：初建状态
 
-
 2. running：运行状态
-
 
 3. stopped：停止状态
 
-
 4. paused： 暂停状态
-
 
 5. deleted：删除状态
 各生命周期之前的转换关系如图所示：
 
 ![Lark20200923-114857.png](https://s0.lgstatic.com/i/image/M00/55/BF/CgqCHl9qxcuANmQGAADHS_nfwJE810.png)
 
-图2 容器的生命周期
-
+图 2 容器的生命周期
 
 通过`docker create`命令生成的容器状态为初建状态，初建状态通过`docker start`命令可以转化为运行状态，运行状态的容器可以通过`docker stop`命令转化为停止状态，处于停止状态的容器可以通过`docker start`转化为运行状态，运行状态的容器也可以通过`docker pause`命令转化为暂停状态，处于暂停状态的容器可以通过`docker unpause`转化为运行状态 。处于初建状态、运行状态、停止状态、暂停状态的容器都可以直接删除。
 
@@ -852,14 +804,12 @@ d6f3d364fad3        busybox             "sh"        �
 
 这时候我们可以看到容器已经处于启动状态了。
 
-
 容器启动有两种方式：
 
 1. 使用`docker start`命令基于已经创建好的容器直接启动 。
 
-
 2. 使用`docker run`命令直接基于镜像新建一个容器并启动，相当于先执行`docker create`命令从镜像创建容器，然后再执行`docker start`命令启动容器。
-使用`docker run`的命令如下:
+使用`docker run`的命令如下：
 
 ```
 $ docker run -it --name=busybox busybox
@@ -869,15 +819,11 @@ $ docker run -it --name=busybox busybox
 
 * Docker 会检查本地是否存在 busybox 镜像，如果镜像不存在则从 Docker Hub 拉取 busybox 镜像；
 
-
 * 使用 busybox 镜像创建并启动一个容器；
-
 
 * 分配文件系统，并且在镜像只读层外创建一个读写层；
 
-
 * 从 Docker IP 池中分配一个 IP 给容器；
-
 
 * 执行用户的启动命令运行镜像。
 上述命令中， -t 参数的作用是分配一个伪终端，-i 参数则可以终端的 STDIN 打开，同时使用 -it 参数可以让我们进入交互模式。 在交互模式下，用户可以通过所创建的终端来输入命令，例如：
@@ -946,7 +892,6 @@ PID   USER     TIME  COMMAND
 
 注意：当我们同时使用`docker attach`命令同时在多个终端运行时，所有的终端窗口将同步显示相同内容，当某个命令行窗口的命令阻塞时，其他命令行窗口同样也无法操作。
 
-
 由于`docker attach`命令不够灵活，因此我们一般不会使用`docker attach`进入容器。下面我介绍一个更加灵活的进入容器的方式`docker exec`
 
 * **使用 docker exec 命令进入容器**
@@ -973,7 +918,7 @@ PID   USER     TIME  COMMAND
 docker rm busybox
 ```
 
-如果要删除正在运行中的容器，必须添加 -f (或 --force) 参数， Docker 会发送 SIGKILL 信号强制终止正在运行的容器。
+如果要删除正在运行中的容器，必须添加 -f （或 --force) 参数， Docker 会发送 SIGKILL 信号强制终止正在运行的容器。
 
 ```
 docker rm -f busybox
@@ -1024,13 +969,11 @@ test
 
 到此，我相信你已经了解了容器的基本概念和组成，并已经熟练掌握了容器各个生命周期操作和管理。那容器与镜像的区别，你应该也很清楚了。镜像包含了容器运行所需要的文件系统结构和内容，是静态的只读文件，而容器则是在镜像的只读层上创建了可写层，并且容器中的进程属于运行状态，容器是真正的应用载体。
 
-那你知道为什么容器的文件系统要设计成写时复制(如图 1 所示)，而不是每一个容器都单独拷贝一份镜像文件吗？思考后，可以把你的想法写在留言区。
+那你知道为什么容器的文件系统要设计成写时复制（如图 1 所示），而不是每一个容器都单独拷贝一份镜像文件吗？思考后，可以把你的想法写在留言区。
 
 ## 05 仓库访问：怎样搭建属于你的私有仓库？
 
-
 在第三课时“镜像使用：Docker 环境下如何配置你的镜像？”里，我介绍了镜像的基本操作和镜像的原理，那么有了镜像，我们应该如何更好地存储和分发镜像呢？答案就是今天的主角——Docker 的镜像仓库。其实我们不仅可以使用公共镜像仓库存储和分发镜像，也可以自己搭建私有的镜像仓库，那在搭建之前，我们先回顾下仓库的基础知识。
-
 
 ### 仓库是什么？
 
@@ -1052,7 +995,6 @@ Docker Hub 是全球最大的镜像市场，目前已经有超过 10w 个容器�
 
 图 2 Docker Hub 镜像
 
-
 下面我以 Docker Hub 为例，教你如何使用公共镜像仓库分发和存储镜像。
 
 #### 注册 Docker Hub 账号
@@ -1063,13 +1005,11 @@ Docker Hub 是全球最大的镜像市场，目前已经有超过 10w 个容器�
 
 图 3 注册 Docker Hub 账号
 
-
 注册完成后，我们可以点击创建仓库，新建一个仓库用于推送镜像。
 
 ![Drawing 3.png](https://s0.lgstatic.com/i/image/M00/4D/C3/Ciqc1F9bL--AYVIKAADWoafHnho359.png)
 
 图 4 创建仓库
-
 
 这里我的账号为 lagoudocker，创建了一个名称为 busybox 的仓库，创建好仓库后我们就可以推送本地镜像到这个仓库里了。下面我通过一个实例来演示一下如何推送镜像到自己的仓库中。
 
@@ -1115,7 +1055,6 @@ latest: digest: sha256:400ee2ed939df769d4681023810d2e4fb9479b8401d97003c710d0e20
 
 此时，`busybox`这个镜像就被推送到自定义的镜像仓库了。这里我们也可以新建其他的镜像仓库，然后把自己构建的镜像推送到仓库中。
 
-
 有时候，出于安全或保密的需求，你可能想要搭建一个自己的镜像仓库，下面我带你一步一步构建一个私有的镜像仓库。
 
 ### 搭建私有仓库
@@ -1159,7 +1098,6 @@ $ docker tag busybox localhost:5000/busybox
 ```
 
 此时 Docker 为`busybox`镜像创建了一个别名`localhost:5000/busybox`，`localhost:5000`为主机名和端口，Docker 将会把镜像推送到这个地址。
-
 
 使用`docker push`推送镜像到本地仓库：
 
@@ -1222,7 +1160,6 @@ $ docker run -v /var/lib/registry/data:/var/lib/registry -d -p 5000:5000 --name 
 
 * 拥有一个合法的域名，并且可以正确解析到镜像服务器；
 
-
 * 从证书颁发机构（CA）获取一个证书。
 在准备好域名和证书后，就可以部署我们的镜像服务器了。这里我以`regisry.lagoudocker.io`这个域名为例。首先准备存放证书的目录`/var/lib/registry/certs`，然后把申请到的证书私钥和公钥分别放到该目录下。 假设我们申请到的证书文件分别为`regisry.lagoudocker.io.crt`和`regisry.lagoudocker.io.key`。
 
@@ -1265,7 +1202,6 @@ Docker 官方开源的镜像仓库`Distribution`仅满足了镜像存储和管�
 
 图 5 Harbor 官网
 
-
 Harbor 的使命是成为 Kubernetes 信任的云原生镜像仓库。 Harbor 需要结合 Kubernetes 才能发挥其最大价值，因此，在这里我就不展开介绍 Harbor 了。如果你对 Harbor 构建企业级镜像仓库感兴趣，可以到它的[官网](https://goharbor.io/)了解更多。
 
 ### 结语
@@ -1274,15 +1210,11 @@ Harbor 的使命是成为 Kubernetes 信任的云原生镜像仓库。 Harbor �
 
 ## 06 最佳实践：如何在生产中编写最优 Dockerfile？
 
-
 在介绍 Dockerfile 最佳实践前，这里再强调一下，**生产实践中一定优先使用 Dockerfile 的方式构建镜像。** 因为使用 Dockerfile 构建镜像可以带来很多好处：
-
 
 * 易于版本化管理，Dockerfile 本身是一个文本文件，方便存放在代码仓库做版本管理，可以很方便地找到各个版本之间的变更历史；
 
-
 * 过程可追溯，Dockerfile 的每一行指令代表一个镜像层，根据 Dockerfile 的内容即可很明确地查看镜像的完整构建过程；
-
 
 * 屏蔽构建环境异构，使用 Dockerfile 构建镜像无须考虑构建环境，基于相同 Dockerfile 无论在哪里运行，构建结果都一致。
 虽然有这么多好处，但是如果你 Dockerfile 使用不当也会引发很多问题。比如镜像构建时间过长，甚至镜像构建失败；镜像层数过多，导致镜像文件过大。所以，这一课时我就教你如何在生产环境中编写最优的 Dockerfile。
@@ -1323,21 +1255,11 @@ Dockerfile 也是一种代码，我们应该保持良好的代码编写习惯，
 |tem?      |匹配以 tem 开头并且以任意字符结尾的文件，？代表任意一个字符                                                |
 |!README|! 表示排除忽略。
 
-
 例如 .dockerignore 定义如下：
-
-
-
-
 
 *
 
-
 !README
-
-
-
-
 
 表示除了 README 文件外所有以  结尾的文件。|
 
@@ -1349,9 +1271,7 @@ Docker 构建时判断是否需要使用缓存的规则如下：
 
 * 从当前构建层开始，比较所有的子镜像，检查所有的构建指令是否与当前完全一致，如果不一致，则不使用缓存；
 
-
 * 一般情况下，只需要比较构建指令即可判断是否需要使用缓存，但是有些指令除外（例如`ADD`和`COPY`）；
-
 
 * 对于`ADD`和`COPY`指令不仅要校验命令是否一致，还要为即将拷贝到容器的文件计算校验和（根据文件内容计算出的一个数值，如果两个文件计算的数值一致，表示两个文件内容一致 ），命令和校验和完全一致，才认为命中缓存。
 因此，基于 Docker 构建时的缓存特性，我们可以把不轻易改变的指令放到 Dockerfile 前面（例如安装软件包），而可能经常发生改变的指令放在 Dockerfile 末尾（例如编译应用程序）。
@@ -1374,15 +1294,15 @@ RUN yum install -y make
 
 我们从 Docker Hub 拉取的官方操作系统镜像大多数都是 UTC 时间（世界标准时间）。如果你想要在容器中使用中国区标准时间（东八区），请根据使用的操作系统修改相应的时区信息，下面我介绍几种常用操作系统的修改方式：
 
-* **Ubuntu 和Debian 系统**
-Ubuntu 和Debian 系统可以向 Dockerfile 中添加以下指令：
+* **Ubuntu 和 Debian 系统**
+Ubuntu 和 Debian 系统可以向 Dockerfile 中添加以下指令：
 
 ```
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN echo "Asia/Shanghai" >> /etc/timezone
 ```
 
-* **CentOS系统**
+* **CentOS 系统**
 CentOS 系统则向 Dockerfile 中添加以下指令：
 
 ```
@@ -1405,7 +1325,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # geographically close to the client.  You should use this for CentOS updates
 # unless you are manually picking other mirrors.
 #
-# If the mirrorlist= does not work for you, as a fall back you can try the 
+# If the mirrorlist= does not work for you, as a fall back you can try the
 # remarked out baseurl= line instead.
 #
 #
@@ -1475,7 +1395,6 @@ RUN yum install -y net-tools
 
 * 当`RUN`指令后面跟的内容比较复杂时，建议使用反斜杠（\） 结尾并且换行；
 
-
 * `RUN`指令后面的内容尽量按照字母顺序排序，提高可读性。
 例如，我想在官方的 CentOS 镜像下安装一些软件，一个建议的 Dockerfile 指令如下：
 
@@ -1493,8 +1412,7 @@ RUN yum install -y automake \
 
 这两个指令的相同之处，``和`ENTRYPOINT`的基本使用格式分为两种。
 
-* 第一种为``/`ENTRYPOINT`["command" , "param"]。这种格式是使用 Linux 的`exec`实现的， 一般称为`exec`模式，这种书写格式为``/`ENTRYPOINT`后面跟 json 数组，也是Docker 推荐的使用格式。
-
+* 第一种为``/`ENTRYPOINT`["command" , "param"]。这种格式是使用 Linux 的`exec`实现的， 一般称为`exec`模式，这种书写格式为``/`ENTRYPOINT`后面跟 json 数组，也是 Docker 推荐的使用格式。
 
 * 另外一种格式为``/`ENTRYPOINT`command param ，这种格式是基于 shell 实现的， 通常称为`shell`模式。当使用`shell`模式时，Docker 会以 /bin/sh -c command 的方式执行命令。
 > 使用 exec 模式启动容器时，容器的 1 号进程就是 /ENTRYPOINT 中指定的命令，而使用 shell 模式启动容器时相当于我们把启动命令放在了 shell 进程中执行，等效于执行 /bin/sh -c "task command" 命令。因此 shell 模式启动的进程在容器中实际上并不是 1 号进程。
@@ -1503,9 +1421,8 @@ RUN yum install -y automake \
 
 * Dockerfile 中如果使用了`ENTRYPOINT`指令，启动 Docker 容器时需要使用 --entrypoint 参数才能覆盖 Dockerfile 中的`ENTRYPOINT`指令 ，而使用``设置的命令则可以被`docker run`后面的参数直接覆盖。
 
-
 * `ENTRYPOINT`指令可以结合``指令使用，也可以单独使用，而``指令只能单独使用。
-看到这里你也许会问，我什么时候应该使用`ENTRYPOINT`,什么时候使用``呢？
+看到这里你也许会问，我什么时候应该使用`ENTRYPOINT`, 什么时候使用``呢？
 
 如果你希望你的镜像足够灵活，推荐使用``指令。如果你的镜像只执行单一的具体程序，并且不希望用户在执行`docker run`时覆盖默认程序，建议使用`ENTRYPOINT`。
 
@@ -1541,11 +1458,10 @@ RUN wget -O /tmp/memtester-4.3.0.tar.gz http://pyropus.ca/software/memtester/old
 
 * [Go](https://github.com/docker-library/golang/blob/4d68c4dd8b51f83ce4fdce0f62484fdc1315bfa8/1.15/buster/Dockerfile)
 
-
 * [Nginx](https://github.com/nginxinc/docker-nginx/blob/9774b522d4661effea57a1fbf64c883e699ac3ec/mainline/buster/Dockerfile)
 
-
 * [Hy](https://github.com/hylang/docker-hylang/blob/f9c873b7f71f466e5af5ea666ed0f8f42835c688/dockerfiles-generated/Dockerfile.python3.8-buster)
+
 ### 结语
 
 好了，到此为止，相信你已经对 Dockerfile 的书写原则和一些重要指令有了较深的认识。
@@ -1554,9 +1470,7 @@ RUN wget -O /tmp/memtester-4.3.0.tar.gz http://pyropus.ca/software/memtester/old
 
 ## 07 Docker 安全：基于内核的弱隔离系统如何保障安全性？
 
-
 在第 01 课时“Docker 安装：入门案例带你了解容器技术原理”中，我有介绍到 Docker 是基于 Linux 内核的 Namespace 技术实现资源隔离的，所有的容器都共享主机的内核。其实这与以虚拟机为代表的云计算时代还是有很多区别的，比如虚拟机有着更好的隔离性和安全性，而容器的隔离性和安全性则相对较弱。
-
 
 在讨论容器的安全性之前，我们先了解下容器与虚拟机的区别，这样可以帮助我们更好地了解容器的安全隐患以及如何加固容器安全。
 
@@ -1564,7 +1478,7 @@ RUN wget -O /tmp/memtester-4.3.0.tar.gz http://pyropus.ca/software/memtester/old
 
 ![WechatIMG1632.jpeg](https://s0.lgstatic.com/i/image/M00/56/B7/Ciqc1F9sDDSAQhNcAAD8rL1NLXc02.jpeg)
 
-从图 1 可以看出，虚拟机是通过管理系统(Hypervisor)模拟出 CPU、内存、网络等硬件，然后在这些模拟的硬件上创建客户内核和操作系统。这样做的好处就是虚拟机有自己的内核和操作系统，并且硬件都是通过虚拟机管理系统模拟出来的，用户程序无法直接使用到主机的操作系统和硬件资源，因此虚拟机也对隔离性和安全性有着更好的保证。
+从图 1 可以看出，虚拟机是通过管理系统 (Hypervisor) 模拟出 CPU、内存、网络等硬件，然后在这些模拟的硬件上创建客户内核和操作系统。这样做的好处就是虚拟机有自己的内核和操作系统，并且硬件都是通过虚拟机管理系统模拟出来的，用户程序无法直接使用到主机的操作系统和硬件资源，因此虚拟机也对隔离性和安全性有着更好的保证。
 
 而 Docker 容器则是通过 Linux 内核的 Namespace 技术实现了文件系统、进程、设备以及网络的隔离，然后再通过 Cgroups 对 CPU、 内存等资源进行限制，最终实现了容器之间相互不受影响，由于容器的隔离性仅仅依靠内核来提供，因此容器的隔离性也远弱于虚拟机。
 
@@ -1586,11 +1500,10 @@ Docker 作为一款容器引擎，本身也会存在一些安全漏洞，CVE 目
 
 * 镜像软件存在安全漏洞：由于容器需要安装基础的软件包，如果软件包存在漏洞，则可能会被不法分子利用并且侵入容器，影响其他容器或主机安全。
 
-
 * 仓库漏洞：无论是 Docker 官方的镜像仓库还是我们私有的镜像仓库，都有可能被攻击，然后篡改镜像，当我们使用镜像时，就可能成为攻击者的目标对象。
 
-
 * 用户程序漏洞：用户自己构建的软件包可能存在漏洞或者被植入恶意脚本，这样会导致运行时提权影响其他容器或主机安全。
+
 #### (3) Linux 内核隔离性不够
 
 尽管目前 Namespace 已经提供了非常多的资源隔离类型，但是仍有部分关键内容没有被完全隔离，其中包括一些系统的关键性目录（如 /sys、/proc 等），这些关键性的目录可能会泄露主机上一些关键性的信息，让攻击者利用这些信息对整个主机甚至云计算中心发起攻击。
@@ -1633,9 +1546,7 @@ Capabilities 是 Linux 内核的概念，Linux 将系统权限分为了多个 Ca
 
 * cron 定时任务可以在容器内运行，设置定时任务的权限也仅限于容器内部；
 
-
 * 由于容器是共享主机内核的，因此在容器内部一般不允许直接操作主机内核；
-
 
 * 容器的网络管理在容器外部，这就意味着一般情况下，我们在容器内部是不需要执行`ifconfig`、`route`等命令的 。
 由于容器可以按照需求逐项添加 Capabilities 权限，因此在大多数情况下，容器并不需要主机的 root 权限，Docker 默认情况下也是不开启额外特权的。
@@ -1648,9 +1559,7 @@ Linux 的 SELinux、AppArmor、GRSecurity 组件都是 Docker 官方推荐的安
 
 * SELinux (Secure Enhanced Linux): 是 Linux 的一个内核安全模块，提供了安全访问的策略机制，通过设置 SELinux 策略可以实现某些进程允许访问某些文件。
 
-
 * AppArmor: 类似于 SELinux，也是一个 Linux 的内核安全模块，普通的访问控制仅能控制到用户的访问权限，而 AppArmor 可以控制到用户程序的访问权限。
-
 
 * GRSecurity: 是一个对内核的安全扩展，可通过智能访问控制，提供内存破坏防御，文件系统增强等多种防御形式。
 这三个组件可以限制一个容器对主机的内核或其他资源的访问控制。目前，容器报告的一些安全漏洞中，很多都是通过对内核进行加强访问和隔离来实现的。
@@ -1693,17 +1602,13 @@ $ docker run -it --cpus=1 -m=2048m --pids-limit=1000 busybox sh
 
 ## 08 容器监控：容器监控原理及 cAdvior 的安装与使用
 
-
 生产环境中监控容器的运行状况十分重要，通过监控我们可以随时掌握容器的运行状态，做到线上隐患和问题早发现，早解决。所以今天我就和你分享关于容器监控的知识（原理及工具 cAdvisor）。
-
 
 虽然传统的物理机和虚拟机监控已经有了比较成熟的监控方案，但是容器的监控面临着更大的挑战，因为容器的行为和本质与传统的虚拟机是不一样的，总的来说，容器具有以下特性：
 
 * 容器是短期存活的，并且可以动态调度；
 
-
 * 容器的本质是进程，而不是一个完整操作系统；
-
 
 * 由于容器非常轻量，容器的创建和销毁也会比传统虚拟机更加频繁。
 Docker 容器的监控方案有很多，除了 Docker 自带的`docker stats`命令，还有很多开源的解决方案，例如 sysdig、cAdvisor、Prometheus 等，都是非常优秀的监控工具。
@@ -1720,7 +1625,7 @@ Docker 容器的监控方案有很多，除了 Docker 自带的`docker stats`命
 $ docker run --cpus=1 -m=2g --name=nginx  -d nginx
 ```
 
-容器启动后，可以使用`docker stats`命令查看容器的资源使用状态:
+容器启动后，可以使用`docker stats`命令查看容器的资源使用状态：
 
 ```
 $ docker stats nginx
@@ -1739,7 +1644,7 @@ f742a467b6d8        0.00%               1.387 MiB / 2 GiB   0.07%�
 
 ### cAdvisor
 
-cAdvisor 是谷歌开源的一款通用的容器监控解决方案。cAdvisor 不仅可以采集机器上所有运行的容器信息，还提供了基础的查询界面和 HTTP 接口，更方便与外部系统结合。所以，cAdvisor很快成了容器指标监控最常用组件，并且 Kubernetes 也集成了 cAdvisor 作为容器监控指标的默认工具。
+cAdvisor 是谷歌开源的一款通用的容器监控解决方案。cAdvisor 不仅可以采集机器上所有运行的容器信息，还提供了基础的查询界面和 HTTP 接口，更方便与外部系统结合。所以，cAdvisor 很快成了容器指标监控最常用组件，并且 Kubernetes 也集成了 cAdvisor 作为容器监控指标的默认工具。
 
 #### cAdvisor 的安装与使用
 
@@ -1770,8 +1675,7 @@ $ docker run \
 
 ![Drawing 0.png](https://s0.lgstatic.com/i/image/M00/56/18/Ciqc1F9rCXSAQEwLAADKlh0at8o307.png)
 
-图1 cAdvisor 首页
-
+图 1 cAdvisor 首页
 
 cAdvisor 不仅可以监控容器的资源使用情况，还可以监控主机的资源使用情况。下面我们就先看下它是如何查看主机资源使用情况的。
 
@@ -1781,8 +1685,7 @@ cAdvisor 不仅可以监控容器的资源使用情况，还可以监控主机�
 
 ![Drawing 1.png](https://s0.lgstatic.com/i/image/M00/56/23/CgqCHl9rCX2ANrtaAADIGkeKKPc100.png)
 
-图2 主机 CPU 使用情况
-
+图 2 主机 CPU 使用情况
 
 #### 使用 cAdvisor 查看容器监控
 
@@ -1790,20 +1693,17 @@ cAdvisor 不仅可以监控容器的资源使用情况，还可以监控主机�
 
 ![Drawing 2.png](https://s0.lgstatic.com/i/image/M00/56/18/Ciqc1F9rCZyAN8hYAAGAOL1FGcg401.png)
 
-图3 Docker 容器
-
+图 3 Docker 容器
 
 在上图中的 Subcontainers 下会列出当前主机上运行的所有容器，点击其中一个容器即可查看该容器的详细运行状态，如下图所示。
 
 ![Drawing 3.png](https://s0.lgstatic.com/i/image/M00/56/23/CgqCHl9rCaWAVSLVAAGGy2lTMqY130.png)
 
-图4 容器监控状态
-
+图 4 容器监控状态
 
 总体来说，使用 cAdvisor 监控容器具有以下特点：
 
 * 可以同时采集物理机和容器的状态；
-
 
 * 可以展示监控历史数据。
 了解 Docker 的监控工具，你是否想问，这些监控数据是怎么来的呢？下面我就带你了解一下容器监控的原理。
@@ -1812,7 +1712,7 @@ cAdvisor 不仅可以监控容器的资源使用情况，还可以监控主机�
 
 我们知道 Docker 是基于 Namespace、Cgroups 和联合文件系统实现的。其中 Cgroups 不仅可以用于容器资源的限制，还可以提供容器的资源使用率。无论何种监控方案的实现，底层数据都来源于 Cgroups。
 
-Cgroups 的工作目录为`/sys/fs/cgroup`，`/sys/fs/cgroup`目录下包含了 Cgroups 的所有内容。Cgroups包含很多子系统，可以用来对不同的资源进行限制。例如对CPU、内存、PID、磁盘 IO等资源进行限制和监控。
+Cgroups 的工作目录为`/sys/fs/cgroup`，`/sys/fs/cgroup`目录下包含了 Cgroups 的所有内容。Cgroups 包含很多子系统，可以用来对不同的资源进行限制。例如对 CPU、内存、PID、磁盘 IO 等资源进行限制和监控。
 
 为了更详细的了解 Cgroups 的子系统，我们通过 ls -l 命令查看`/sys/fs/cgroup`文件夹，可以看到很多目录：
 
@@ -1840,7 +1740,7 @@ dr-xr-xr-x 5 root root  0 Jul  9 19:32 syst
 
 #### 监控系统是如何获取容器的内存限制的？
 
-下面我们以 memory 子系统（memory 子系统是Cgroups 众多子系统的一个，主要用来限制内存使用，Cgroups 会在第十课时详细讲解）为例，讲解一下监控组件是如何获取到容器的资源限制和使用状态的（即容器的内存限制）。
+下面我们以 memory 子系统（memory 子系统是 Cgroups 众多子系统的一个，主要用来限制内存使用，Cgroups 会在第十课时详细讲解）为例，讲解一下监控组件是如何获取到容器的资源限制和使用状态的（即容器的内存限制）。
 
 我们首先在主机上使用以下命令启动一个资源限制为 1 核 2G 的 nginx 容器：
 
@@ -1938,13 +1838,13 @@ $ sudo cat /sys/fs/cgroup/memory/docker/51041a74070e9260e82876974762b8c61c5ed0a5
 2147483648
 ```
 
-这里可以看到memory.limit_in_bytes 的值为2147483648，转换单位后正好为 2G，符合我们启动容器时的内存限制 2G。
+这里可以看到 memory.limit_in_bytes 的值为 2147483648，转换单位后正好为 2G，符合我们启动容器时的内存限制 2G。
 
 通过 memory 子系统的例子，我们可以知道**监控组件通过读取 memory.limit_in_bytes 文件即可获取到容器内存的限制值**。了解完容器的内存限制我们来了解一下容器的内存使用情况。
 
 #### 监控系统是如何获取容器的内存使用状态的？
 
-内存使用情况存放在 memory.usage_in_bytes 文件里，同样我们也使用 cat 命令查看一下文件内容:
+内存使用情况存放在 memory.usage_in_bytes 文件里，同样我们也使用 cat 命令查看一下文件内容：
 
 ```
 $ sudo cat /sys/fs/cgroup/memory/docker/51041a74070e9260e82876974762b8c61c5ed0a51832d74fba6711175f89ede1/memory.usage_in_bytes
@@ -1984,9 +1884,7 @@ Inter-|   Receive                                        �
 
 ## 09 资源隔离：为什么构建容器需要 Namepace ？
 
-
-我们知道， Docker 是使用 Linux 的 Namespace 技术实现各种资源隔离的。那么究竟什么是 Namespace，各种 Namespace 都有什么作用，为什么 Docker 需要 Namespace呢？下面我带你一一揭秘。
-
+我们知道， Docker 是使用 Linux 的 Namespace 技术实现各种资源隔离的。那么究竟什么是 Namespace，各种 Namespace 都有什么作用，为什么 Docker 需要 Namespace 呢？下面我带你一一揭秘。
 
 首先我们来了解一下什么是 Namespace。
 
@@ -2011,9 +1909,9 @@ Inter-|   Receive                                        �
 |Control group (cgroup) Namespace|隔离 Cgroups 根目录                      |4.6   |
 |Time Namespace                  |隔离系统时间                             |5.6   |
 
-虽然 Linux 内核提供了8种 Namespace，但是最新版本的 Docker 只使用了其中的前6 种，分别为Mount Namespace、PID Namespace、Net Namespace、IPC Namespace、UTS Namespace、User Namespace。
+虽然 Linux 内核提供了 8 种 Namespace，但是最新版本的 Docker 只使用了其中的前 6 种，分别为 Mount Namespace、PID Namespace、Net Namespace、IPC Namespace、UTS Namespace、User Namespace。
 
-下面，我们详细了解下 Docker 使用的 6 种 Namespace的作用分别是什么。
+下面，我们详细了解下 Docker 使用的 6 种 Namespace 的作用分别是什么。
 
 ### 各种 Namespace 的作用？
 
@@ -2099,15 +1997,15 @@ lrwxrwxrwx. 1 centos centos 0 Sep  4 08:20 user -> user:[4026531837]
 lrwxrwxrwx. 1 centos centos 0 Sep  4 08:20 uts -> uts:[4026531838]
 ```
 
-通过对比两次命令的输出结果，我们可以看到，除了 Mount Namespace 的 ID 值不一样外，其他Namespace 的 ID 值均一致。
+通过对比两次命令的输出结果，我们可以看到，除了 Mount Namespace 的 ID 值不一样外，其他 Namespace 的 ID 值均一致。
 
 通过以上结果我们可以得出结论，**使用 unshare 命令可以新建 Mount Namespace，并且在新建的 Mount Namespace 内 mount 是和外部完全隔离的。**
 
 #### （2）PID Namespace
 
-PID Namespace 的作用是用来隔离进程。在不同的 PID Namespace 中，进程可以拥有相同的 PID 号，利用 PID Namespace 可以实现每个容器的主进程为 1 号进程，而容器内的进程在主机上却拥有不同的PID。例如一个进程在主机上 PID 为 122，使用 PID Namespace 可以实现该进程在容器内看到的 PID 为 1。
+PID Namespace 的作用是用来隔离进程。在不同的 PID Namespace 中，进程可以拥有相同的 PID 号，利用 PID Namespace 可以实现每个容器的主进程为 1 号进程，而容器内的进程在主机上却拥有不同的 PID。例如一个进程在主机上 PID 为 122，使用 PID Namespace 可以实现该进程在容器内看到的 PID 为 1。
 
-下面我们通过一个实例来演示下 PID Namespace的作用。首先我们使用以下命令创建一个 bash 进程，并且新建一个 PID Namespace：
+下面我们通过一个实例来演示下 PID Namespace 的作用。首先我们使用以下命令创建一个 bash 进程，并且新建一个 PID Namespace：
 
 ```
 $ sudo unshare --pid --fork --mount-proc /bin/bash
@@ -2149,7 +2047,7 @@ root@centos7 centos]# hostname -b lagoudocker
 lagoudocker
 ```
 
-通过上面命令的输出，我们可以看到当前UTS Namespace 内的主机名已经被修改为 lagoudocker。然后我们新打开一个命令行窗口，使用相同的命令查看一下主机的 hostname：
+通过上面命令的输出，我们可以看到当前 UTS Namespace 内的主机名已经被修改为 lagoudocker。然后我们新打开一个命令行窗口，使用相同的命令查看一下主机的 hostname：
 
 ```
 [centos@centos7 ~]$ hostname
@@ -2162,7 +2060,7 @@ centos7
 
 IPC Namespace 主要是用来隔离进程间通信的。例如 PID Namespace 和 IPC Namespace 一起使用可以实现同一 IPC Namespace 内的进程彼此可以通信，不同 IPC Namespace 的进程却不能通信。
 
-同样我们通过一个实例来验证下IPC Namespace的作用，首先我们使用 unshare 命令来创建一个 IPC Namespace：
+同样我们通过一个实例来验证下 IPC Namespace 的作用，首先我们使用 unshare 命令来创建一个 IPC Namespace：
 
 ```
 $ sudo unshare --ipc --fork /bin/bash
@@ -2172,7 +2070,6 @@ $ sudo unshare --ipc --fork /bin/bash
 下面我们需要借助两个命令来实现对 IPC Namespace 的验证。
 
 * ipcs -q 命令：用来查看系统间通信队列列表。
-
 
 * ipcmk -Q 命令：用来创建系统间通信队列。
 我们首先使用 ipcs -q 命令查看一下当前 IPC Namespace 下的系统通信队列列表：
@@ -2201,7 +2098,7 @@ key        msqid      owner      perms      used-bytes   messages
 0x73682a32 0          root       644        0            0
 ```
 
-可以看到我们已经成功创建了一个系统通信队列。然后我们新打开一个命令行窗口，使用ipcs -q 命令查看一下主机的系统通信队列：
+可以看到我们已经成功创建了一个系统通信队列。然后我们新打开一个命令行窗口，使用 ipcs -q 命令查看一下主机的系统通信队列：
 
 ```
 [centos@centos7 ~]$ ipcs -q
@@ -2303,19 +2200,17 @@ Linux 内核从 2002 年 2.4.19 版本开始加入了 Mount Namespace，而直�
 
 ## 10 资源限制：如何通过 Cgroup 机制实现资源限制？
 
-
 上一课时，我们知道使用不同的 Namespace，可以实现容器中的进程看不到别的容器的资源，但是有一个问题你是否注意到？容器内的进程仍然可以任意地使用主机的 CPU 、内存等资源，如果某一个容器使用的主机资源过多，可能导致主机的资源竞争，进而影响业务。那如果我们想限制一个容器资源的使用（如 CPU、内存等）应该如何做呢？
 
+这里就需要用到 Linux 内核的另一个核心技术 cgroups。那么究竟什么是 cgroups？我们应该如何使用 cgroups？Docker 又是如何使用 cgroups 的？下面我带你一一解密。
 
-这里就需要用到 Linux 内核的另一个核心技术cgroups。那么究竟什么是cgroups？我们应该如何使用cgroups？Docker 又是如何使用cgroups的？下面我带你一一解密。
-
-首先我们来学习下什么是cgroups。
+首先我们来学习下什么是 cgroups。
 
 ### cgroups
 
 cgroups（全称：control groups）是 Linux 内核的一个功能，它可以实现限制进程或者进程组的资源（如 CPU、内存、磁盘 IO 等）。
 
-> 在 2006 年，Google 的工程师（ Rohit Seth 和 Paul Menage 为主要发起人） 发起了这个项目，起初项目名称并不是cgroups，而被称为进程容器（process containers）。在 2007 年cgroups代码计划合入Linux 内核，但是当时在 Linux 内核中，容器（container）这个词被广泛使用，并且拥有不同的含义。为了避免命名混乱和歧义，进程容器被重名为cgroups，并在 2008 年成功合入 Linux 2.6.24 版本中。cgroups目前已经成为 syst、Docker、Linux Containers（LXC） 等技术的基础。
+> 在 2006 年，Google 的工程师（ Rohit Seth 和 Paul Menage 为主要发起人） 发起了这个项目，起初项目名称并不是 cgroups，而被称为进程容器（process containers）。在 2007 年 cgroups 代码计划合入 Linux 内核，但是当时在 Linux 内核中，容器（container）这个词被广泛使用，并且拥有不同的含义。为了避免命名混乱和歧义，进程容器被重名为 cgroups，并在 2008 年成功合入 Linux 2.6.24 版本中。cgroups 目前已经成为 syst、Docker、Linux Containers（LXC） 等技术的基础。
 
 #### cgroups 功能及核心概念
 
@@ -2323,23 +2218,18 @@ cgroups 主要提供了如下功能。
 
 * 资源限制： 限制资源的使用量，例如我们可以通过限制某个业务的内存上限，从而保护主机其他业务的安全运行。
 
-
 * 优先级控制：不同的组可以有不同的资源（ CPU 、磁盘 IO 等）使用优先级。
 
-
 * 审计：计算控制组的资源使用情况。
-
 
 * 控制：控制进程的挂起或恢复。
 了解了 cgroups 可以为我们提供什么功能，下面我来看下 cgroups 是如何实现这些功能的。
 
-cgroups功能的实现依赖于三个核心概念：子系统、控制组、层级树。
+cgroups 功能的实现依赖于三个核心概念：子系统、控制组、层级树。
 
 * 子系统（subsystem）：是一个内核的组件，一个子系统代表一类资源调度控制器。例如内存子系统可以限制内存的使用量，CPU 子系统可以限制 CPU 的使用时间。
 
-
 * 控制组（cgroup）：表示一组进程和一组带有参数的子系统的关联关系。例如，一个进程使用了 CPU 子系统来限制 CPU 的使用时间，则这个进程和 CPU 子系统的关联关系称为控制组。
-
 
 * 层级树（hierarchy）：是由一系列的控制组按照树状结构排列组成的。这种排列方式可以使得控制组拥有父子关系，子控制组默认拥有父控制组的属性，也就是子控制组会继承于父控制组。比如，系统中定义了一个控制组 c1，限制了 CPU 可以使用 1 核，然后另外一个控制组 c2 想实现既限制 CPU 使用 1 核，同时限制内存使用 2G，那么 c2 就可以直接继承 c1，无须重复定义 CPU 限制。
 cgroups 的三个核心概念中，子系统是最核心的概念，因为子系统是真正实现某类资源的限制的基础。
@@ -2348,7 +2238,7 @@ cgroups 的三个核心概念中，子系统是最核心的概念，因为子系
 
 下面我通过一个实例演示一下在 Linux 上默认都启动了哪些子系统。
 
-我们先通过 mount 命令查看一下当前系统已经挂载的cgroups信息：
+我们先通过 mount 命令查看一下当前系统已经挂载的 cgroups 信息：
 
 ```
 $ sudo mount -t cgroup
@@ -2365,17 +2255,17 @@ cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,sec
 cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,hugetlb)
 ```
 
-> 我的操作系统版本为 CentOS7.8，内核为 3.10.0-1127.el7.x86_64 版本，不同内核版本cgroups子系统和使用方式可能略有差异。如果你对cgroups不是很熟悉，请尽量使用与我相同的内核环境操作。
+> 我的操作系统版本为 CentOS7.8，内核为 3.10.0-1127.el7.x86_64 版本，不同内核版本 cgroups 子系统和使用方式可能略有差异。如果你对 cgroups 不是很熟悉，请尽量使用与我相同的内核环境操作。
 
-通过输出，可以看到当前系统已经挂载了我们常用的cgroups子系统，例如 cpu、memory、pids 等我们常用的cgroups子系统。这些子系统中，cpu 和 memory 子系统是容器环境中使用最多的子系统，下面我对这两个子系统做详细介绍。
+通过输出，可以看到当前系统已经挂载了我们常用的 cgroups 子系统，例如 cpu、memory、pids 等我们常用的 cgroups 子系统。这些子系统中，cpu 和 memory 子系统是容器环境中使用最多的子系统，下面我对这两个子系统做详细介绍。
 
 #### cpu 子系统
 
-我首先以 cpu 子系统为例，演示一下cgroups如何限制进程的 cpu 使用时间。由于cgroups的操作很多需要用到 root 权限，我们在执行命令前要确保已经切换到了 root 用户，以下命令的执行默认都是使用 root 用户。
+我首先以 cpu 子系统为例，演示一下 cgroups 如何限制进程的 cpu 使用时间。由于 cgroups 的操作很多需要用到 root 权限，我们在执行命令前要确保已经切换到了 root 用户，以下命令的执行默认都是使用 root 用户。
 
 **第一步：在 cpu 子系统下创建 cgroup**
 
-cgroups的创建很简单，只需要在相应的子系统下创建目录即可。下面我们到 cpu 子系统下创建测试文件夹：
+cgroups 的创建很简单，只需要在相应的子系统下创建目录即可。下面我们到 cpu 子系统下创建测试文件夹：
 
 ```
 # mkdir /sys/fs/cgroup/cpu/mydocker
@@ -2414,7 +2304,7 @@ total 0
 
 ```
 # cd /sys/fs/cgroup/cpu/mydocker
-# echo $$ > tasks  
+# echo $$ > tasks
 ```
 
 查看一下 tasks 文件内容：
@@ -2480,7 +2370,6 @@ KiB Swap:        0 total,        0 free,        0 used. 31898216 ava
 
 通过上面输出可以看到，此时 cpu 使用率已经被限制到了 50%，即 0.5 个核。
 
-
 验证完 cgroup 限制 cpu，我们使用相似的方法来验证 cgroup 对内存的限制。
 
 #### memroy 子系统
@@ -2543,7 +2432,7 @@ total 0
 
 ```
 # cd /sys/fs/cgroup/memory/mydocker
-# echo $$ > tasks 
+# echo $$ > tasks
 ```
 
 **第三步，执行内存测试工具，申请内存**
@@ -2605,12 +2494,11 @@ Done.
 
 这里可以看到，此时 memtester 已经成功申请到 500M 内存并且正常完成了内存测试。
 
-
 到此，我们讲解了cgroups的 cpu 和 memroy 子系统，如果你想了解更多的cgroups的知识和使用，可以参考 [Red Hat 官网](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/resource_management_guide/chap-introduction_to_control_groups)。
 
 #### 删除 cgroups
 
-上面创建的cgroups如果不想使用了，直接删除创建的文件夹即可。
+上面创建的 cgroups 如果不想使用了，直接删除创建的文件夹即可。
 
 例如我想删除内存下的 mydocker 目录，使用以下命令即可：
 
@@ -2618,9 +2506,9 @@ Done.
 # ir /sys/fs/cgroup/memory/mydocker/
 ```
 
-学习了cgroups的使用方式，下面我带你了解一下 Docker 是如何使用cgroups的。
+学习了 cgroups 的使用方式，下面我带你了解一下 Docker 是如何使用 cgroups 的。
 
-### Docker 是如何使用cgroups的？
+### Docker 是如何使用 cgroups 的？
 
 首先，我们使用以下命令创建一个 nginx 容器：
 
@@ -2628,7 +2516,7 @@ Done.
 docker run -it -m=1g nginx
 ```
 
-上述命令创建并启动了一个 nginx 容器，并且限制内存为 1G。然后我们进入cgroups内存子系统的目录，使用 ls 命令查看一下该目录下的内容：
+上述命令创建并启动了一个 nginx 容器，并且限制内存为 1G。然后我们进入 cgroups 内存子系统的目录，使用 ls 命令查看一下该目录下的内容：
 
 ```
 # ls -l /sys/fs/cgroup/memory
@@ -2665,8 +2553,7 @@ drwxr-xr-x. 2 root root 0 Sep  5 10:49 cb5c5391177b44ad87636bf3840ecdda83529e51
 
 可以看到内存限制值正好为 1G。
 
-
-事实上，Docker 创建容器时，Docker 会根据启动容器的参数，在对应的 cgroups 子系统下创建以容器 ID 为名称的目录, 然后根据容器启动时设置的资源限制参数, 修改对应的 cgroups 子系统资源限制文件, 从而达到资源限制的效果。
+事实上，Docker 创建容器时，Docker 会根据启动容器的参数，在对应的 cgroups 子系统下创建以容器 ID 为名称的目录，然后根据容器启动时设置的资源限制参数，修改对应的 cgroups 子系统资源限制文件，从而达到资源限制的效果。
 
 ### 小结
 
@@ -2674,13 +2561,11 @@ drwxr-xr-x. 2 root root 0 Sep  5 10:49 cb5c5391177b44ad87636bf3840ecdda83529e51
 
 另外，请注意 cgroups 虽然可以实现资源的限制，但是不能保证资源的使用。例如，cgroups 限制某个容器最多使用 1 核 CPU，但不保证总是能使用到 1 核 CPU，当 CPU 资源发生竞争时，可能会导致实际使用的 CPU 资源产生竞争。
 
-那么，你知道cgroups还有哪些子系统吗？思考后，把你的想法写在留言区。
+那么，你知道 cgroups 还有哪些子系统吗？思考后，把你的想法写在留言区。
 
 ## 11 组件组成：剖析 Docker 组件作用及其底层工作原理
 
-
 在[第 02 课时“ 核心概念：镜像、容器、仓库，彻底掌握 Docker 架构核心设计理念”](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=455#/detail/pc?id=4573)里。我简单介绍了 Docker 架构的形成，相信你已经对 Docker 的架构有了一个整体的认知。这一讲我将带你深入剖析 Docker 的各个组件的作用及其底层的实现原理。
-
 
 首先我们来回顾一下 Docker 的组件构成。
 
@@ -2690,8 +2575,7 @@ Docker 整体架构采用 C/S（客户端 / 服务器）模式，主要由客户
 
 ![image.png](https://s0.lgstatic.com/i/image/M00/56/40/CgqCHl9rFtSAPGOeAADIK4E6wrc522.png)
 
-图1 Docker 整体架构图
-
+图 1 Docker 整体架构图
 
 从整体架构可知，Docker 组件大体分为 Docker 相关组件，containerd 相关组件和容器运行时相关组件。下面我们深入剖析下各个组件。
 
@@ -2714,9 +2598,7 @@ Docker 到底有哪些组件呢？我们可以在 Docker 安装路径下执行 l
 
 1. Docker 相关的组件：docker、dockerd、docker-init 和 docker-proxy
 
-
 2. containerd 相关的组件：containerd、containerd-shim 和 ctr
-
 
 3. 容器运行时相关的组件：runc
 下面我们就逐一了解。
@@ -2735,18 +2617,16 @@ dockerd 是 Docker 服务端的后台常驻进程，用来接收客户端发送�
 
 Docker 客户端可以通过多种方式向 dockerd 发送请求，我们常用的 Docker 客户端与 dockerd 的交互方式有三种。
 
-* 通过 UNIX 套接字与服务端通信：配置格式为unix://socket_path，默认 dockerd 生成的 socket 文件路径为 /var/run/docker.sock，该文件只有 root 用户或者 docker 用户组的用户才可以访问，这就是为什么 Docker 刚安装完成后只有 root 用户才能使用 docker 命令的原因。
+* 通过 UNIX 套接字与服务端通信：配置格式为 unix://socket_path，默认 dockerd 生成的 socket 文件路径为 /var/run/docker.sock，该文件只有 root 用户或者 docker 用户组的用户才可以访问，这就是为什么 Docker 刚安装完成后只有 root 用户才能使用 docker 命令的原因。
 
+* 通过 TCP 与服务端通信：配置格式为 tcp://host:port，通过这种方式可以实现客户端远程连接服务端，但是在方便的同时也带有安全隐患，因此在生产环境中如果你要使用 TCP 的方式与 Docker 服务端通信，推荐使用 TLS 认证，可以通过设置 Docker 的 TLS 相关参数，来保证数据传输的安全。
 
-* 通过 TCP 与服务端通信：配置格式为tcp://host:port，通过这种方式可以实现客户端远程连接服务端，但是在方便的同时也带有安全隐患，因此在生产环境中如果你要使用 TCP 的方式与 Docker 服务端通信，推荐使用 TLS 认证，可以通过设置 Docker 的 TLS 相关参数，来保证数据传输的安全。
-
-
-* 通过文件描述符的方式与服务端通信：配置格式为：fd://这种格式一般用于 syst 管理的系统中。
+* 通过文件描述符的方式与服务端通信：配置格式为：fd:// 这种格式一般用于 syst 管理的系统中。
 Docker 客户端和服务端的通信形式必须保持一致，否则将无法通信，只有当 dockerd 监听了 UNIX 套接字客户端才可以使用 UNIX 套接字的方式与服务端通信，UNIX 套接字也是 Docker 默认的通信方式，如果你想要通过远程的方式访问 dockerd，可以在 dockerd 启动的时候添加 -H 参数指定监听的 HOST 和 PORT。
 
 **（3）docker-init**
 
-如果你熟悉 Linux 系统，你应该知道在 Linux 系统中，1 号进程是 init 进程，是所有进程的父进程。主机上的进程出现问题时，init 进程可以帮我们回收这些问题进程。同样的，在容器内部，当我们自己的业务进程没有回收子进程的能力时，在执行 docker run 启动容器时可以添加 --init 参数，此时 Docker 会使用 docker-init 作为1号进程，帮你管理容器内子进程，例如回收僵尸进程等。
+如果你熟悉 Linux 系统，你应该知道在 Linux 系统中，1 号进程是 init 进程，是所有进程的父进程。主机上的进程出现问题时，init 进程可以帮我们回收这些问题进程。同样的，在容器内部，当我们自己的业务进程没有回收子进程的能力时，在执行 docker run 启动容器时可以添加 --init 参数，此时 Docker 会使用 docker-init 作为 1 号进程，帮你管理容器内子进程，例如回收僵尸进程等。
 
 下面我们通过启动一个 busybox 容器来演示下：
 
@@ -2880,12 +2760,9 @@ containerd 不仅负责容器生命周期的管理，同时还负责一些其他
 
 * 镜像的管理，例如容器运行前从镜像仓库拉取镜像到本地；
 
-
 * 接收 dockerd 的请求，通过适当的参数调用 runc 启动容器；
 
-
 * 管理存储相关资源；
-
 
 * 管理网络相关资源。
 containerd 包含一个后台常驻进程，默认的 socket 路径为 /run/containerd/containerd.sock，dockerd 通过 UNIX 套接字向 containerd 发送请求，containerd 接收到请求后负责执行相关的动作并把执行结果返回给 dockerd。
@@ -2902,7 +2779,7 @@ ctr 实际上是 containerd-ctr，它是 containerd 的客户端，主要用来�
 
 了解完 containerd 相关的组件，我们来了解一下容器的真正运行时 runc。
 
-#### 容器运行时组件runc
+#### 容器运行时组件 runc
 
 runc 是一个标准的 OCI 容器运行时的实现，它是一个命令行工具，可以直接用来创建和运行容器。
 
@@ -3112,7 +2989,6 @@ $ cat config.json
 
 config.json 文件定义了 runc 启动容器时的一些配置，如根目录的路径，文件挂载路径等配置。
 
-
 第三步，使用 runc 启动容器。我们可以使用 runc run 命令直接启动 busybox 容器。
 
 ```
@@ -3145,9 +3021,7 @@ busybox     9778        running     /home/centos/runc   2020-09-06T0
 
 ## 12 网络模型：剖析 Docker 网络实现及 Libnetwork 底层原理
 
-
 前几课时，我介绍了 Linux 的 Namespace 和 Cgroups 技术，利用这两项技术可以实现各种资源的隔离和主机资源的限制，让我们的容器可以像一台虚拟机一样。但这时我们的容器就像一台未联网的电脑，不能被外部访问到，也不能主动与外部通信，这样的容器只能做一些离线的处理任务，无法通过外部访问。所以今天这一讲，我将介绍 Docker 网络相关的知识，使 Docker 容器接通网络。
-
 
 ### 容器网络发展史
 
@@ -3169,9 +3043,7 @@ CNM 定义的网络标准包含三个重要元素。
 
 * **沙箱（Sandbox）**：沙箱代表了一系列网络堆栈的配置，其中包含路由信息、网络接口等网络资源的管理，沙箱的实现通常是 Linux 的 Net Namespace，但也可以通过其他技术来实现，比如 [FreeBSD jail](https://zh.wikipedia.org/wiki/FreeBSD_jail) 等。
 
-
 * **接入点（Endpoint）**：接入点将沙箱连接到网络中，代表容器的网络接口，接入点的实现通常是 Linux 的 veth 设备对。
-
 
 * **网络（Network**）：网络是一组可以互相通信的接入点，它将多接入点组成一个子网，并且多个接入点之间可以相互通信。
 CNM 的三个要素基本抽象了所有网络模型，使得网络模型的开发更加规范。
@@ -3192,7 +3064,7 @@ type NetworkController interface {
 }
 ```
 
-第二步：通过调用 NewNetwork 函数创建指定名称和类型的 Network，其中 Network 也是接口类型，代码如下:
+第二步：通过调用 NewNetwork 函数创建指定名称和类型的 Network，其中 Network 也是接口类型，代码如下：
 
 ```
 type Network interface {
@@ -3231,12 +3103,9 @@ Libnetwork 比较典型的网络模式主要有四种，这四种网络模式基
 
 1. null 空网络模式：可以帮助我们构建一个没有网络接入的容器环境，以保障数据安全。
 
-
 2. bridge 桥接模式：可以打通容器与容器间网络通信的需求。
 
-
 3. host 主机网络模式：可以让容器内的进程共享主机网络，从而监听或修改主机网络。
-
 
 4. container 网络模式：可以将两个容器放在同一个网络命名空间内，让两个业务通过 localhost 即可实现访问。
 下面我们对 libnetwork 的四种网络模式逐一讲解：
@@ -3267,7 +3136,7 @@ lo        Link encap:Local Loopback
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 ```
 
-可以看到容器内除了 Net Namespace 自带的 lo 网卡并没有创建任何虚拟网卡，然后我们再使用 ` route -n` 命令查看一下容器内的路由信息:
+可以看到容器内除了 Net Namespace 自带的 lo 网卡并没有创建任何虚拟网卡，然后我们再使用 ` route -n` 命令查看一下容器内的路由信息：
 
 ```
 / # route -n
@@ -3306,9 +3175,7 @@ Docker 的 bridge 模式也是这种原理。Docker 启动时，libnetwork 会�
 
 * libnetwork 不会为容器创建新的网络配置和 Net Namespace。
 
-
 * Docker 容器中的进程直接共享主机的网络配置，可以直接使用主机的网络信息，此时，在容器内监听的端口，也将直接占用到主机的端口。
-
 
 * 除了网络共享主机的网络外，其他的包括进程、文件系统、主机名等都是与主机隔离的。
 host 主机网络模式通常适用于想要使用主机网络，但又不想把运行环境直接安装到主机上的场景中。例如我想在主机上运行一个 busybox 服务，但又不想直接把 busybox 安装到主机上污染主机环境，此时我可以使用以下命令启动一个主机网络模式的 busybox 镜像：
@@ -3420,16 +3287,13 @@ RX bytes:0 (0.0 B) TX bytes:0 (0.0 B)
 
 ## 13 数据存储：剖析 Docker 卷与持久化数据存储的底层原理
 
-
 上一课时我介绍了 Docker 网络实现，为我们的容器插上了网线。这一课时我将介绍 Docker 的卷，为我们的容器插上磁盘，实现容器数据的持久化。
-
 
 ### 为什么容器需要持久化存储
 
 容器按照业务类型，总体可以分为两类：
 
 * 无状态的（数据不需要被持久化）
-
 
 * 有状态的（数据需要被持久化）
 显然，容器更擅长无状态应用。因为未持久化数据的容器根目录的生命周期与容器的生命周期一样，容器文件系统的本质是在镜像层上面创建的读写层，运行中的容器对任何文件的修改都存在于该读写层，当容器被删除时，容器中的读写层也会随之消失。
@@ -3462,7 +3326,6 @@ $ docker run -d --name=nginx-volume -v /usr/share/nginx/html nginx
 
 使用以上命令，我们启动了一个 nginx 容器，`-v`参数使得 Docker 自动生成一个卷并且绑定到容器的 /usr/share/nginx/html 目录中。
 
-
 我们可以使用`docker volume ls`命令来查看下主机上的卷：
 
 ```
@@ -3484,7 +3347,6 @@ local               myvolume
 ```
 
 通过输出可以看到 myvolume 卷已经创建成功。
-
 
 如果想要查看某个数据卷的详细信息，可以使用`docker volume inspect`命令。例如，我想查看 myvolume 的详细信息，命令如下：
 
@@ -3519,7 +3381,7 @@ $ docker run -d --name=nginx --mount source=myvolume,target=/usr/share/nginx/htm
 
 ```
 $ docker exec -it  nginx bash
-## 使用以下内容直接替换 /usr/share/nginx/html/index.html 文件 
+## 使用以下内容直接替换 /usr/share/nginx/html/index.html 文件
 root@719d3c32e211:/# cat <<EOF >/usr/share/nginx/html/index.html
 <!DOCTYPE html>
 <html>
@@ -3587,7 +3449,7 @@ $ docker volume rm myvolume
 
 这里需要注意，正在被使用中的数据卷无法删除，如果你想要删除正在使用中的数据卷，需要先删除所有关联的容器。
 
-有时候，两个容器之间会有共享数据的需求，很典型的一个场景就是容器内产生的日志需要一个专门的日志采集程序去采集日志内容，例如我需要使用 Filebeat (一种日志采集工具)采集 nginx 容器内的日志，我就需要使用卷来共享一个日志目录，从而使得 Filebeat 和 nginx 容器都可以访问到这个目录，这时就需要用到容器之间共享数据卷的方式。
+有时候，两个容器之间会有共享数据的需求，很典型的一个场景就是容器内产生的日志需要一个专门的日志采集程序去采集日志内容，例如我需要使用 Filebeat （一种日志采集工具）采集 nginx 容器内的日志，我就需要使用卷来共享一个日志目录，从而使得 Filebeat 和 nginx 容器都可以访问到这个目录，这时就需要用到容器之间共享数据卷的方式。
 
 #### 容器与容器之间数据共享
 
@@ -3613,7 +3475,6 @@ docker run -it --name consumer --volumes-from log-producer  busybox
 
 使用`volumes-from`参数可以在启动新的容器时来挂载已经存在的容器的卷，`volumes-from`参数后面跟已经启动的容器名称。
 
-
 下面我们切换到 producer 窗口，使用以下命令创建一个 mylog.log 文件并写入 "Hello，My log." 的内容：
 
 ```
@@ -3637,7 +3498,7 @@ Hello, My log.
 
 Docker 卷的目录默认在 /var/lib/docker 下，当我们想把主机的其他目录映射到容器内时，就需要用到主机与容器之间数据共享的方式了，例如我想把 MySQL 容器中的 /var/lib/mysql 目录映射到主机的 /var/lib/mysql 目录中，我们就可以使用主机与容器之间数据共享的方式来实现。
 
-要实现主机与容器之间数据共享，其实很简单，只需要我们在启动容器的时候添加`-v`参数即可, 使用格式为：`-v HOST_PATH:CONTIANAER_PATH`。
+要实现主机与容器之间数据共享，其实很简单，只需要我们在启动容器的时候添加`-v`参数即可，使用格式为：`-v HOST_PATH:CONTIANAER_PATH`。
 
 例如，我想挂载主机的 /data 目录到容器中的 /usr/local/data 中，可以使用以下命令来启动容器：
 
@@ -3693,7 +3554,7 @@ $  docker run -it --mount source=volume-data,target=/data busybox
 / #
 ```
 
-我们进入到容器的 /data 目录，创建一个 data.log 文件:
+我们进入到容器的 /data 目录，创建一个 data.log 文件：
 
 ```
 / # cd data/
@@ -3722,9 +3583,7 @@ total 0
 
 ## 14 文件存储驱动：AUFS 文件系统原理及生产环境的最佳配置
 
-
 我们知道，Docker 主要是基于 Namespace、cgroups 和联合文件系统这三大核心技术实现的。前面的课时我详细讲解了 Namespace 和 cgroups 的相关原理，那么你知道联合文件系统是什么吗？它的原理又是什么呢？
-
 
 首先我们来了解一下什么是联合文件系统。
 
@@ -3750,7 +3609,6 @@ nodev   aufs
 ```
 
 执行以上命令后，如果输出结果包含`aufs`，则代表当前操作系统支持 AUFS。AUFS 推荐在 Ubuntu 或 Debian 操作系统下使用，如果你想要在 CentOS 等操作系统下使用 AUFS，需要单独安装 AUFS 模块（生产环境不推荐在 CentOS 下使用 AUFS，如果你想在 CentOS 下安装 AUFS 用于研究和测试，可以参考这个[链接](https://github.com/bnied/kernel-ml-aufs)），安装完成后使用上述命令输出结果中有`aufs`即可。
-
 
 当确认完操作系统支持 AUFS 后，你就可以配置 Docker 的启动参数了。
 
@@ -3802,7 +3660,6 @@ AUFS 是联合文件系统，意味着它在主机上使用多层目录存储，
 
 图 1 AUFS 工作原理示意图
 
-
 如图 1 所示，每一个镜像层和容器层都是 /var/lib/docker 下的一个子目录，镜像层和容器层都在 aufs/diff 目录下，每一层的目录名称是镜像或容器的 ID 值，联合挂载点在 aufs/mnt 目录下，mnt 目录是真正的容器工作目录。
 
 下面我们针对 aufs 文件夹下的各目录结构，在创建容器前后的变化做详细讲述。
@@ -3811,18 +3668,14 @@ AUFS 是联合文件系统，意味着它在主机上使用多层目录存储，
 
 * diff 文件夹：存储镜像内容，每一层都存储在以镜像层 ID 命名的子文件夹中。
 
-
 * layers 文件夹：存储镜像层关系的元数据，在 diif 文件夹下的每个镜像层在这里都会有一个文件，文件的内容为该层镜像的父级镜像的 ID。
-
 
 * mnt 文件夹：联合挂载点目录，未生成容器时，该目录为空。
 当一个镜像已经生成容器时，AUFS 存储结构会发生如下变化。
 
 * diff 文件夹：当容器运行时，会在 diff 目录下生成容器层。
 
-
 * layers 文件夹：增加容器层相关的元数据。
-
 
 * mnt 文件夹：容器的联合挂载点，这和容器中看到的文件内容一致。
 以上便是 AUFS 的工作原理，那你知道容器的在工作过程中是如何使用 AUFS 的吗？
@@ -3837,11 +3690,10 @@ AUFS 的工作过程中对文件的操作分为读取文件和修改文件。下
 
 * 文件在容器层中存在时：当文件存在于容器层时，直接从容器层读取。
 
-
 * 当文件在容器层中不存在时：当容器运行时需要读取某个文件，如果容器层中不存在时，则从镜像层查找该文件，然后读取文件内容。
 
-
 * 文件既存在于镜像层，又存在于容器层：当我们读取的文件既存在于镜像层，又存在于容器层时，将会从容器层读取该文件。
+
 ##### 2. 修改文件或目录
 
 AUFS 对文件的修改采用的是写时复制的工作机制，这种工作机制可以最大程度节省存储空间。
@@ -3968,7 +3820,6 @@ Hello, Image layer1!
 
 发现“镜像层”的 image1.txt 文件并未被修改。
 
-
 然后我们查看一下"容器层"对应的 image1.txt 文件内容：
 
 ```
@@ -3995,9 +3846,7 @@ Hello, Image layer1 changed!
 
 ## 15 文件存储驱动：Devicemapper 文件系统原理及生产环境的最佳配置
 
-
 上一课时我带你学习了什么是联合文件系统，以及 AUFS 的工作原理和配置。我们知道 AUFS 并不在 Linux 内核主干中，所以如果你的操作系统是 CentOS，就不推荐使用 AUFS 作为 Docker 的联合文件系统了。
-
 
 那在 CentOS 系统中，我们怎么实现镜像和容器的分层结构呢？我们通常使用 Devicemapper 作为 Docker 的联合文件系统。
 
@@ -4015,23 +3864,19 @@ Devicemapper 将主要的工作部分分为用户空间和内核空间。
 
 * 用户空间负责配置具体的设备映射策略与相关的内核空间控制逻辑，例如逻辑设备 dm-a 如何与物理设备 sda 相关联，怎么建立逻辑设备和物理设备的映射关系等。
 
-
 * 内核空间则负责用户空间配置的关联关系实现，例如当 IO 请求到达虚拟设备 dm-a 时，内核空间负责接管 IO 请求，然后处理和过滤这些 IO 请求并转发到具体的物理设备 sda 上。
-这个架构类似于 C/S （客户端/服务区）架构的工作模式，客户端负责具体的规则定义和配置下发，服务端根据客户端配置的规则来执行具体的处理任务。
+这个架构类似于 C/S （客户端 / 服务区）架构的工作模式，客户端负责具体的规则定义和配置下发，服务端根据客户端配置的规则来执行具体的处理任务。
 
 Devicemapper 的工作机制主要围绕三个核心概念。
 
 * 映射设备（mapped device）：即对外提供的逻辑设备，它是由 Devicemapper 模拟的一个虚拟设备，并不是真正存在于宿主机上的物理设备。
 
-
 * 目标设备（target device）：目标设备是映射设备对应的物理设备或者物理设备的某一个逻辑分段，是真正存在于物理机上的设备。
-
 
 * 映射表（map table）：映射表记录了映射设备到目标设备的映射关系，它记录了映射设备在目标设备的起始地址、范围和目标设备的类型等变量。
 ![Drawing 1.png](https://s0.lgstatic.com/i/image/M00/5E/87/CgqCHl-GyFOAG6TPAACE_8cMjoQ585.png)
 
 图 1 Devicemapper 核心概念关系图
-
 
 Devicemapper 三个核心概念之间的关系如图 1，**映射设备通过映射表关联到具体的物理目标设备。事实上，映射设备不仅可以通过映射表关联到物理目标设备，也可以关联到虚拟目标设备，然后虚拟目标设备再通过映射表关联到物理目标设备。**
 
@@ -4061,11 +3906,10 @@ Devicemapper 在内核中通过很多模块化的映射驱动（target driver）
 
 * devicemapper 目录（/var/lib/docker/devicemapper/devicemapper/）：存储镜像和容器实际内容，该目录由一个或多个块设备构成。
 
-
-* metadata 目录（/var/lib/docker/devicemapper/metadata/）： 包含 Devicemapper 本身配置的元数据信息, 以 json 的形式配置，这些元数据记录了镜像层和容器层之间的关联信息。
-
+* metadata 目录（/var/lib/docker/devicemapper/metadata/）： 包含 Devicemapper 本身配置的元数据信息，以 json 的形式配置，这些元数据记录了镜像层和容器层之间的关联信息。
 
 * mnt 目录（ /var/lib/docker/devicemapper/mnt/）：是容器的联合挂载点目录，未生成容器时，该目录为空，而容器存在时，该目录下的内容跟容器中一致。
+
 ### Devicemapper 如何实现镜像分层与共享？
 
 Devicemapper 使用专用的块设备实现镜像的存储，并且像 AUFS 一样使用了写时复制的技术来保障最大程度节省存储空间，所以 Devicemapper 的镜像分层也是依赖快照来是实现的。
@@ -4074,9 +3918,7 @@ Devicemapper 的每一镜像层都是其下一层的快照，最底层的镜像�
 
 * 相同的镜像层，仅在磁盘上存储一次。例如，我有 10 个运行中的 busybox 容器，底层都使用了 busybox 镜像，那么 busybox 镜像只需要在磁盘上存储一次即可。
 
-
 * 快照是写时复制策略的实现，也就是说，当我们需要对文件进行修改时，文件才会被复制到读写层。
-
 
 * 相比对文件系统加锁的机制，Devicemapper 工作在块级别，因此可以实现同时修改和读写层中的多个块设备，比文件系统效率更高。
 当我们需要读取数据时，如果数据存在底层快照中，则向底层快照查询数据并读取。当我们需要写数据时，则向瘦供给池动态申请存储空间生成读写层，然后把数据复制到读写层进行修改。Devicemapper 默认每次申请的大小是 64K 或者 64K 的倍数，因此每次新生成的读写层的大小都是 64K 或者 64K 的倍数。
@@ -4086,7 +3928,6 @@ Devicemapper 的每一镜像层都是其下一层的快照，最底层的镜像�
 ![Drawing 3.png](https://s0.lgstatic.com/i/image/M00/5E/87/CgqCHl-GyHeAX_zKAABoNW4U26c205.png)
 
 图 2 Devicemapper 存储模型
-
 
 这个 Ubuntu 镜像一共有四层，每一层镜像都是下一层的快照，镜像的最底层是基础设备的快照。当容器运行时，容器是基于镜像的快照。综上，Devicemapper 实现镜像分层的根本原理就是快照。
 
@@ -4100,13 +3941,13 @@ Docker 的 Devicemapper 模式有两种：第一种是 loop-lvm 模式，该模�
 
 #### 配置 loop-lvm 模式
 
-1.使用以下命令停止已经运行的 Docker：
+1. 使用以下命令停止已经运行的 Docker：
 
 ```
 $ sudo systemctl stop docker
 ```
 
-2.编辑 /etc/docker/daemon.json 文件，如果该文件不存在，则创建该文件，并添加以下配置：
+2. 编辑 /etc/docker/daemon.json 文件，如果该文件不存在，则创建该文件，并添加以下配置：
 
 ```
 {
@@ -4114,13 +3955,13 @@ $ sudo systemctl stop docker
 }
 ```
 
-3.启动 Docker：
+3. 启动 Docker：
 
 ```
 $ sudo systemctl start docker
 ```
 
-4.验证 Docker 的文件驱动模式：
+4. 验证 Docker 的文件驱动模式：
 
 ```
 $ docker info
@@ -4163,13 +4004,13 @@ Server:
 
 #### 配置 direct-lvm 模式
 
-1.使用以下命令停止已经运行的 Docker：
+1. 使用以下命令停止已经运行的 Docker：
 
 ```
 $ sudo systemctl stop docker
 ```
 
-2.编辑 /etc/docker/daemon.json 文件，如果该文件不存在，则创建该文件，并添加以下配置：
+2. 编辑 /etc/docker/daemon.json 文件，如果该文件不存在，则创建该文件，并添加以下配置：
 
 ```
 {
@@ -4187,13 +4028,13 @@ $ sudo systemctl stop docker
 
 其中 directlvm_device 指定需要用作 Docker 存储的磁盘路径，Docker 会动态为我们创建对应的存储池。例如这里我想把 /dev/xdf 设备作为我的 Docker 存储盘，directlvm_device 则配置为 /dev/xdf。
 
-3.启动 Docker：
+3. 启动 Docker：
 
 ```
 $ sudo systemctl start docker
 ```
 
-4.验证 Docker 的文件驱动模式：
+4. 验证 Docker 的文件驱动模式：
 
 ```
 $ docker info
@@ -4242,11 +4083,9 @@ Devicemapper 使用块设备来存储文件，运行速度会比直接操作文�
 
 ## 16 文件存储驱动：OverlayFS 文件系统原理及生产环境的最佳配置
 
-
 前面课时我分别介绍了 Docker 常见的联合文件系统解决方案： AUFS 和 Devicemapper。今天我给你介绍一个性能更好的联合文件系统解决方案—— OverlayFS。
 
-
-OverlayFS 的发展分为两个阶段。2014 年，OverlayFS 第一个版本被合并到 Linux 内核 3.18 版本中，此时的 OverlayFS 在 Docker 中被称为`overlay`文件驱动。由于第一版的`overlay`文件系统存在很多弊端（例如运行一段时间后Docker 会报 "too many links problem" 的错误）， Linux 内核在 4.0 版本对`overlay`做了很多必要的改进，此时的 OverlayFS 被称之为`overlay2`。
+OverlayFS 的发展分为两个阶段。2014 年，OverlayFS 第一个版本被合并到 Linux 内核 3.18 版本中，此时的 OverlayFS 在 Docker 中被称为`overlay`文件驱动。由于第一版的`overlay`文件系统存在很多弊端（例如运行一段时间后 Docker 会报 "too many links problem" 的错误）， Linux 内核在 4.0 版本对`overlay`做了很多必要的改进，此时的 OverlayFS 被称之为`overlay2`。
 
 因此，在 Docker 中 OverlayFS 文件驱动被分为了两种，一种是早期的`overlay`，不推荐在生产环境中使用，另一种是更新和更稳定的`overlay2`，推荐在生产环境中使用。下面的内容我们主要围绕`overlay2`展开。
 
@@ -4256,11 +4095,10 @@ OverlayFS 的发展分为两个阶段。2014 年，OverlayFS 第一个版本被�
 
 * 要想使用`overlay2`，Docker 版本必须高于 17.06.02。
 
-
 * 如果你的操作系统是 RHEL 或 CentOS，Linux 内核版本必须使用 3.10.0-514 或者更高版本，其他 Linux 发行版的内核版本必须高于 4.0（例如 Ubuntu 或 Debian），你可以使用`uname -a`查看当前系统的内核版本。
 
+* `overlay2`最好搭配 xfs 文件系统使用，并且使用 xfs 作为底层文件系统时，d_type 必须开启，可以使用以下命令验证 d_type 是否开启：
 
-* `overlay2`最好搭配 xfs 文件系统使用，并且使用 xfs 作为底层文件系统时，d_type必须开启，可以使用以下命令验证 d_type 是否开启：
 ```
 $ xfs_info /var/lib/docker | grep ftype
 naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
@@ -4282,7 +4120,6 @@ $UUID /var/lib/docker xfs defaults,pquota 0 0
 
 其中 UUID 为 /var/lib/docker 所在磁盘或者分区的 UUID 或者磁盘路径。
 
-
 如果你的操作系统无法满足上面的任何一个条件，那我推荐你使用 AUFS 或者 Devicemapper 作为你的 Docker 文件系统驱动。
 
 > 通常情况下， overlay2 会比 AUFS 和 Devicemapper 性能更好，而且更加稳定，因为 overlay2 在 inode 优化上更加高效。因此在生产环境中推荐使用 overlay2 作为 Docker 的文件驱动。
@@ -4291,7 +4128,7 @@ $UUID /var/lib/docker xfs defaults,pquota 0 0
 
 #### 准备 /var/lib/docker 目录
 
-1.使用 lsblk（Linux 查看磁盘和块设备信息命令）命令查看本机磁盘信息：
+1. 使用 lsblk（Linux 查看磁盘和块设备信息命令）命令查看本机磁盘信息：
 
 ```
 $ lsblk
@@ -4304,25 +4141,25 @@ vdb    253:16   0  500G  0 disk
 
 可以看到，我的机器有两块磁盘，一块是 vda，一块是 vdb。其中 vda 已经被用来挂载系统根目录，这里我想把 /var/lib/docker 挂载到 vdb1 分区上。
 
-2.使用 mkfs 命令格式化磁盘 vdb1：
+2. 使用 mkfs 命令格式化磁盘 vdb1：
 
 ```
 $ sudo mkfs.xfs -f -n ftype=1 /dev/vdb1
 ```
 
-3.将挂载信息写入到 /etc/fstab，保证机器重启挂载目录不丢失：
+3. 将挂载信息写入到 /etc/fstab，保证机器重启挂载目录不丢失：
 
 ```
 $ sudo echo "/dev/vdb1 /var/lib/docker xfs defaults,pquota 0 0" >> /etc/fstab
 ```
 
-4.使用 mount 命令使得挂载目录生效：
+4. 使用 mount 命令使得挂载目录生效：
 
 ```
 $ sudo mount -a
 ```
 
-5.查看挂载信息：
+5. 查看挂载信息：
 
 ```
 $ lsblk
@@ -4348,19 +4185,19 @@ naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
 
 当你的系统满足上面的条件后，就可以配置你的 Docker 存储驱动为 overlay2 了，具体配置步骤如下。
 
-1.停止已经运行的 Docker：
+1. 停止已经运行的 Docker：
 
 ```
 $ sudo systemctl stop docker
 ```
 
-2.备份 /var/lib/docker 目录：
+2. 备份 /var/lib/docker 目录：
 
 ```
 $ sudo cp -au /var/lib/docker /var/lib/docker.back
 ```
 
-3.在 /etc/docker 目录下创建 daemon.json 文件，如果该文件已经存在，则修改配置为以下内容：
+3. 在 /etc/docker 目录下创建 daemon.json 文件，如果该文件已经存在，则修改配置为以下内容：
 
 ```
 {
@@ -4374,13 +4211,13 @@ $ sudo cp -au /var/lib/docker /var/lib/docker.back
 
 其中 storage-driver 参数指定使用 overlay2 文件驱动，overlay2.size 参数表示限制每个容器根目录大小为 20G。限制每个容器的磁盘空间大小是通过 xfs 的 pquota 特性实现，overlay2.size 可以根据不同的生产环境来设置这个值的大小。我推荐你在生产环境中开启此参数，防止某个容器写入文件过大，导致整个 Docker 目录空间溢出。
 
-4.启动 Docker：
+4. 启动 Docker：
 
 ```
 $ sudo systemctl start docker
 ```
 
-5.检查配置是否生效：
+5. 检查配置是否生效：
 
 ```
 $ docker info
@@ -4453,7 +4290,6 @@ lrwxrwxrwx. 1 root root 72 Sep 13 08:16 VQSNH735KNX4YK2TCMBAJRFTGT -> ../94222a2
 ```
 
 可以看到`l`目录是一堆软连接，把一些较短的随机串软连到镜像层的 diff 文件夹下，这样做是为了避免达到`mount`命令参数的长度限制。
-
 
 下面我们查看任意一个镜像层下的文件内容：
 
@@ -4551,9 +4387,7 @@ overlay2 的工作过程中对文件的操作分为读取文件和修改文件�
 
 * 文件在容器层中存在：当文件存在于容器层并且不存在于镜像层时，直接从容器层读取文件；
 
-
 * 当文件在容器层中不存在：当容器中的进程需要读取某个文件时，如果容器层中不存在该文件，则从镜像层查找该文件，然后读取文件内容；
-
 
 * 文件既存在于镜像层，又存在于容器层：当我们读取的文件既存在于镜像层，又存在于容器层时，将会从容器层读取该文件。
 **修改文件或目录**
@@ -4564,6 +4398,7 @@ overlay2 对文件的修改采用的是写时复制的工作机制，这种工�
 > overlay2 写时复制的操作将会复制整个文件，如果文件过大，将会大大降低文件系统的性能，因此当我们有大量文件需要被修改时，overlay2 可能会出现明显的延迟。好在，写时复制操作只在第一次修改文件时触发，对日常使用没有太大影响。
 
 * 删除文件或目录：当文件或目录被删除时，overlay2 并不会真正从镜像中删除它，因为镜像层是只读的，overlay2 会创建一个特殊的文件或目录，这种特殊的文件或目录会阻止容器的访问。
+
 ### 结语
 
 overlay2 目前已经是 Docker 官方推荐的文件系统了，也是目前安装 Docker 时默认的文件系统，因为 overlay2 在生产环境中不仅有着较高的性能，它的稳定性也极其突出。但是 overlay2 的使用还是有一些限制条件的，例如要求 Docker 版本必须高于 17.06.02，内核版本必须高于 4.0 等。因此，在生产环境中，如果你的环境满足使用 overlay2 的条件，请尽量使用 overlay2 作为 Docker 的联合文件系统。
@@ -4574,13 +4409,11 @@ overlay2 目前已经是 Docker 官方推荐的文件系统了，也是目前安
 
 ## 17 原理实践：自己动手使用 Golang 开发 Docker（上）
 
-
 第一模块，我们从 Docker 基础概念讲到 Docker 的基本操作。第二模块，我们详细剖析了 Docker 的三大关键技术（ Namespace、cgroups 和联合文件系统）的实现原理，并且讲解了 Docker 的网络模型等关键性技术。相信此时的你已经对 Docker 有了一个新的认识。
 
+接下来的两课时，我就趁热打铁，带你动手使用 Golang 编写一个 Docker。学习这两节的内容需要你能够熟练使用 Golang 语言，如果你没有 Golang 编程基础，建议先学习一下 Golang 的基本语法。那么 Golang 究竟是什么呢？Golang 应该如何安装使用？下面我带你一一学习。
 
-接下来的两课时，我就趁热打铁，带你动手使用 Golang 编写一个 Docker。学习这两节的内容需要你能够熟练使用 Golang 语言，如果你没有 Golang 编程基础，建议先学习一下 Golang 的基本语法。那么 Golang 究竟是什么呢? Golang 应该如何安装使用？下面我带你一一学习。
-
-### Golang 是什么?
+### Golang 是什么？
 
 Golang 又称为 Go，是 Google 开源的一种静态编译型语言，Golang 自带内存管理机制，相比于 C 和 C++ 语言，我们不需要关心内存的分配和回收。
 
@@ -4594,8 +4427,7 @@ Golang 是新一代的互联网编程语言，在 Golang 诞生前，C 或 C++ �
 
 安装信息如下：
 
-* CentOS 7系统
-
+* CentOS 7 系统
 
 * Golang 版本 1.15.2
 首先我们到[Golang 官网](https://golang.org/)（由于国内无法访问 Golang 官网，推荐到[Golang 中文网](https://studygolang.com/dl)下载安装包）下载一个对应操作系统的安装包。
@@ -4770,7 +4602,6 @@ dr-xr-xr-x  4 root    root                  0 Sep 19 22:27 tty
 
 * **self 目录**：它是连接到当前正在运行的进程目录，比如我当前的进程 ID 为 30097，则 self 目录实际连接到 /proc/30097 这个目录。
 
-
 * **/proc/{PID}/exe 文件**：exe 连接到进程执行的命令文件，例如 30097 这个进程的运行命令为 docker，则执行 /proc/30097/exe ps 等同于执行 docker ps。
 好了，了解完这些基础知识后，我们就开始行动吧！因为我们的精简版 Docker 是使用 Golang 编写，这里就给我们编写的 Docker 命名为 gocker 吧。
 
@@ -4841,7 +4672,6 @@ $ go install
 
 执行完 go install 后， Golang 会自动帮助我们编译当前项目下的代码，编译后的二进制文件存放在 $GOPATH/bin 目录下。由于我们之前在 $HOME/.bashrc 文件下把 $GOPATH/bin 放入了系统 PATH 中，所以此时你可以直接使用 gocker 命令了。
 
-
 接下来我们使用 gocker 来启动一个容器：
 
 ```
@@ -4855,7 +4685,6 @@ $ go install
 
 这里我们使用 it 参数指定以命令行交互的模式启动容器，rootfs 指定准备好的镜像目录。执行完上面的命令后 busybox 容器就成功启动了。
 
-
 这时候，我们使用 ps 命令查看一下当前进程信息：
 
 ```
@@ -4866,7 +4695,6 @@ PID   USER     TIME  COMMAND
 ```
 
 此时，容器内的进程已经与主机完全隔离。
-
 
 我们再查看一下当前目录下的内容：
 
@@ -4890,12 +4718,11 @@ drwxr-xr-x    4 root     root          4096 Sep  8 18:09 var
 
 可以看到当前目录已经为根目录，并且根目录下的文件就是我们上面准备的 busybox 镜像文件。
 
-
 到此，一个完全由我们自己编写的 gocker 已经可以启动容器了。
 
 ### 结语
 
-本课时我们讲解了 Golang 是什么, 并且配置好了 Golang 环境，编译了 gocker，也了解了 Linux /proc 文件系统的一些重要功能，最后使用 gocker 成功启动了一个 busybox 容器。
+本课时我们讲解了 Golang 是什么，并且配置好了 Golang 环境，编译了 gocker，也了解了 Linux /proc 文件系统的一些重要功能，最后使用 gocker 成功启动了一个 busybox 容器。
 
 那么你知道，为什么 Docker 会选择使用 Golang 来开发吗？思考后，把你的想法写在留言区。
 
@@ -4905,9 +4732,7 @@ drwxr-xr-x    4 root     root          4096 Sep  8 18:09 var
 
 ## 18 原理实践：自己动手使用 Golang 开发 Docker（下）
 
-
 上一课时我们安装了 Golang，学习了一些容器必备的基础知识，并且自己动手编译了一个 gocker，实现了 Namespace 的隔离。今天我将带你深入剖析 gocker 的源码和实现原理，并且带你实现 cgroups 的资源限制。
-
 
 ### gocker 源码剖析
 
@@ -4944,7 +4769,6 @@ func main() {
 ```
 
 main.go 文件中引用了一个第三方工具库 github.com/urfave/cli，该工具库提供了一个编写命令行的工具，可以帮助我们快速构建命令行应用程序，Docker 默认的容器运行时 runC 也引用了该工具库。
-
 
 main 函数是 gocker 执行的入口文件，main 定义了 gocker 的名称和简单介绍，同时调用了 InitCommand 和 RunCommand 实现了`gocker init`和`gocker run`这两个命令的初始化。
 
@@ -4992,7 +4816,7 @@ var RunCommand = &cli.Command{
         }
         tty := context.Bool("it")
         rootfs := context.String("rootfs")
-        
+
          := exec.Command("/proc/self/exe", "init")
         .SysProcAttr = &syscall.SysProcAttr{
             Cloneflags: syscall.CLONE_NEWNS |
@@ -5108,8 +4932,8 @@ func readCommandArray() []string {
 
 * RunCommand 是当我们执行 gocker run 命令时调用的函数，是实现 gocker run 的入口；
 
-
 * InitCommand 是当我们执行 gocker run 时自动调用 gocker init 来初始化容器的一些环境。
+
 #### RunCommand （容器启动的入口）
 
 我们先从 RunCommand 来分析：
@@ -5134,7 +4958,7 @@ var RunCommand = &cli.Command{
     },
     // gocker run 命令的执行函数
     Action: func(context *cli.Context) error {
-        // 校验参数 
+        // 校验参数
         if context.Args().Len() < 1 {
             return errors.New("参数不全，请检查！")
         }
@@ -5180,28 +5004,21 @@ RunCommand 变量实际上是一个 Command 结构体，这个结构体包含了
 
 1. Name：定义一个启动命令，这里定义的是 run 命令，当执行 gocker run 时会调用该函数。
 
-
 2. Usage：`gocker run`命令的使用说明。
 
-
 3. Flags：执行`gocker run`命令可以传递的参数。
-
 
 4. Action： 该变量是真正的 gocker run 命令的入口， 主要做了以下事情：
 
     * 校验 gocker run 传递的参数；
-    
-    
+
     * 构造一个 Pipe，把 gocker 的启动参数写入，方便在 init 进程中获取；
-    
-    
+
     * 定义 /proc/self/exe init 调用，相当于调用 gocker init ；
-    
-    
+
     * 创建五种命名空间用于资源隔离，分别为 Mount Namespace、UTS Namespace、IPC Namespace、PID Namespace 和 Net Namespace；
-    
-    
-    * 调用 .Start 函数，开始执行容器启动步骤，首先创建出来一个 namespace （上一步定义的五种namespace）隔离的进程，然后调用 /proc/self/exe，也就是调用 gocker init，执行 InitCommand 中定义的容器初始化步骤。
+
+    * 调用 .Start 函数，开始执行容器启动步骤，首先创建出来一个 namespace （上一步定义的五种 namespace）隔离的进程，然后调用 /proc/self/exe，也就是调用 gocker init，执行 InitCommand 中定义的容器初始化步骤。
 那么 InitCommand 究竟做了什么呢？
 
 #### InitCommand（准备容器环境）
@@ -5252,7 +5069,7 @@ var InitCommand = &cli.Command{
         return nil
     },
 }
-      
+
 ```
 
 通过代码你能看出 InitCommand 都做了哪些容器启动前的准备工作吗？
@@ -5261,29 +5078,23 @@ InitCommand 主要做了以下几件事情：
 
 1. 获取当前运行目录；
 
-
 2. 从 RunCommand 中获取用户传递的容器启动参数；
-
 
 3. 修改当前进程运行的根目录为用户传递的 rootfs 目录；
 
-
 4. 挂载容器自己的 proc 目录，使得容器中执行 ps 命令只能看到自己命名空间下的进程；
 
-
 5. 设置容器的主机名称为 lagoudocker；
-
 
 6. 执行 syscall.Exec 实现使用用户传递的启动命令替换当前 init 进程。
 这里有两个比较关键的技术点 pivotRoot 和 syscall.Exec。
 
 * pivotRoot：pivotRoot 是一个系统调用，主要功能是改变当前进程的根目录，它可以把当前进程的根目录移动到我们传递的 rootfs 目录下，从而使得我们不仅能够看到指定目录，还可以看到它的子目录信息。
 
-
 * syscall.Exec：syscall.Exec 是一个系统调用，这个系统调用可以实现执行指定的命令，但是并不创建新的进程，而是在当前的进程空间执行，替换掉正在执行的进程，复用同一个进程号。通过这种机制，才实现了我们在容器中看到的 1 号进程是我们传递的命令，而不是 init 进程。
-最后，总结下容器的完整创建流程:
+最后，总结下容器的完整创建流程：
 
-1.使用以下命令创建容器
+1. 使用以下命令创建容器
 
 ```
 gocker run -it -rootfs=/tmp/busybox /bin/sh
@@ -5291,13 +5102,13 @@ gocker run -it -rootfs=/tmp/busybox /bin/sh
 
 2.RunCommand 解析请求的参数（-it -rootfs=/tmp/busybox）和主进程启动命令（/bin/sh）；
 
-3.创建 namespace 隔离的容器进程；
+3. 创建 namespace 隔离的容器进程；
 
-4.启动容器进程；
+4. 启动容器进程；
 
-5.容器内的进程执行 /proc/self/exe 调用自己实现容器的初始化，修改当前进程运行的根目录，挂载 proc 文件系统，修改主机名，最后使用 sh 进程替换当前容器的进程，使得容器的主进程为 sh 进程。
+5. 容器内的进程执行 /proc/self/exe 调用自己实现容器的初始化，修改当前进程运行的根目录，挂载 proc 文件系统，修改主机名，最后使用 sh 进程替换当前容器的进程，使得容器的主进程为 sh 进程。
 
-目前我们的容器虽然实现了使用 Namespace 隔离各种资源，但是容器内的进程仍然可以任意地使用主机的 CPU 、内存等资源。而这可能导致主机的资源竞争，下面我们使用cgroups来实现对 CPU 和内存的限制。
+目前我们的容器虽然实现了使用 Namespace 隔离各种资源，但是容器内的进程仍然可以任意地使用主机的 CPU 、内存等资源。而这可能导致主机的资源竞争，下面我们使用 cgroups 来实现对 CPU 和内存的限制。
 
 ### 为 gocker 添加 cgroups 限制
 
@@ -5312,7 +5123,7 @@ const gockerCgroupPath = "gocker"
 const cgroupsRoot = "/sys/fs/cgroup"
 ```
 
-然后定义Cgroups结构体，分别定义 CPU 和 Memory 字段，用于存储用户端传递的 CPU 和 Memory 限制值：
+然后定义 Cgroups 结构体，分别定义 CPU 和 Memory 字段，用于存储用户端传递的 CPU 和 Memory 限制值：
 
 ```
 type Cgroups struct {
@@ -5327,14 +5138,12 @@ type Cgroups struct {
 
 * Apply：把容器的 pid 写入到对应子系统下的 tasks 文件中，使得 cgroups 限制对容器进程生效。
 
-
 * Destroy：容器退出时删除对应的 cgroups 文件。
-
 
 * SetCPULimit：将 CPU 限制值写入到 cpu.cfs_quota_us 文件中。
 
-
 * SetMemoryLimit：将内存限制值写入 memory.limit_in_bytes 文件中。
+
 ```
 func (c *Cgroups) Apply(pid int) error {
     if c.CPU != 0 {
@@ -5494,8 +5303,7 @@ drwxr-xr-x  2 root root 0 9月  19 21:34 user.slice
 100000
 ```
 
-可以看到我们容器的 CPU资源已经被限制为 1 核。下面我们来验证一下 CPU 限制是否生效。
-
+可以看到我们容器的 CPU 资源已经被限制为 1 核。下面我们来验证一下 CPU 限制是否生效。
 
 首先我们在容器窗口使用以下命令制造一个死循环，来提升 cpu 使用率：
 
@@ -5503,7 +5311,7 @@ drwxr-xr-x  2 root root 0 9月  19 21:34 user.slice
 # while true;do echo;done;
 ```
 
-然后在主机的窗口使用 top 查看一下cpu 使用率：
+然后在主机的窗口使用 top 查看一下 cpu 使用率：
 
 ```
 top - 20:57:50 up 2 days, 23:23,  2 users,  load average: 1.08, 0.27, 0.14
@@ -5528,12 +5336,9 @@ KiB Swap:        0 total,        0 free,        0 used.  3141076 av
 
 1. Linux 的 /proc 目录是一种“文件系统”，它存放于内存中，是一个虚拟的文件系统，/proc 目录存放了当前内核运行状态的一系列特殊的文件，你可以通过这些文件查看当前的进程信息。
 
-
 2. /proc/self/exe 是一个特殊的连接，执行该文件等同于执行当前程序的二进制文件
 
-
 3. pivotRoot 是一个系统调用，主要功能是改变当前进程的根目录，它可以把当前进程的根目录移动到我们传递的 rootfs 目录下
-
 
 4. syscall.Exec 是一个系统调用，这个系统调用可以实现新的进程直接替换正在执行的老的进程，并且复用老进程的 ID。
 另外，容器的实现当然离不开 Linux 的 namespace 和 cgroups 这两项关键技术，有了 Linux 的这些关键技术才使得我们的容器可以顺利实现，可以说 Linux 是容器技术的基石。而容器的编写，我们不仅可以使用 Go 语言，也可以使用其他编程语言，甚至只使用 shell 命令也可以实现一个容器。
@@ -5546,9 +5351,7 @@ KiB Swap:        0 total,        0 free,        0 used.  3141076 av
 
 ## 19 如何使用 Docker Compoe 解决开发环境的依赖？
 
-
 前两个模块，我们从 Docker 的基本操作到 Docker 的实现原理，为你一步一步揭开了 Docker 神秘的面纱。然而目前为止，我们所有的操作都是围绕单个容器进行的，但当我们的业务越来越复杂时，需要多个容器相互配合，甚至需要多个主机组成容器集群才能满足我们的业务需求，这个时候就需要用到容器的编排工具了。因为容器编排工具可以帮助我们批量地创建、调度和管理容器，帮助我们解决规模化容器的部署问题。
-
 
 从这一课时开始，我将向你介绍 Docker 三种常用的编排工具：Docker Compose、Docker Swarm 和 Kubernetes。了解这些编排工具，可以让你在不同的环境中选择最优的编排框架。
 
@@ -5607,9 +5410,7 @@ Docker Compose 文件主要分为三部分： services（服务）、networks（
 
 * services（服务）：服务定义了容器启动的各项配置，就像我们执行`docker run`命令时传递的容器启动的参数一样，指定了容器应该如何启动，例如容器的启动参数，容器的镜像和环境变量等。
 
-
 * networks（网络）：网络定义了容器的网络配置，就像我们执行`docker network create`命令创建网络配置一样。
-
 
 * volumes（数据卷）：数据卷定义了容器的卷配置，就像我们执行`docker volume create`命令创建数据卷一样。
 一个典型的 Docker Compose 文件结构如下：
@@ -5635,7 +5436,7 @@ services 下，首先需要定义服务名称，例如你这个服务是 nginx �
 ```
 version: "3.8"
 services:
-  nginx: 
+  nginx:
 ```
 
 服务名称定义完毕后，我们需要在服务名称的下一级定义当前服务的各项配置，使得我们的服务可以按照配置正常启动。常用的 16 种 service 配置如下。如果你比较了解，可以直接跳过看 Volume 配置和后续实操即可。
@@ -5824,7 +5625,7 @@ services:
         target: /var/log/mylog
 volumes:
   logdata:
- 
+
 ```
 
 #### 编写 Network 配置
@@ -5838,16 +5639,16 @@ version: "3"
 services:
   web:
     networks:
-      mybridge: 
+      mybridge:
         ipv4_address: 172.16.1.11
 networks:
   mybridge:
     driver: bridge
-    ipam: 
+    ipam:
       driver: default
       config:
         subnet: 172.16.1.0/24
-      
+
 ```
 
 编写完 Docker Compose 模板文件后，需要使用 docker-compose 命令来运行这些文件。下面我们来学习下 docker-compose 都有哪些操作命令。
@@ -5977,7 +5778,6 @@ Starting wordpress_wordpress_1 ... done
 
 图 1 WordPress 启动界面
 
-
 #### 停止 WordPress
 
 如果你不再需要 WordPress 服务了，可以使用`docker-compose stop`命令来停止已启动的服务。
@@ -5998,9 +5798,7 @@ Docker Compose 是一个用来定义复杂应用的单机编排工具，通常�
 
 ## 20 如何在生产环境中使用 Docker Swarm 调度容器？
 
-
 上一课时，我介绍了 Docker 的单节点引擎工具 Docker Compose，它能够在单一节点上管理和编排多个容器，当我们的服务和容器数量较小时可以使用 Docker Compose 来管理容器。
-
 
 然而随着我们的业务规模越来越大，我们的容器规模也逐渐增大时，数量庞大的容器管理将给我们带来许多挑战。Docker 官方为了解决多容器管理的问题推出了 Docker Swarm ，我们可以用它来管理规模更大的容器集群。
 
@@ -6016,9 +5814,7 @@ Docker Compose 是一个用来定义复杂应用的单机编排工具，通常�
 
 * **分布式：** Swarm 使用[Raft](https://raft.github.io/)（一种分布式一致性协议）协议来做集群间数据一致性保障，使用多个容器节点组成管理集群，从而避免单点故障。
 
-
 * **安全：** Swarm 使用 TLS 双向认证来确保节点之间通信的安全，它可以利用双向 TLS 进行节点之间的身份认证，角色授权和加密传输，并且可以自动执行证书的颁发和更换。
-
 
 * **简单：** Swarm 的操作非常简单，并且除 Docker 外基本无其他外部依赖，而且从 Docker 1.12 版本后， Swarm 直接被内置到了 Docker 中，可以说真正做到了开箱即用。
 Swarm 的这些优点得益于它优美的架构设计，下面我们来了解一下 Swarm 的架构。
@@ -6030,7 +5826,6 @@ Swarm 的架构整体分为**管理节点**（Manager Nodes）和**工作节点*
 ![image.png](https://s0.lgstatic.com/i/image/M00/67/E1/CgqCHl-iZxSAbYhzAABiA3_fQM8971.png)
 
 图 1 Swarm 架构图
-
 
 **管理节点：** 管理节点负责接受用户的请求，用户的请求中包含用户定义的容器运行状态描述，然后 Swarm 负责调度和管理容器，并且努力达到用户所期望的状态。
 
@@ -6044,7 +5839,7 @@ Swarm 的架构整体分为**管理节点**（Manager Nodes）和**工作节点*
 
 #### Swarm 集群
 
-Swarm 集群是一组被 Swarm 统一管理和调度的节点，被 Swarm纳管的节点可以是物理机或者虚拟机。其中一部分节点作为管理节点，负责集群状态的管理和协调，另一部分作为工作节点，负责执行具体的任务来管理容器，实现用户服务的启停等功能。
+Swarm 集群是一组被 Swarm 统一管理和调度的节点，被 Swarm 纳管的节点可以是物理机或者虚拟机。其中一部分节点作为管理节点，负责集群状态的管理和协调，另一部分作为工作节点，负责执行具体的任务来管理容器，实现用户服务的启停等功能。
 
 #### 节点
 
@@ -6058,8 +5853,8 @@ Swarm 集群中的每一台物理机或者虚拟机称为节点。节点按照�
 
 * 全局服务：每个工作节点上都会运行一个任务，类似于 Kubernetes 中的 [Daemonset](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)。
 
-
 * 副本服务：按照指定的副本数在整个集群中调度运行。
+
 #### 任务
 
 任务是集群中的最小调度单位，它包含一个真正运行中的 Docker 容器。当管理节点根据服务中声明的副本数将任务调度到节点时，任务则开始在该节点启动和运行，当节点出现异常时，任务会运行失败。此时调度器会把失败的任务重新调度到其他正常的节点上正常运行，以确保运行中的容器副本数满足用户所期望的副本数。
@@ -6075,7 +5870,6 @@ Swarm 集群的公开端口可以从集群内的任意节点上访问到，当�
 要想使用 Swarm 集群有如下一些要求：
 
 * Docker 版本大于 1.12，推荐使用最新稳定版 Docker；
-
 
 * 主机需要开放一些端口（TCP：2377 UDP:4789 TCP 和 UDP:7946）。
 下面我通过四台机器来搭建一个 Swarm 集群，演示的节点规划如下：
@@ -6127,7 +5921,7 @@ To add a manager to this swarm, run the following command:
 
 复制 Swarm 输出的结果即可加入管理节点到集群中。
 
-> 注意：管理节点的数量必须为奇数，生产环境推荐使用3个、5个或7个管理节点来管理 Swarm 集群。
+> 注意：管理节点的数量必须为奇数，生产环境推荐使用 3 个、5 个或 7 个管理节点来管理 Swarm 集群。
 
 * 第三步：节点查看
 节点添加完成后，我们使用以下命令可以查看当前节点的状态：
@@ -6175,7 +5969,6 @@ hello-world
 ```
 
 此时 hello-world 这个服务已经成功地从集群中删除。
-
 
 想要了解更多的`docker service`命令的相关操作，可以参考[这里](https://docs.docker.com/engine/swarm/swarm-tutorial/deploy-service/)。
 
@@ -6237,7 +6030,6 @@ Creating service wordpress_wordpress
 
 1. MySQL 服务，默认启动了一个副本。
 
-
 2. WordPress 服务，根据我们 docker-compose 模板的定义启动了两个副本。
 下面我们用`docker service ls`命令查看一下当前启动的服务。
 
@@ -6256,13 +6048,11 @@ Docker Swarm 是一个用来定义复杂应用的集群编排工具，可以帮�
 
 那么，学完本课时内容，你可以试着构建一个高可用（管理节点扩展为 3 个或 5 个）的 Swarm 集群吗？
 
-下一课时，我将为你讲解目前使用最多的容器编排系统Kubernetes，再会。
+下一课时，我将为你讲解目前使用最多的容器编排系统 Kubernetes，再会。
 
 ## 21 如何使 Docker 和 Kubernete 结合发挥容器的最大价值？
 
-
 Docker 虽然在容器领域有着不可撼动的地位，然而在容器的编排领域，却有着另外一个事实标准，那就是 Kubernetes。本课时，我就带你一起来认识下 Kubernetes。
-
 
 ### Kubernetes 的前生今世
 
@@ -6270,7 +6060,7 @@ Docker 虽然在容器领域有着不可撼动的地位，然而在容器的编�
 
 正当大家以为云计算领域已经变成了以虚拟机为代表的云平台时，Docker 在 2013 年横空出世，Docker 提出了镜像、仓库等核心概念，规范了服务的交付标准，使得复杂服务的落地变得更加简单，之后 Docker 又定义了 OCI 标准，可以说在容器领域 Docker 已经成了事实的标准。
 
-然而 Docker 诞生只是帮助我们定义了开发和交付标准，如果想要在生产环境中大批量的使用容器，还离不开的容器的编排技术。于是，在 2014 年 6 月 7 日，Kubernetes（Kubernetes 简称为 K8S，8 代表 ubernete 8个字母） 的第一个 commit（提交）拉开了容器编排标准定义的序幕。
+然而 Docker 诞生只是帮助我们定义了开发和交付标准，如果想要在生产环境中大批量的使用容器，还离不开的容器的编排技术。于是，在 2014 年 6 月 7 日，Kubernetes（Kubernetes 简称为 K8S，8 代表 ubernete 8 个字母） 的第一个 commit（提交）拉开了容器编排标准定义的序幕。
 
 Kubernetes 是舵手的意思，我们把 Docker 比喻成一个个集装箱，而 Kubernetes 正是运输这些集装箱的舵手。早期的 Kubernetes 主要参考 Google 内部的 Borg 系统，Kubernetes 刚刚诞生时，提出了 Pod、Sidecar 等概念，这些都是 Google 内部多年实战和沉淀所积累的精华。经过将近一年的沉淀和积累，Kubernetes 于 2015 年 7 月 21 日对外发布了第一个正式版本 v1.0，正式走入了大众的视线。
 
@@ -6286,14 +6076,12 @@ Kubernetes 采用典型的主从架构，分为 Master 和 Node 两个角色。
 
 * Mater 是 Kubernetes 集群的控制节点，负责整个集群的管理和控制功能。
 
-
 * Node 为工作节点，负责业务容器的生命周期管理。
 整体架构如下图：
 
 ![image (1).png](https://s0.lgstatic.com/i/image/M00/68/D6/Ciqc1F-k_FqAdHbtAAFVTi8cyOE246.png)
 
 图 1 Kubernetes 架构图（来源：Kubernetes 官网）
-
 
 #### Master 节点
 
@@ -6381,8 +6169,8 @@ Kubernetes 目前已经支持在多种环境下安装，我们可以在公有云
 下面，我以 Linux 平台为例，演示一下如何使用 minikube 安装一个 Kubernetes 集群。
 
 > 如果你想要在其他平台使用 minikube 安装 Kubernetes，请参考官网[安装教程](https://minikube.sigs.k8s.io/docs/start/)。
-> 
-> 
+>
+>
 > 在使用 minikube 安装 Kubernetes 之前，请确保我们的机器已经正确安装并且启动 Docker。
 
 第一步，安装 minikube 和 kubectl。首先执行以下命令安装 minikube。
@@ -6393,7 +6181,6 @@ $ sudo install minikube-linux-64 /usr/local/bin/minikube
 ```
 
 Kubectl 是 Kubernetes 官方的命令行工具，可以实现对 Kubernetes 集群的管理和控制。
-
 
 我们使用以下命令来安装 kubectl：
 
@@ -6408,7 +6195,6 @@ $ sudo install kubernetes/client/bin/kubectl /usr/local/bin/kubectl
 ```
 
 第二步，安装 Kubernetes 集群。
-
 
 执行以下命令使用 minikube 安装 Kubernetes 集群：
 
@@ -6529,7 +6315,6 @@ $ minikube service hello-world
 
 图 2 服务请求结果
 
-
 总结下，我们首先使用 Deployment 创建了三个 nginx-hello 的实例，然后使用 Service 的方式随机负载到后端的三个实例，并将服务通过 NodePort 的方式暴露在主机上，使得我们可以直接使用主机的端口访问到容器中的服务。
 
 ### 结语
@@ -6544,12 +6329,9 @@ Kubernetes 的目标一直很明确，那就是对标 Borg，可以支撑数亿�
 
 ## 22 多阶段构建：Docker 下如何实现镜像多阶级构建？
 
-
 通过前面课程的学习，我们知道 Docker 镜像是分层的，并且每一层镜像都会额外占用存储空间，一个 Docker 镜像层数越多，这个镜像占用的存储空间则会越多。镜像构建最重要的一个原则就是要保持镜像体积尽可能小，要实现这个目标通常可以从两个方面入手：
 
-
 * 基础镜像体积应该尽量小；
-
 
 * 尽量减少 Dockerfile 的行数，因为 Dockerfile 的每一条指令都会生成一个镜像层。
 在 Docker 的早期版本中，对于编译型语言（例如 C、Java、Go）的镜像构建，我们只能将应用的编译和运行环境的准备，全部都放到一个 Dockerfile 中，这就导致我们构建出来的镜像体积很大，从而增加了镜像的存储和分发成本，这显然与我们的镜像构建原则不符。
@@ -6557,7 +6339,6 @@ Kubernetes 的目标一直很明确，那就是对标 Borg，可以支撑数亿�
 为了减小镜像体积，我们需要借助一个额外的脚本，将镜像的编译过程和运行过程分开。
 
 * 编译阶段：负责将我们的代码编译成可执行对象。
-
 
 * 运行时构建阶段：准备应用程序运行的依赖环境，然后将编译后的可执行对象拷贝到镜像中。
 我以 Go 语言开发的一个 HTTP 服务为例，代码如下：
@@ -6591,10 +6372,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o http-server .
 Dockerfile.build 可以帮助我们把代码编译成可以执行的二进制文件，我们使用以下 Dockerfile 构建一个运行环境：
 
 ```
-FROM alpine:latest  
+FROM alpine:latest
 WORKDIR /root/
 COPY http-server .
- ["./http-server"] 
+ ["./http-server"]
 ```
 
 然后，我们将应用的编译和运行环境的准备步骤，都放到一个 build.sh 脚本文件中，内容如下：
@@ -6603,8 +6384,8 @@ COPY http-server .
 #!/bin/sh
 echo Building http-server:build
 docker build -t http-server:build . -f Dockerfile.build
-docker create --name builder http-server:build  
-docker cp builder:/go/src/github.com/wilhelmguo/multi-stage-demo/http-server ./http-server  
+docker create --name builder http-server:build
+docker cp builder:/go/src/github.com/wilhelmguo/multi-stage-demo/http-server ./http-server
 docker rm -f builder
 echo Building http-server:latest
 docker build -t http-server:latest .
@@ -6629,13 +6410,13 @@ docker build -t http-server:build . -f Dockerfile.build
 第三步，使用 http-server:build 镜像创建一个名称为 builder 的容器，该容器包含编译后的 http-server 二进制文件。
 
 ```
-docker create --name builder http-server:build  
+docker create --name builder http-server:build
 ```
 
 第四步，使用`docker cp`命令从 builder 容器中拷贝 http-server 文件到当前构建目录下，并且删除名称为 builder 的临时容器。
 
 ```
-docker cp builder:/go/src/github.com/wilhelmguo/multi-stage-demo/http-server ./http-server  
+docker cp builder:/go/src/github.com/wilhelmguo/multi-stage-demo/http-server ./http-server
 docker rm -f builder
 ```
 
@@ -6669,10 +6450,10 @@ FROM golang:1.13
 WORKDIR /go/src/github.com/wilhelmguo/multi-stage-demo/
 COPY main.go .
 RUN CGO_ENABLED=0 GOOS=linux go build -o http-server .
-FROM alpine:latest  
+FROM alpine:latest
 WORKDIR /root/
 COPY --from=0 /go/src/github.com/wilhelmguo/multi-stage-demo/http-server .
- ["./http-server"] 
+ ["./http-server"]
 ```
 
 然后，我们将这个 Dockerfile 拆解成两步进行分析。
@@ -6691,7 +6472,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o http-server .
 第二步，构建运行时镜像。
 
 ```
-FROM alpine:latest  
+FROM alpine:latest
 WORKDIR /root/
 COPY --from=0 /go/src/github.com/wilhelmguo/multi-stage-demo/http-server .
  ["./http-server"]
@@ -6717,7 +6498,7 @@ $ cd /go/src/github.com/wilhelmguo
 $ git clone https://github.com/wilhelmguo/multi-stage-demo.git
 ```
 
-代码克隆完成后，我们首先切换到without-multi-stage分支：
+代码克隆完成后，我们首先切换到 without-multi-stage 分支：
 
 ```
 $ cd without-multi-stage
@@ -6732,13 +6513,13 @@ Building http-server:build
 Sending build context to Docker daemon  96.26kB
 Step 1/4 : FROM golang:1.13
 1.13: Pulling from library/golang
-d6ff36c9ec48: Pull complete 
-c958d65b3090: Pull complete 
-edaf0a6b092f: Pull complete 
-80931cf68816: Pull complete 
-813643441356: Pull complete 
-799f41bb59c9: Pull complete 
-16b5038bccc8: Pull complete 
+d6ff36c9ec48: Pull complete
+c958d65b3090: Pull complete
+edaf0a6b092f: Pull complete
+80931cf68816: Pull complete
+813643441356: Pull complete
+799f41bb59c9: Pull complete
+16b5038bccc8: Pull complete
 Digest: sha256:8ebb6d5a48deef738381b56b1d4cd33d99a5d608e0d03c5fe8dfa3f68d41a1f8
 Status: Downloaded newer image for golang:1.13
  ---> d6f3656320fe
@@ -6760,7 +6541,7 @@ Building http-server:latest
 Sending build context to Docker daemon  7.496MB
 Step 1/4 : FROM alpine:latest
 latest: Pulling from library/alpine
-df20fa9351a1: Already exists 
+df20fa9351a1: Already exists
 Digest: sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f60a771a2dfe321
 Status: Downloaded newer image for alpine:latest
  ---> a24bb4013296
@@ -6779,7 +6560,6 @@ Successfully tagged http-server:latest
 ```
 
 经过一段时间的等待，我们的镜像就构建完成了。
-
 
 镜像构建完成后，我们使用`docker image ls`命令查看一下刚才构建的镜像大小：
 
@@ -6858,7 +6638,7 @@ WORKDIR /go/src/github.com/wilhelmguo/multi-stage-demo/
 COPY main.go .
 RUN CGO_ENABLED=0 GOOS=linux go build -o http-server .
 
-FROM alpine:latest  
+FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /go/src/github.com/wilhelmguo/multi-stage-demo/http-server .
  ["./http-server"]
@@ -6898,9 +6678,7 @@ COPY --from=nginx:latest /etc/nginx/nginx.conf /etc/local/nginx.conf
 
 ## 23 DevOp：容器化后如何通过 DevOp 提高协作效能？
 
-
 提到 DevOps 相信很多人并不陌生，DevOps 作为一个热门的概念，近几年被提及的频率也越来越高。有些人说它是一种方法论，有些人说它是一堆工具，有些人说它是企业的一种管理模式。那么，DevOps 究竟是什么呢？Docker 在 DevOps 中又扮演了什么角色呢？今天，我们就来详细聊聊这个话题。
-
 
 ### DevOps 的前生今世
 
@@ -6940,7 +6718,7 @@ DevOps 的整体目标是**促进开发和运维人员之间的配合，并且�
 
 如果想要微服务实现更快的迭代和更加可靠的稳定性，一定是离不开一个一体化的 DevOps 平台，DevOps 的目标是构建一个稳定可靠的软件生命周期管理环境。所以它不仅可以帮助我们节省很多研发、测试和运维成本，还可以极大地提高我们的软件迭代速度，可以说微服务要想顺利实施，离不开 DevOps 的思想作为指导。
 
-在 Docker 技术出现之前，人们通常更加关注如何做好 CI（Continuous Integration，持续集成）/CD（Continuous Delivery持续交付）以及 IAAS（基础设施即服务），这时我们称之为 DevOps 1.0 时代。
+在 Docker 技术出现之前，人们通常更加关注如何做好 CI（Continuous Integration，持续集成）/CD（Continuous Delivery 持续交付）以及 IAAS（基础设施即服务），这时我们称之为 DevOps 1.0 时代。
 
 随着 Docker 技术的诞生，我们开始迎来了 DevOps 2.0 时代，DevOps 所有的这些需求都与 Docker 所提供的能力极其匹配。首先 Docker 足够轻量，可以帮助我们的微服务实现快速迭代。其次 Docker 可以很方便地帮助我们构建任何语言的运行环境，帮助我们顺利地使用多种语言来开发的我们的服务，最后 Docker 可以帮助我们更好地隔离开发环境和生产环境。
 
@@ -6954,11 +6732,10 @@ DevOps 的整体目标是**促进开发和运维人员之间的配合，并且�
 
 1. 云平台作为底层基础，采用 Docker 技术将服务做容器化部署，并且使用资源管理和调度平台（例如 Kubernetes 或 Swarm）来自动化地管理容器。
 
-
 2. DevOps 平台在云基础平台之上，通过流程自动化以及工具自动化的手段，为可持续集成和交付提供能力支持。
 
-
 3. 有了云平台和 DevOps 的支撑，微服务才能够发挥更大的作用，使得我们的业务更加成熟和稳定。
+
 ### 容器如何助力 DevOps
 
 Docker 可以在 DevOps 各个阶段发挥重要作用，例如 Docker 可以帮助我们在开发阶段提供统一的开发环境，在持续集成阶段帮助我们快速构建应用，在部署阶段帮助我们快速发布或更新生产环境的应用。
@@ -6983,7 +6760,7 @@ Docker 可以在 DevOps 各个阶段发挥重要作用，例如 Docker 可以帮
 
 ### DevOps 工具介绍
 
-工欲善其事，必先利其器，要想顺利落地 DevOps，工具的选择十分重要，下面我们来看下除了Docker 外还有哪些工具可以帮助我们顺利地构建 DevOps 平台。
+工欲善其事，必先利其器，要想顺利落地 DevOps，工具的选择十分重要，下面我们来看下除了 Docker 外还有哪些工具可以帮助我们顺利地构建 DevOps 平台。
 
 #### Git
 
@@ -7025,9 +6802,7 @@ DevOps 提倡小规模和增量的服务发布方式，并且 DevOps 还指导�
 
 ## 24 CICD：容器化后如何实现持续集成与交付？（上）
 
-
 上一讲，我介绍了 DevOps 的概念与 DevOps 的一些思想。DevOps 的思想可以帮助我们缩短上线周期并且提高软件迭代速度，而 CI/CD 则是 DevOps 思想中最重要的部分。
-
 
 具体来说，CI/CD 是一种通过在应用开发阶段，引入自动化的手段来频繁地构建应用，并且向客户交付应用的方法。它的核心理念是持续开发、持续部署以及持续交付，它还可以让自动化持续交付贯穿于整个应用生命周期，使得开发和运维统一参与协同支持。
 
@@ -7071,14 +6846,12 @@ Gitlab 是由 Gitlab Inc. 开发的一款基于 Git 的代码托管平台，它�
 
 * 操作系统：CentOS 7
 
-
 * Jenkins：tls 长期维护版
-
 
 * Docker：18.06
 
-
 * GitLab：13.3.8-ce.0
+
 #### 第一步：安装 Docker
 
 安装 Docker 的步骤可以在[第一讲](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=455#/detail/pc?id=4572)的内容中找到，这里就不再赘述。Docker 环境准备好后，我们就可以利用 Docker 来部署 GitLab 和 Jenkins 了。
@@ -7103,15 +6876,13 @@ gitlab/gitlab-ce:13.3.8-ce.0
 
 ![Drawing 0.png](https://s0.lgstatic.com/i/image/M00/6F/40/CgqCHl-05ceAOEtOAAC7xTjpRgo536.png)
 
-图1 GitLab 设置密码界面
-
+图 1 GitLab 设置密码界面
 
 第一次登陆，GitLab 会要求我们设置管理员密码，我们输入管理员密码后点击确认即可，之后 GitLab 会自动跳转到登录页面。
 
 ![Drawing 1.png](https://s0.lgstatic.com/i/image/M00/6F/40/CgqCHl-05eKAftEiAACO_hts6R8497.png)
 
-图2 GitLab 登录界面
-
+图 2 GitLab 登录界面
 
 然后输入默认管理员用户名：admin@example.com，密码为我们上一步设置的密码。点击登录即可登录到系统中，至此，GitLab 已经安装成功。
 
@@ -7166,36 +6937,31 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 
 ![Drawing 2.png](https://s0.lgstatic.com/i/image/M00/6F/35/Ciqc1F-05giAJYDhAADCpDZzl2M065.png)
 
-图3 Jenkins 登录界面
-
+图 3 Jenkins 登录界面
 
 然后将日志中的密码粘贴到密码框即可，之后 Jenkins 会自动初始化，我们根据引导，安装推荐的插件即可。
 
 ![Drawing 3.png](https://s0.lgstatic.com/i/image/M00/6F/35/Ciqc1F-05hSAHd7VAAEpFeu4qfY218.png)
 
-图4 Jenkins 引导页面
-
+图 4 Jenkins 引导页面
 
 选择好安装推荐的插件后，Jenkins 会自动开始初始化一些常用插件。界面如下：
 
 ![Drawing 4.png](https://s0.lgstatic.com/i/image/M00/6F/35/Ciqc1F-05h-AUSiFAAEAxHFCt30058.png)
 
-图5 Jenkins 插件初始化
-
+图 5 Jenkins 插件初始化
 
 插件初始化完后，创建管理员账户和密码，输入用户名、密码和邮箱等信息，然后点击保存并完成即可。
 
 ![Drawing 5.png](https://s0.lgstatic.com/i/image/M00/6F/35/Ciqc1F-05iaANJXNAABXftlfsvQ115.png)
 
-图6 Jenkins 创建管理员
-
+图 6 Jenkins 创建管理员
 
 这里，确认 Jenkins 地址，我们就可以进入到 Jenkins 主页了。
 
 ![Drawing 6.png](https://s0.lgstatic.com/i/image/M00/6F/35/Ciqc1F-05i2AR2lRAADHULl7Ysk145.png)
 
-图7 Jenkins 主页
-
+图 7 Jenkins 主页
 
 然后在系统管理 -> 插件管理 -> 可选插件处，搜索 GitLab 和 Docker ，分别安装相关插件即可，以便我们的 Jenkins 服务和 GitLab 以及 Docker 可以更好地交互。
 
@@ -7203,8 +6969,7 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 
 ![Drawing 8.png](https://s0.lgstatic.com/i/image/M00/6F/35/Ciqc1F-05kKAMr27AAGh4SQTNsU299.png)
 
-图8 Jenkins 插件安装
-
+图 8 Jenkins 插件安装
 
 等待插件安装完成， 重启 Jenkins ，我们的 Jenkins 环境就准备完成了。
 
@@ -7220,23 +6985,17 @@ Docker 的出现解决了 CI/CD 流程中的各种问题，Docker 交付的镜�
 
 ## 25 CICD：容器化后如何实现持续集成与交付？（下）
 
-
 上一讲，我介绍了 CI 和 CD 的相关概念，并且使用 Docker+Jenkins+GitLab 搭建了我们的 CI/CD 环境，今天我们就来使用已经构建好的环境来实际构建和部署一个应用。
-
 
 构建和部署一个应用的流程可以分为五部分。
 
 1. 我们首先需要配置 GitLab SSH 访问公钥，使得我们可以直接通过 SSH 拉取或推送代码到 GitLab。
 
-
 2. 接着将代码通过 SSH 上传到 GitLab。
-
 
 3. 再在 Jenkins 创建构建任务，使得 Jenkins 可以成功拉取 GitLab 的代码并进行构建。
 
-
 4. 然后配置代码变更自动构建流程，使得代码变更可以触发自动构建 Docker 镜像。
-
 
 5. 最后配置自动部署流程，镜像构建完成后自动将镜像发布到测试或生产环境。
 接下来我们逐一操作。
@@ -7377,9 +7136,9 @@ total 24
 # 第一步，登录镜像仓库
 $ docker login -u {USER} -p  {PASSWORD}
 # 第二步，使用 docker build 命令构建镜像
-$ docker build -t lagoudocker/devops-demo . 
+$ docker build -t lagoudocker/devops-demo .
 # 第三步, 使用 docker push 命令推送镜像
-$ docker push lagoudocker/devops-demo 
+$ docker push lagoudocker/devops-demo
 ```
 
 ![Drawing 8.png](https://s0.lgstatic.com/i/image/M00/6F/A9/CgqCHl-2QUKAJ-psAABwghmp76g949.png)
@@ -7404,17 +7163,17 @@ $ docker push lagoudocker/devops-demo 
 
 ```
 # 需要推送的镜像名称
-IMAGE_NAME="lagoudocker/devops-demo" 
+IMAGE_NAME="lagoudocker/devops-demo"
 # 获取当前构建的版本号
 GIT_VERSION=`git describe --always --tag`
 # 生成完整的镜像 URL 变量，用于构建和推送镜像
-REPOSITORY=docker.io/${IMAGE_NAME}:${GIT_VERSION} 
-# 构建Docker镜像 
-docker build -t $REPOSITORY -f Dockerfile . 
+REPOSITORY=docker.io/${IMAGE_NAME}:${GIT_VERSION}
+# 构建Docker镜像
+docker build -t $REPOSITORY -f Dockerfile .
 # 登录镜像仓库，username 跟 password 为目标镜像仓库的用户名和密码
 docker login --username=xxxxx --password=xxxxxx docker.io
 # 推送 Docker 镜像到目标镜像仓库
-docker push $REPOSITORY 
+docker push $REPOSITORY
 ```
 
 好了，到此我们已经完成了 GitLab -> Jenkins -> Docker 镜像仓库的自动构建和推送。当我们推送代码到 GitLab 中时，会自动触发 Webhooks，然后 GitLab 会根据配置的 Webhooks 调用 Jenkins 开始构建镜像，镜像构建完成后自动将镜像上传到我们的镜像仓库。
@@ -7431,7 +7190,7 @@ docker push $REPOSITORY
 
 ![Drawing 12.png](https://s0.lgstatic.com/i/image/M00/6F/A9/CgqCHl-2QfmAc4iBAACDzvOoPWI585.png)
 
-**第二步，配置 Publish Over SSH 插件。** 插件安装完成后，在 Jenkins 系统管理的系统设置下，找到 Publish Over SSH 功能模块，添加远程服务器节点，这里我使用密码验证的方式添加一台服务器。配置好后，我们可以使用测试按钮测试服务器是否可以正常连接，显示Success 代表服务器可以正常连接，测试连接成功后，点击保存按钮保存配置。
+**第二步，配置 Publish Over SSH 插件。** 插件安装完成后，在 Jenkins 系统管理的系统设置下，找到 Publish Over SSH 功能模块，添加远程服务器节点，这里我使用密码验证的方式添加一台服务器。配置好后，我们可以使用测试按钮测试服务器是否可以正常连接，显示 Success 代表服务器可以正常连接，测试连接成功后，点击保存按钮保存配置。
 
 ![Drawing 13.png](https://s0.lgstatic.com/i/image/M00/6F/A9/CgqCHl-2QgSAVk0bAAC6abody2k836.png)
 
@@ -7439,21 +7198,21 @@ docker push $REPOSITORY
 
 ```
 # 需要推送的镜像名称
-IMAGE_NAME="lagoudocker/devops-demo" 
+IMAGE_NAME="lagoudocker/devops-demo"
 # 获取当前构建的版本号
 GIT_VERSION=`git describe --always --tag`
 # 生成完整的镜像 URL 变量，用于构建和推送镜像
-REPOSITORY=docker.io/${IMAGE_NAME}:${GIT_VERSION} 
-# 构建Docker镜像 
-docker build -t $REPOSITORY -f Dockerfile . 
+REPOSITORY=docker.io/${IMAGE_NAME}:${GIT_VERSION}
+# 构建Docker镜像
+docker build -t $REPOSITORY -f Dockerfile .
 # 登录镜像仓库，username 跟 password 为目标镜像仓库的用户名和密码
 docker login --username={USER} --password={PASSWORD} docker.io
 # 推送 Docker 镜像到目标镜像仓库
-docker push $REPOSITORY 
-mkdir -p ./shell && echo \ 
-"docker login --username={USER} --password={PASSWORD} \n"\ 
-"docker pull $REPOSITORY\n"\ 
-"docker kill hello \n"\ 
+docker push $REPOSITORY
+mkdir -p ./shell && echo \
+"docker login --username={USER} --password={PASSWORD} \n"\
+"docker pull $REPOSITORY\n"\
+"docker kill hello \n"\
 "docker run --rm --name=hello -p 8090:8090 -d $REPOSITORY" >> ./shell/release
 ```
 
@@ -7465,9 +7224,7 @@ mkdir -p ./shell && echo \
 
 * Source file 就是我们要传递的 shell 脚本信息，这里填写我们上面生成的 shell 脚本文件即可。
 
-
 * Remove prefix 是需要过滤的目录，这里我们填写 shell。
-
 
 * Remote directory 为远程执行脚本的目录。
 最后点击保存，保存我们的配置即可。配置完成后，我们就完成了推送代码到 GitLab，Jenkins 自动构建镜像，之后推送镜像到镜像仓库，最后自动在远程服务器上拉取并重新部署容器。
@@ -7480,13 +7237,11 @@ mkdir -p ./shell && echo \
 
 DevOps 是一个非常棒的指导思想，而 CI/CD 是整个 DevOps 流程中最重要的部分，目前 CI/CD 的市场已经非常成熟，CI/CD 的工具链也非常完善，因此，无论是小团队还是大团队，都有必要去学习和掌握 CI/CD，以便帮助我们改善团队的效能，一切可以自动化的流程，都应该尽量避免人工参与。
 
-那么，你知道如何使用 Jenkins 将构建后的镜像发布到 Kubernetes 中吗?
+那么，你知道如何使用 Jenkins 将构建后的镜像发布到 Kubernetes 中吗？
 
 ## 26 结束语 展望未来：Docker 的称霸之路
 
-
 不知不觉，已经陪伴你走过了 25 课时，首先，恭喜你坚持学完了本专栏的全部内容。
-
 
 在这个专栏，我带你从 Docker 的基础知识开始学习，到 Docker 的原理讲解，再到 Docker 的编排，最后将 Docker 技术融合到了 DevOps 中，相信此时的你已经对 Docker 有了全新的认识。
 
@@ -7527,4 +7282,3 @@ DevOps 是一个非常棒的指导思想，而 CI/CD 是整个 DevOps 流程中�
 最后，我邀请你为本专栏课程进行结课评价，因为你的每一个观点都是我和拉勾教育最关注的点。[点击链接，既可参与课程评价，编辑会随机抽 5 位同学送精美礼品喔。](https://wj.qq.com/s2/7542578/939b)
 
 我是郭少，后会有期。
-

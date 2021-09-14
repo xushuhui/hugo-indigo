@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -19,7 +20,7 @@ import (
 func getHeaders() (header map[string]string) {
 	header = map[string]string{
 		//"Content-Type": "application/x-www-form-urlencoded",
-		"Cookie":          `login_sid_t=e3498f7cca72a692d34ae777ebc63039; cross_origin_proto=SSL; _s_tentry=-; Apache=8988982910612.766.1609150868347; SINAGLOBAL=8988982910612.766.1609150868347; ULV=1609150868353:1:1:1:8988982910612.766.1609150868347:; XSRF-TOKEN=trOXzEyA1bxHU4sXjsAT2R5E; SSOLoginState=1630897648; UOR=,,www.google.com; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWOg3rc-lellg-YikzmUDqZ5JpX5KMhUgL.FozN1hqfehMpS0z2dJLoIpjLxK-LB.-L1K5LxKqL1-zL1K.LxKnLB.-L1h.t; ALF=1662778049; SCF=Al6SMtYhRRaWwDB15z5E5DhyjbPLGqwZ52MHaYUy0NiGcFIPTbZd9k3aMAVoq_JVmIVoUvTyZAxRax-vtNzMrck.; SUB=_2A25MPrcSDeRhGeRJ41QU8CnNzD6IHXVvTa_arDV8PUNbmtB-LWPMkW9NUneWxWLlgmOtOC2JvrBbxV1sGUWY0j2e; WBPSESS=GjA8I2NHhaKAyZg5agD9BG8KVHidYGC8nIa48kcJ-usOA-Obr8g7hnPN5lMIvhjb_jkl2SAyINLQLkkzNIPmpUNqJVc0TsGvFUXp-ymwzx-UsJDivJKOobNeOdILGwJd`,
+		"Cookie":          `login_sid_t=e3498f7cca72a692d34ae777ebc63039; cross_origin_proto=SSL; _s_tentry=-; Apache=8988982910612.766.1609150868347; SINAGLOBAL=8988982910612.766.1609150868347; ULV=1609150868353:1:1:1:8988982910612.766.1609150868347:; SSOLoginState=1630897648; UOR=,,www.google.com; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWOg3rc-lellg-YikzmUDqZ5JpX5KMhUgL.FozN1hqfehMpS0z2dJLoIpjLxK-LB.-L1K5LxKqL1-zL1K.LxKnLB.-L1h.t; ALF=1663029958; SCF=Al6SMtYhRRaWwDB15z5E5DhyjbPLGqwZ52MHaYUy0NiG3N7MO-tTkjKv4untB1fQ01qIeCkLkC8z_cofwgLW5iw.; SUB=_2A25MOu8YDeRhGeRJ41QU8CnNzD6IHXVvTkfQrDV8PUNbmtB-LRCmkW9NUneWxRXeO-zBwm4fp9-SWgRfAqIzAUUb; WBStorage=d335429e|undefined`,
 		"User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
 		"Referer":         "http://weibo.com/minipublish",
 		"Accept":          "*/*",
@@ -30,7 +31,7 @@ func getHeaders() (header map[string]string) {
 	}
 	return
 }
-func Download(url string) string{
+func Download(url string) {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	req.Header.Set("Referer", "http://www.imooc.com/")
@@ -39,6 +40,7 @@ func Download(url string) string{
 
 	s := strings.Split(url, "/")
 	name := s[len(s)-1]
+
 	if err != nil {
 		panic(err)
 	}
@@ -48,9 +50,9 @@ func Download(url string) string{
 	if err != nil {
 		panic(err)
 	}
-	ioutil.WriteFile(name, data, 0644)
-	img := uploadSinaImg(name)
-	return img
+	ioutil.WriteFile("./img/"+name, data, 0644)
+	//img := uploadSinaImg(name)
+	return
 }
 func Post(url string, jsonStr io.Reader) (body []byte, err error) {
 	client := &http.Client{}
@@ -75,19 +77,7 @@ func Post(url string, jsonStr io.Reader) (body []byte, err error) {
 		return
 	}
 	defer res.Body.Close()
-	br := bufio.NewReader(res.Body)
-	var n int
-	for {
-		n++
-		a, _, c := br.ReadLine()
-		if c == io.EOF {
-			break
-		}
-		if n == 3 {
-			body = a
-		}
-
-	}
+	body, _ = ioutil.ReadAll(res.Body)
 
 	return
 }
@@ -105,53 +95,96 @@ func uploadSinaImg(fileName string) string {
 	err = json.Unmarshal(b, &res)
 	if err != nil {
 		log.Println(err)
+		return ""
 	}
+	fmt.Println("filename ", fileName)
 	if res.Code != "A00006" {
-		log.Fatal("err", string(b))
+		fmt.Println("err", string(b))
+		return ""
 	}
 	name := res.Data.Pics.Pic1.PID
 	return "https://tvax1.sinaimg.cn/large/" + name
 
 }
-func replaceImg(s string)  {
+func replaceImg(s string) {
 	var index int
 	for k, v := range s {
-		if v==40{
+		if v == 40 {
 			index = k
 		}
 	}
-	old := s[index+1:len(s)-1]
+	old := s[index+1 : len(s)-1]
 
-	s  = strings.ReplaceAll(s,old,"new")
+	s = strings.ReplaceAll(s, old, "new")
 }
 func main() {
-	//getList("http://www.imooc.com/wiki/springlesson/springintro.html", 25)
-	//uploadSinaImg()
-	//Download("http://img.mukewang.com/wiki/5e8c6c8608ae082105630300.jpg")
-	dir :="./imooc/spring"
+	//getList("http://www.imooc.com/wiki/ES6lesson/introductions.html", 200, "./imooc/front/")
+
+	dir := "./imooc/test/"
 	files, _ := ioutil.ReadDir(dir)
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
-
-		output, needHandle, err := handleMd(dir+"/"+file.Name())
+		f, err := os.OpenFile(dir+"/"+file.Name(), os.O_RDWR|os.O_CREATE, 0766)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
-		if needHandle {
-			err = writeToFile(dir+"/"+file.Name(), output)
-			if err != nil {
-				panic(err)
-			}
-		}
-
+		s, _ := ioutil.ReadAll(f)
+		importPost(file.Name(), string(s))
 	}
 
+	//	output, needHandle, err := handleMdImg(dir+"/"+file.Name())
+	//fmt.Println(file.Name())
+	//
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	if needHandle {
+	//		err = writeToFile(dir+"/"+file.Name(), output)
+	//		if err != nil {
+	//			panic(err)
+	//		}
+	//	}
+	//
+	//}
 
 }
+
+type Posts struct {
+	Title    string `json:"title"`
+	Markdown string `json:"markdown"`
+	IsPublic int    `json:"is_public"`
+	Html     string `json:"html"`
+}
+
+func importPost(title, content string) {
+	client := &http.Client{}
+	s, _ := json.Marshal(Posts{
+		Title:    title,
+		Markdown: content,
+	})
+
+	var data = strings.NewReader(string(s))
+	req, err := http.NewRequest("POST", "https://api.mdnice.com/articles", data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36")
+	req.Header.Set("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciIsInVzZXJJZCI6Ik9URXdOdz09Iiwic3ViIjoiNDc0NDk3MDk3QHFxLmNvbSIsImlzcyI6IjkwYjlhNjNjODFjYzYzNTg4NDg2IiwiaWF0IjoxNjMxNjEyOTc0LCJhdWQiOiJtZG5pY2UtYXBpIiwiZXhwIjoxNjM0MjA0OTc0LCJuYmYiOjE2MzE2MTI5NzR9.dejutJy1hcnArLB3GES_quaWVNp6lOo2z4UGlaIXrEM")
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", bodyText)
+}
 func getContent(link string, title string) {
-	fileName := "imooc/spring/" + title
+	fileName := title
 	file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0766) // For read access.
 	if err != nil {
 		log.Fatal(err)
@@ -176,7 +209,7 @@ func getContent(link string, title string) {
 
 	html, _ := content.Html()
 	godown.Convert(file, strings.NewReader(html), &godown.Option{
-		GuessLang: func(s string) (string, error) { return "java", nil },
+		GuessLang: func(s string) (string, error) { return "javascript", nil },
 	})
 
 	output, needHandle, err := handleMd(fileName)
@@ -204,7 +237,8 @@ func writeToFile(filePath string, outPut []byte) error {
 	writer.Flush()
 	return nil
 }
-func handleMd(fileName string) ([]byte, bool, error) {
+
+func handleMdImg(fileName string) ([]byte, bool, error) {
 	f, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -214,6 +248,7 @@ func handleMd(fileName string) ([]byte, bool, error) {
 	needHandle := false
 	output := make([]byte, 0)
 	for {
+
 		line, _, err := reader.ReadLine()
 		if err != nil {
 			if err == io.EOF {
@@ -233,19 +268,55 @@ func handleMd(fileName string) ([]byte, bool, error) {
 			if !needHandle {
 				needHandle = true
 			}
-		} else if strings.Contains(string(line),"img.mukewang.com"){
+		} else if strings.Contains(string(line), "img.mukewang.com") {
 			s := string(line)
 			var index int
 			for k, v := range s {
-				if v==40{
+				if v == 40 {
 					index = k
 				}
 			}
-			old := s[index+1:len(s)-1]
-			new := Download(old)
-			s  = strings.ReplaceAll(s,old,new)
+			old := s[index+1 : len(s)-1]
 
+			Download(old)
 			newByte := []byte(s)
+			output = append(output, newByte...)
+			output = append(output, []byte("\n")...)
+			if !needHandle {
+				needHandle = true
+			}
+		} else {
+			output = append(output, line...)
+			output = append(output, []byte("\n")...)
+		}
+	}
+	return output, needHandle, nil
+
+}
+func handleMd(fileName string) ([]byte, bool, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	reader := bufio.NewReader(f)
+	needHandle := false
+	output := make([]byte, 0)
+	for {
+		line, _, err := reader.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				str1 := []byte("### 微信公众号\n")
+				str2 := []byte("\n![扫码关注](https://tvax4.sinaimg.cn/large/a616b9a4gy1grl9d1rdpvj2076076wey.jpg)")
+				output = append(output, str1...)
+				output = append(output, str2...)
+
+				return output, needHandle, nil
+			}
+			return nil, needHandle, err
+		}
+		if string(line) == "<!---->" {
+			newByte := []byte("")
 			output = append(output, newByte...)
 			output = append(output, []byte("\n")...)
 			if !needHandle {
@@ -273,7 +344,8 @@ func replace(r io.Reader, w io.Writer) error {
 	}
 	return sc.Err()
 }
-func getList(url string, start int) {
+
+func getList(url string, start int, dir string) {
 
 	res, err := http.Get(url)
 	if err != nil {
@@ -294,11 +366,12 @@ func getList(url string, start int) {
 		// For each item found, get the title
 		i = i + start
 		title := strings.TrimSpace(s.Text())
-		title = "Spring从零开始（" + strconv.Itoa(i) + "）" + title + ".md"
+
+		title = "前端从零开始（" + strconv.Itoa(i) + "）" + strings.ReplaceAll(title, "/", "") + ".md"
 		link, _ := s.Attr("href")
 		link = "http://www.imooc.com" + link
 
-		getContent(link, title)
-		time.Sleep(10 * time.Second)
+		getContent(link, dir+title)
+		time.Sleep(1 * time.Second)
 	})
 }
