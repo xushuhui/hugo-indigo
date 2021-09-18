@@ -24,7 +24,7 @@ func getHeaders() (header map[string]string) {
 		"User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
 		"Referer":         "http://weibo.com/minipublish",
 		"Accept":          "*/*",
-		"Content-Length":  "79664",
+
 		"Accept-Encoding": "gzip, deflate, br",
 		"Host":            "picupload.weibo.com",
 		"Connection":      "keep-alive",
