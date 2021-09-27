@@ -31,7 +31,7 @@ func getHeaders() (header map[string]string) {
 	}
 	return
 }
-func Download(url string) {
+func Download(url string,dir string) {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	req.Header.Set("Referer", "http://www.imooc.com/")
@@ -50,7 +50,7 @@ func Download(url string) {
 	if err != nil {
 		panic(err)
 	}
-	ioutil.WriteFile("./img/"+name, data, 0644)
+	ioutil.WriteFile(dir+name, data, 0644)
 	//img := uploadSinaImg(name)
 	return
 }
@@ -118,21 +118,8 @@ func replaceImg(s string) {
 	s = strings.ReplaceAll(s, old, "new")
 }
 func main() {
-	//getList("http://www.imooc.com/wiki/ES6lesson/introductions.html", 200, "./imooc/front/")
-
-	dir := "./imooc/test/"
-	files, _ := ioutil.ReadDir(dir)
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		f, err := os.OpenFile(dir+"/"+file.Name(), os.O_RDWR|os.O_CREATE, 0766)
-		if err != nil {
-			log.Fatal(err)
-		}
-		s, _ := ioutil.ReadAll(f)
-		importPost(file.Name(), string(s))
-	}
+	//getList("http://www.imooc.com/wiki/lambda/lambdaintro.html", 50, "./imooc/java/")
+	//
 
 	//	output, needHandle, err := handleMdImg(dir+"/"+file.Name())
 	//fmt.Println(file.Name())
@@ -212,7 +199,7 @@ func getContent(link string, title string) {
 		GuessLang: func(s string) (string, error) { return "javascript", nil },
 	})
 
-	output, needHandle, err := handleMd(fileName)
+	output, needHandle, err := handleMdImg(fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -252,10 +239,10 @@ func handleMdImg(fileName string) ([]byte, bool, error) {
 		line, _, err := reader.ReadLine()
 		if err != nil {
 			if err == io.EOF {
-				//str1 := []byte("### 微信公众号\n")
-				//str2 := []byte("\n![扫码关注](https://tvax4.sinaimg.cn/large/a616b9a4gy1grl9d1rdpvj2076076wey.jpg)")
-				//output = append(output, str1...)
-				//output = append(output, str2...)
+				str1 := []byte("### 微信公众号老徐说\n")
+				str2 := []byte("\n![扫码关注](https://tvax4.sinaimg.cn/large/a616b9a4gy1grl9d1rdpvj2076076wey.jpg)")
+				output = append(output, str1...)
+				output = append(output, str2...)
 
 				return output, needHandle, nil
 			}
@@ -277,8 +264,10 @@ func handleMdImg(fileName string) ([]byte, bool, error) {
 				}
 			}
 			old := s[index+1 : len(s)-1]
-
-			Download(old)
+			if !strings.Contains(old, "http://") && !strings.Contains(old, "https://") {
+				old = "https:"+old
+			}
+			Download(old,"./img/")
 			newByte := []byte(s)
 			output = append(output, newByte...)
 			output = append(output, []byte("\n")...)
@@ -306,7 +295,7 @@ func handleMd(fileName string) ([]byte, bool, error) {
 		line, _, err := reader.ReadLine()
 		if err != nil {
 			if err == io.EOF {
-				str1 := []byte("### 微信公众号\n")
+				str1 := []byte("### 微信公众号老徐说\n")
 				str2 := []byte("\n![扫码关注](https://tvax4.sinaimg.cn/large/a616b9a4gy1grl9d1rdpvj2076076wey.jpg)")
 				output = append(output, str1...)
 				output = append(output, str2...)
@@ -367,7 +356,7 @@ func getList(url string, start int, dir string) {
 		i = i + start
 		title := strings.TrimSpace(s.Text())
 
-		title = "前端从零开始（" + strconv.Itoa(i) + "）" + strings.ReplaceAll(title, "/", "") + ".md"
+		title = "Java从零开始（" + strconv.Itoa(i) + "）" + strings.ReplaceAll(title, "/", "") + ".md"
 		link, _ := s.Attr("href")
 		link = "http://www.imooc.com" + link
 
